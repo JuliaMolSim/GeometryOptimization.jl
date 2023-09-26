@@ -5,12 +5,12 @@ DocMeta.setdocmeta!(GeometryOptimization, :DocTestSetup, :(using GeometryOptimiz
 
 makedocs(;
     modules=[GeometryOptimization],
-    authors="Christoph Ortner <christohortner@gmail.com> and contributors",
-    repo="https://github.com/ortner/GeometryOptimization.jl/blob/{commit}{path}#{line}",
+    authors="JuliaMolSim community",
+    repo="https://github.com/JuliaMolSim/GeometryOptimization.jl/blob/{commit}{path}#{line}",
     sitename="GeometryOptimization.jl",
     format=Documenter.HTML(;
         prettyurls=get(ENV, "CI", "false") == "true",
-        canonical="https://ortner.github.io/GeometryOptimization.jl",
+        canonical="https://JuliaMolSim.github.io/GeometryOptimization.jl",
         edit_link="main",
         assets=String[],
     ),
@@ -20,6 +20,6 @@ makedocs(;
 )
 
 deploydocs(;
-    repo="github.com/ortner/GeometryOptimization.jl",
+    repo="github.com/JuliaMolSim/GeometryOptimization.jl",
     devbranch="main",
 )
