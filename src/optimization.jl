@@ -21,23 +21,14 @@ export optimize_geometry
     are used.
 
 """
-function construct_optimization_function(system::AbstractSystem, calculator; kwargs...)
-    f = function(x::AbstractVector{<:Real})
-            x = 1u"bohr" .* x # Work in atomic units.
-            new_system = update_optimizable_coordinates(system, x)
-            austrip(AtomsCalculators.potential_energy(new_system, calculator; kwargs...))
-    end
-    return f
-end
-
-function construct_optimization_function_w_gradients(system::AbstractSystem, calculator; kwargs...)
+function Optimization.OptimizationFunction(system::AbstractSystem, calculator; kwargs...)
     mask = get_optimizable_mask(system) # mask is assumed not to change during optim.
 
     f = function(x::AbstractVector{<:Real}, p)
         x = 1u"bohr" .* x # Work in atomic units.
         new_system = update_optimizable_coordinates(system, x)
         energy = AtomsCalculators.potential_energy(new_system, calculator; kwargs...)
-        return austrip(energy)
+        austrip(energy)
     end
 
     g! = function(G::AbstractVector{<:Real}, x::AbstractVector{<:Real}, p)
@@ -52,22 +43,13 @@ function construct_optimization_function_w_gradients(system::AbstractSystem, cal
         # NOTE: minus sign since forces are opposite to gradient.
         G .= - austrip.(forces_concat)
     end
-    return (f, g!)
+    OptimizationFunction(f; grad=g!)
 end
 
-function optimize_geometry(system::AbstractSystem, calculator;
-        no_gradients=false, solver=Optim.LBFGS(), kwargs...)
-
+function optimize_geometry(system::AbstractSystem, calculator; solver=Optim.LBFGS(), kwargs...)
     # Use current system parameters as starting positions.
     x0 = Vector(austrip.(get_optimizable_coordinates(system))) # Optim modifies x0 in-place, so need a mutable type.
-
-    if no_gradients
-        f = construct_optimization_function(system, calculator)
-        f_opt = OptimizationFunction(f)
-    else
-        (f, g!) = construct_optimization_function_w_gradients(system, calculator)
-        f_opt = OptimizationFunction(f; grad=g!)
-    end
+    f_opt = OptimizationFunction(system, calculator)
     problem = OptimizationProblem(f_opt, x0, nothing) # Last argument needed in Optimization.jl.
     solve(problem, solver; kwargs...)
 end
