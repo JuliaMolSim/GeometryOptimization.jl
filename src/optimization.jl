@@ -25,15 +25,13 @@ function Optimization.OptimizationFunction(system::AbstractSystem, calculator; k
     mask = get_optimizable_mask(system) # mask is assumed not to change during optim.
 
     f = function(x::AbstractVector{<:Real}, p)
-        x = 1u"bohr" .* x # Work in atomic units.
-        new_system = update_optimizable_coordinates(system, x)
+        new_system = update_optimizable_positions(system, x * u"bohr")
         energy = AtomsCalculators.potential_energy(new_system, calculator; kwargs...)
         austrip(energy)
     end
 
     g! = function(G::AbstractVector{<:Real}, x::AbstractVector{<:Real}, p)
-        x = 1u"bohr" .* x # Work in atomic units.
-        new_system = update_optimizable_coordinates(system, x)
+        new_system = update_optimizable_positions(system, x * u"bohr")
         energy = AtomsCalculators.potential_energy(new_system, calculator; kwargs...)
 
         forces = AtomsCalculators.forces(new_system, calculator; kwargs...)
@@ -48,7 +46,7 @@ end
 
 function optimize_geometry(system::AbstractSystem, calculator; solver=Optim.LBFGS(), kwargs...)
     # Use current system parameters as starting positions.
-    x0 = Vector(austrip.(get_optimizable_coordinates(system))) # Optim modifies x0 in-place, so need a mutable type.
+    x0 = Vector(austrip.(get_optimizable_positions(system))) # Optim modifies x0 in-place, so need a mutable type.
     f_opt = OptimizationFunction(system, calculator)
     problem = OptimizationProblem(f_opt, x0, nothing) # Last argument needed in Optimization.jl.
     solve(problem, solver; kwargs...)

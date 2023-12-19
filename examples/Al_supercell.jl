@@ -32,7 +32,7 @@ function build_al_supercell(rep=1)
 
     # Unfortunately right now the conversion to ASE drops the pseudopotential information,
     # so we need to reattach it:
-    supercell = attach_psp(supercell; Al="hgh/lda/al-q3")
+    supercell = attach_psp(supercell; Al=artifact"pd_nc_sr_lda_standard_0.4.1_upf/Al.upf")
     return supercell
 end;
 
