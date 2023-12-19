@@ -1,8 +1,7 @@
 module GeometryOptimization
 
-using LinearAlgebra
 using StaticArrays
-using Optimization, Optim, LineSearches
+using Optimization
 using OptimizationOptimJL
 using AtomsBase
 using AtomsCalculators

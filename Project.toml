@@ -4,25 +4,25 @@ authors = ["JuliaMolSim community"]
 version = "0.0.1"
 
 [deps]
-ASEconvert = "3da9722f-58c2-4165-81be-b4d7253e8fd2"
 AtomsBase = "a963bdd2-2df7-4f54-a1ee-49d51e6be12a"
 AtomsCalculators = "a3e0e189-c65a-42c1-833c-339540406eb1"
-ExtXYZ = "352459e4-ddd7-4360-8937-99dcb397b478"
-LineSearches = "d3d80556-e9d4-5f37-9878-2ab0fcc64255"
-LinearAlgebra = "37e2e46d-f89d-539d-b4ee-838fcccc9c8e"
-NeighbourLists = "2fcf5ba9-9ed4-57cf-b73f-ff513e316b9c"
-Optim = "429524aa-4258-5aef-a3af-852621145aeb"
 Optimization = "7f7a1694-90dd-40f0-9382-eb1efda571ba"
 OptimizationOptimJL = "36348300-93cb-4f02-beb5-3c3902f8871e"
-SplitApplyCombine = "03a91e81-4c3e-53e1-a0a4-9c0c8f19dd66"
 StaticArrays = "90137ffa-7385-5640-81b9-e52037218182"
 TestItemRunner = "f8b46487-2199-4994-9208-9a1283c18c0a"
-UnicodePlots = "b8865327-cd53-5732-bb35-84acbb429228"
 Unitful = "1986cc42-f94f-5a68-af5c-568840ba703d"
 UnitfulAtomic = "a7773ee8-282e-5fa2-be4e-bd808c38a91a"
 
 [compat]
 julia = "1.9"
+AtomsBase = "0.3"
+AtomsCalculators = "0.1"
+Optimization = "3.20"
+OptimizationOptimJL = "0.1"
+StaticArrays = "1.8"
+TestItemRunner = "0.2"
+Unitful = "1.19"
+UnitfulAtomic = "1.0"
 
 [extras]
 Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
