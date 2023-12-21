@@ -9,12 +9,10 @@ AtomsCalculators = "a3e0e189-c65a-42c1-833c-339540406eb1"
 Optimization = "7f7a1694-90dd-40f0-9382-eb1efda571ba"
 OptimizationOptimJL = "36348300-93cb-4f02-beb5-3c3902f8871e"
 StaticArrays = "90137ffa-7385-5640-81b9-e52037218182"
-TestItemRunner = "f8b46487-2199-4994-9208-9a1283c18c0a"
 Unitful = "1986cc42-f94f-5a68-af5c-568840ba703d"
 UnitfulAtomic = "a7773ee8-282e-5fa2-be4e-bd808c38a91a"
 
 [compat]
-julia = "1.9"
 AtomsBase = "0.3"
 AtomsCalculators = "0.1"
 Optimization = "3.20"
@@ -23,9 +21,18 @@ StaticArrays = "1.8"
 TestItemRunner = "0.2"
 Unitful = "1.19"
 UnitfulAtomic = "1.0"
+julia = "1.9"
+DFTK = "0.6"
+ASEconvert = "0.1"
+EmpiricalPotentials = "0.0.1"
 
 [extras]
 Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
+TestItemRunner = "f8b46487-2199-4994-9208-9a1283c18c0a"
+DFTK = "acf6eb54-70d9-11e9-0013-234b7a5f5337"
+ASEconvert = "3da9722f-58c2-4165-81be-b4d7253e8fd2"
+EmpiricalPotentials = "38527215-9240-4c91-a638-d4250620c9e2"
 
 [targets]
-test = ["Test"]
+examples = ["DFTK", "ASEconvert", "EmpiricalPotentials"]
+test = ["Test", "TestItemRunner"]

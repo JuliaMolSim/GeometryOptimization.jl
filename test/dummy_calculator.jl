@@ -4,14 +4,15 @@
     using Unitful
     using UnitfulAtomic
     
-    struct DummyCalculator
-    end
+    struct DummyCalculator end
     
-    AtomsCalculators.@generate_interface function AtomsCalculators.potential_energy(system, calculator::DummyCalculator; kwargs...)
-        return 0.0u"eV"
+    AtomsCalculators.@generate_interface function AtomsCalculators.potential_energy(
+            system, calculator::DummyCalculator; kwargs...)
+        0.0u"eV"
     end
         
-    AtomsCalculators.@generate_interface function AtomsCalculators.forces(system, calculator::DummyCalculator; kwargs...)
-        return AtomsCalculators.zero_forces(system, calculator)
+    AtomsCalculators.@generate_interface function AtomsCalculators.forces(
+            system, calculator::DummyCalculator; kwargs...)
+        AtomsCalculators.zero_forces(system, calculator)
     end
 end

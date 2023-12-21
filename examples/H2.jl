@@ -18,7 +18,7 @@ positions = [[0, 0, 0], [0, 0, .16]]
 system = periodic_system(lattice, atoms, positions)
 
 # Set everything to optimizable.
-# system = clamp_atoms(system, [1])
+system = clamp_atoms(system, [1])
 
 # Create a simple calculator for the model.
 model_kwargs = (; functionals = [:lda_x, :lda_c_pw])
@@ -31,4 +31,4 @@ optim_options = (f_tol=1e-32, iterations=20, show_trace=true)
 
 results = optimize_geometry(system, calculator; solver=solver, optim_options...)
 println(results)
-@printf "Bond length: %3f bohrs.\n" norm(results.minimizer[1:3] - results.minimizer[4:end])
+@printf "Bond length: %3f bohrs.\n" norm(results.minimizer[1:end])

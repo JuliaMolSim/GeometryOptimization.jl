@@ -1,9 +1,7 @@
 #= Test Geometry Optimization on an aluminium supercell.
 =#
-using Printf
 using LinearAlgebra
 using EmpiricalPotentials
-using DFTK
 using Unitful
 using UnitfulAtomic
 using OptimizationOptimJL
@@ -23,4 +21,4 @@ solver = OptimizationOptimJL.LBFGS()
 optim_options = (f_tol=1e-6, iterations=100, show_trace=false)
 
 results = optimize_geometry(system, lj; solver=solver, optim_options...)
-@printf "Bond length: %3f bohrs.\n" norm(results.minimizer[1:3] - results.minimizer[4:end])
+println("Bond length: $(norm(results.minimizer[1:3] - results.minimizer[4:end])).")
