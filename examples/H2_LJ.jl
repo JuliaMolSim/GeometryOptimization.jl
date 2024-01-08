@@ -20,5 +20,5 @@ lj = LennardJones(-1.17u"hartree", 0.743u"angstrom", 1, 1, 0.6u"nm")
 solver = OptimizationOptimJL.LBFGS()
 optim_options = (f_tol=1e-6, iterations=100, show_trace=false)
 
-results = optimize_geometry(system, lj; solver=solver, optim_options...)
+results = minimize_energy(system, lj; solver=solver, optim_options...)
 println("Bond length: $(norm(results.minimizer[1:3] - results.minimizer[4:end])).")

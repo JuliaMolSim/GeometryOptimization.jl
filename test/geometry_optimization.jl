@@ -18,6 +18,6 @@
     solver = OptimizationOptimJL.LBFGS()
     optim_options = (f_tol=1e-6, iterations=4, show_trace=false)
     
-    results = optimize_geometry(system, calculator; solver=solver, optim_options...)
+    results = minimize_energy(system, calculator; solver=solver, optim_options...)
     @test isapprox(results.u[1], 0; atol=1e-5)
 end

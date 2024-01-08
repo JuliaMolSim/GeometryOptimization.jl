@@ -22,5 +22,5 @@ system = AbstractSystem(data; particles)
 solver = OptimizationOptimJL.LBFGS()
 optim_options = (f_tol=1e-8, g_tol=1e-8, iterations=10, show_trace=true)
 
-results = optimize_geometry(system, lj; solver=solver, optim_options...)
+results = minimize_energy(system, lj; solver=solver, optim_options...)
 println(results)

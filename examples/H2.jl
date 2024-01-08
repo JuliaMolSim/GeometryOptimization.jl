@@ -29,6 +29,6 @@ calculator = DFTKCalculator(system; model_kwargs, basis_kwargs, scf_kwargs)
 solver = OptimizationOptimJL.LBFGS()
 optim_options = (f_tol=1e-32, iterations=20, show_trace=true)
 
-results = optimize_geometry(system, calculator; solver=solver, optim_options...)
+results = minimize_energy(system, calculator; solver=solver, optim_options...)
 println(results)
 @printf "Bond length: %3f bohrs.\n" norm(results.minimizer[1:end])

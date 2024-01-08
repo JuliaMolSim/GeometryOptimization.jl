@@ -56,5 +56,5 @@ println("Initial regret $(energy_pert - energy_true).")
 
 optim_options = (f_tol=1e-6, iterations=6, show_trace=true)
 
-results = optimize_geometry(al_supercell, calculator; optim_options...)
+results = minimize_energy(al_supercell, calculator; optim_options...)
 println(results)

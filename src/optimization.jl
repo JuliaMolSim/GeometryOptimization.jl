@@ -3,7 +3,7 @@
 # IMPORTANT: Note that we always work in cartesian coordinates.
 =#
 
-export optimize_geometry
+export minimize_energy
 
 
 """ 
@@ -35,7 +35,7 @@ function Optimization.OptimizationFunction(system::AbstractSystem, calculator; k
     OptimizationFunction(f; grad=g!)
 end
 
-function optimize_geometry(system::AbstractSystem, calculator; solver=Optim.LBFGS(), kwargs...)
+function minimize_energy(system::AbstractSystem, calculator; solver=Optim.LBFGS(), kwargs...)
     # Use current system parameters as starting positions.
     x0 = austrip.(not_clamped_positions(system)) # Optim modifies x0 in-place, so need a mutable type.
     f_opt = OptimizationFunction(system, calculator)
