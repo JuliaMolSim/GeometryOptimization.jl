@@ -12,7 +12,7 @@ export minimize_energy
     are used.
 
 """
-function Optimization.OptimizationFunction(system::AbstractSystem, calculator; kwargs...)
+function Optimization.OptimizationFunction(system, calculator; kwargs...)
     mask = not_clamped_mask(system)  # mask is assumed not to change during optim.
 
     f = function(x::AbstractVector{<:Real}, p)
@@ -35,7 +35,7 @@ function Optimization.OptimizationFunction(system::AbstractSystem, calculator; k
     OptimizationFunction(f; grad=g!)
 end
 
-function minimize_energy(system::AbstractSystem, calculator; solver=Optim.LBFGS(), kwargs...)
+function minimize_energy(system, calculator; solver=Optim.LBFGS(), kwargs...)
     # Use current system parameters as starting positions.
     x0 = austrip.(not_clamped_positions(system)) # Optim modifies x0 in-place, so need a mutable type.
     f_opt = OptimizationFunction(system, calculator)
