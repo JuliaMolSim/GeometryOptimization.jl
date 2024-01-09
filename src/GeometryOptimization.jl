@@ -1,6 +1,7 @@
 module GeometryOptimization
 
 using StaticArrays
+using ComponentArrays
 using Optimization
 using OptimizationOptimJL
 using AtomsBase
