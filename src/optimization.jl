@@ -3,7 +3,7 @@
 # IMPORTANT: Note that we always work in cartesian coordinates.
 =#
 
-export minimize_energy
+export minimize_energy!
 
 
 """ 
@@ -35,7 +35,7 @@ function Optimization.OptimizationFunction(system, calculator; kwargs...)
     OptimizationFunction(f; grad=g!)
 end
 
-function minimize_energy(system, calculator; solver=Optim.LBFGS(), kwargs...)
+function minimize_energy!(system, calculator; solver=Optim.LBFGS(), kwargs...)
     # Use current system parameters as starting positions.
     x0 = austrip.(not_clamped_positions(system)) # Optim modifies x0 in-place, so need a mutable type.
     f_opt = OptimizationFunction(system, calculator)
