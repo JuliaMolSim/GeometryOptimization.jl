@@ -35,7 +35,6 @@ end
 @doc raw"""
 Creates a new system based on ``system`` where the non clamped positions are
 updated to the ones provided (in the order in which they appear in the system).
-
 """
 function update_not_clamped_positions(system, positions::AbstractVector{<:Unitful.Length})
     mask = not_clamped_mask(system)

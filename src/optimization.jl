@@ -7,10 +7,9 @@ export minimize_energy!
 
 
 """ 
-    By default we work in cartesian coordinaes.
-    Note that internally, when optimizing the cartesian positions, atomic units 
-    are used.
-
+By default we work in cartesian coordinaes.
+Note that internally, when optimizing the cartesian positions, atomic units 
+are used.
 """
 function Optimization.OptimizationFunction(system, calculator; kwargs...)
     mask = not_clamped_mask(system)  # mask is assumed not to change during optim.

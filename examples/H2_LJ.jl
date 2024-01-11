@@ -10,7 +10,6 @@ using AtomsBase
 using GeometryOptimization
 
 
-
 bounding_box = 10.0u"angstrom" .* [[1, 0, 0.], [0., 1, 0], [0., 0, 1]]
 atoms = [:H => [0, 0, 0.0]u"bohr", :H => [0, 0, 1.9]u"bohr"]
 system = periodic_system(atoms, bounding_box)

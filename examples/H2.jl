@@ -1,5 +1,3 @@
-#= Test Geometry Optimization on an aluminium supercell.
-=#
 using Printf
 using LinearAlgebra
 using DFTK
