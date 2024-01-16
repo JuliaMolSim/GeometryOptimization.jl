@@ -33,6 +33,7 @@ function Optimization.OptimizationFunction(system, calculator; pressure=0.0, kwa
 
     function g!(G, x, p)
         new_system = update_not_clamped_positions(system, x * u"bohr")
+        # TODO: Determine if here we need a call to update_state.
         energy = AtomsCalculators.potential_energy(new_system, calculator; kwargs...)
 
         forces = AtomsCalculators.forces(new_system, calculator; kwargs...)
@@ -44,27 +45,29 @@ function Optimization.OptimizationFunction(system, calculator; pressure=0.0, kwa
     end
     function g!(G::ComponentVector, x::ComponentVector, p)
         new_system = update_not_clamped_positions(system, x * u"bohr")
-        energy = AtomsCalculators.potential_energy(new_system, calculator)
+        state = update_state(system, new_system, calculator.state)
+        energy = AtomsCalculators.potential_energy(new_system, calculator; state, kwargs...)
 
-        forces = AtomsCalculators.forces(new_system, calculator; kwargs...)
+        forces = AtomsCalculators.forces(new_system, calculator; state, kwargs...)
         # Translate the forces vectors on each particle to a single gradient for the optimization parameter.
         forces_concat = collect(Iterators.flatten(forces[mask]))
 
         # NOTE: minus sign since forces are opposite to gradient.
-        g.atoms .= - austrip.(forces_concat)
+        G.atoms .= - austrip.(forces_concat)
         virial = AtomsCalculators.virial(new_system, calculator)
         G.bounding_box .= - collect(Iterators.flatten(virial))
     end
     OptimizationFunction(f; grad=g!)
 end
 
-function minimize_energy!(system, calculator; pressure=0.0, solver=Optim.LBFGS(), kwargs...)
+function minimize_energy!(system, calculator; pressure=0.0, procedure="relax", 
+                          solver=Optim.LBFGS(), kwargs...)
     # Use current system parameters as starting positions.
     if procedure == "relax"
         x0 = austrip.(not_clamped_positions(system))
     elseif procedure == "vc_relax"
-        x0 = ComponentVector(atoms = austrip.(reduce(vcat, position(al_supercell))),
-                             bounding_box = austrip.(reduce(vcat, bounding_box(al_supercell))))
+        x0 = ComponentVector(atoms = austrip.(reduce(vcat, position(system))),
+                             bounding_box = austrip.(reduce(vcat, bounding_box(system))))
     else
         print("error")
     end
