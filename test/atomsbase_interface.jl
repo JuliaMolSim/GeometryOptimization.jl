@@ -40,7 +40,8 @@ end
     new_positions = orig_positions + [σ * rand(Float64, size(v)) for v in orig_positions]
     new_not_clamped_positions = reduce(vcat, new_positions)
     new_lattice = orig_lattice + [σ * rand(Float64, size(v)) for v in orig_lattice]
-    new_general_pos = ComponentVector(atoms = new_not_clamped_positions, bounding_box = new_lattice)
+    new_general_pos = ComponentVector(atoms = new_not_clamped_positions,
+                                      bounding_box = reduce(vcat, new_lattice))
     new_system = update_not_clamped_positions(silicon_supercell, new_general_pos)
     
     @test position(new_system) == new_positions

@@ -40,7 +40,7 @@ al_supercell = build_al_supercell(1)
 model_kwargs = (; functionals = [:lda_x, :lda_c_pw], temperature = 1e-4)
 basis_kwargs = (; kgrid = [6, 6, 6], Ecut = 30.0)
 scf_kwargs = (; tol = 1e-6)
-calculator = DFTKCalculator(al_supercell; model_kwargs, basis_kwargs, scf_kwargs, verbose=true)
+calculator = DFTKCalculator(; model_kwargs, basis_kwargs, scf_kwargs, verbose=true)
 
 energy_true = AtomsCalculators.potential_energy(al_supercell, calculator)
 

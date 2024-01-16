@@ -57,9 +57,10 @@ function update_not_clamped_positions(system, positions::ComponentVector)
     atoms_positions = collect(positions.atoms)
     new_positions[mask] = reinterpret(reshape, SVector{3, eltype(atoms_positions)},
                                       reshape(atoms_positions, 3, :))
+    bounding_box = reinterpret(reshape, SVector{3, eltype(positions.bounding_box)},
+                               reshape(positions.bounding_box, 3, 3))
     update_positions(system,
-                     ComponentVector(atoms=new_positions,
-                                     bounding_box=collect.(positions.bounding_box))
+                     ComponentVector(atoms=new_positions, bounding_box=bounding_box)
                     )
 end
 

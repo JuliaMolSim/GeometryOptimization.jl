@@ -28,10 +28,10 @@ function Optimization.OptimizationFunction(system, calculator; pressure=0.0, kwa
         new_system = update_not_clamped_positions(system, x * u"bohr")
         state = update_state(system, new_system, calculator.state)
         energy = AtomsCalculators.potential_energy(new_system, calculator; state, kwargs...)
-        austrip(energy) + pressure * calculator.state.scfres.basis.model.unit_cell_volume
+        austrip(energy)
     end
 
-    g! = function(G::AbstractVector{<:Real}, x::AbstractVector{<:Real}, p)
+    function g!(G, x, p)
         new_system = update_not_clamped_positions(system, x * u"bohr")
         energy = AtomsCalculators.potential_energy(new_system, calculator; kwargs...)
 
@@ -42,12 +42,32 @@ function Optimization.OptimizationFunction(system, calculator; pressure=0.0, kwa
         # NOTE: minus sign since forces are opposite to gradient.
         G .= - austrip.(forces_concat)
     end
+    function g!(G::ComponentVector, x::ComponentVector, p)
+        new_system = update_not_clamped_positions(system, x * u"bohr")
+        energy = AtomsCalculators.potential_energy(new_system, calculator)
+
+        forces = AtomsCalculators.forces(new_system, calculator; kwargs...)
+        # Translate the forces vectors on each particle to a single gradient for the optimization parameter.
+        forces_concat = collect(Iterators.flatten(forces[mask]))
+
+        # NOTE: minus sign since forces are opposite to gradient.
+        g.atoms .= - austrip.(forces_concat)
+        virial = AtomsCalculators.virial(new_system, calculator)
+        G.bounding_box .= - collect(Iterators.flatten(virial))
+    end
     OptimizationFunction(f; grad=g!)
 end
 
 function minimize_energy!(system, calculator; pressure=0.0, solver=Optim.LBFGS(), kwargs...)
     # Use current system parameters as starting positions.
-    x0 = austrip.(not_clamped_positions(system)) # Optim modifies x0 in-place, so need a mutable type.
+    if procedure == "relax"
+        x0 = austrip.(not_clamped_positions(system))
+    elseif procedure == "vc_relax"
+        x0 = ComponentVector(atoms = austrip.(reduce(vcat, position(al_supercell))),
+                             bounding_box = austrip.(reduce(vcat, bounding_box(al_supercell))))
+    else
+        print("error")
+    end
     f_opt = OptimizationFunction(system, calculator; pressure)
     problem = OptimizationProblem(f_opt, x0, nothing)  # Last argument needed in Optimization.jl.
     solve(problem, solver; kwargs...)
