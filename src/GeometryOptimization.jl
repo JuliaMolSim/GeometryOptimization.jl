@@ -1,5 +1,6 @@
 module GeometryOptimization
 
+using LinearAlgebra
 using StaticArrays
 using ComponentArrays
 using Optimization
@@ -10,6 +11,7 @@ using Unitful
 using UnitfulAtomic
 
 include("atomsbase_interface.jl")
+include("strain.jl")
 include("optimization.jl")
 
 end

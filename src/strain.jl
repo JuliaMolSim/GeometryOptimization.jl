@@ -12,7 +12,8 @@ end
 
 function apply_voigt_strain(system, strain)
 	deformation = I + voigt_to_full(strain)
-	new_lattice = eachrow(hcat(bounding_box(system)...) * deformation)
+	new_lattice = eachrow(
+			      reduce(hcat, bounding_box(system))' * deformation)
 	# Also deform coordinates, since internally do not work in fractional coordinates.
 	new_positions = [transpose(pos) * deformation for pos in position(system)]
 	new_generalized_positions = ComponentVector(atoms=new_positions , bounding_box=new_lattice)
