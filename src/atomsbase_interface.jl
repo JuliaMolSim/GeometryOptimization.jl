@@ -9,27 +9,31 @@ export update_positions, update_not_clamped_positions, clamp_atoms
 
 @doc raw"""
 Creates a new system based on ``system`` but with atoms positions updated 
-to the ones provided.
+to the ones provided. Can also update lattice vectors if `bounding_box` is provided.
 
 """
-function update_positions(system, positions::AbstractVector{<:AbstractVector{<:Unitful.Length}})
+function update_positions(system, positions::AbstractVector{<:AbstractVector{<:Unitful.Length}};
+                          bounding_box=bounding_box(system))
     particles = [Atom(atom; position) for (atom, position) in zip(system, positions)]
-    AbstractSystem(system; particles)
+    AbstractSystem(system; particles, bounding_box)
 end
 
 @doc raw"""
-Creates a new system based on ``system`` but with atoms positions and lattice 
-vectors updated to the ones provided.
+Creates a new system based on ``system`` but with atoms positions 
+updated to the ones provided and lattice vectors deformed according 
+to the provided strain.
 New generalized coordinates should be provided in a ComponentArray with 
-component `atoms` and `bounding_box`, containing new atomic positions 
-and lattice vectors respectively.
+component `atoms` and `strain`.
 
 """
 function update_positions(system, positions::ComponentVector)
-    # Collect are needed with ComponentArrays to get concrete types.
+    # TODO: Do we want to apply the strain to the atoms too?
     particles = [Atom(atom; position) for (atom, position)
                  in zip(system, collect.(positions.atoms))]
-    AbstractSystem(system; particles, bounding_box=collect.(positions.bounding_box))
+
+    deformation_tensor = I + voigt_to_full(austrip.(positions.strain))
+    bbox = eachcol(deformation_tensor * bbox_to_matrix(bounding_box(system)))
+    AbstractSystem(system; particles, bounding_box=bbox)
 end
 
 @doc raw"""
@@ -48,7 +52,7 @@ end
 Creates a new system based on ``system`` where the non clamped positions and 
 lattice vectors are updated to the ones provided.
 Note that the `atoms`component of `positions` should be a vector of 
-coordinates.
+coordinates and that the `strain` component should be a 6-vector.
 
 """
 function update_not_clamped_positions(system, positions::ComponentVector)
@@ -57,11 +61,7 @@ function update_not_clamped_positions(system, positions::ComponentVector)
     atoms_positions = collect(positions.atoms)
     new_positions[mask] = reinterpret(reshape, SVector{3, eltype(atoms_positions)},
                                       reshape(atoms_positions, 3, :))
-    bounding_box = reinterpret(reshape, SVector{3, eltype(positions.bounding_box)},
-                               reshape(positions.bounding_box, 3, 3))
-    update_positions(system,
-                     ComponentVector(atoms=new_positions, bounding_box=bounding_box)
-                    )
+    update_positions(system, ComponentVector(; atoms=new_positions, positions.strain))
 end
 
 @doc raw"""

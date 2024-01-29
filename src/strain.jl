@@ -12,7 +12,7 @@ end
 
 """ 
 Transform a bounding box in list of vectors form in matrix form 
-(box vectors in the rows).
+(box vectors in the columns).
 """
 function bbox_to_matrix(bbox)
 	reduce(hcat, bbox)

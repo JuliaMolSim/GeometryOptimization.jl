@@ -46,8 +46,6 @@ function Optimization.OptimizationFunction(system, calculator; pressure=0.0, kwa
     function g!(G::ComponentVector, x::ComponentVector, p)
         new_system = update_not_clamped_positions(system, x * u"bohr")
         state = update_state(system, new_system, calculator.state)
-        energy = AtomsCalculators.potential_energy(new_system, calculator; state, kwargs...)
-
         forces = AtomsCalculators.forces(new_system, calculator; state, kwargs...)
         # Translate the forces vectors on each particle to a single gradient for the optimization parameter.
         forces_concat = collect(Iterators.flatten(forces[mask]))
@@ -55,7 +53,7 @@ function Optimization.OptimizationFunction(system, calculator; pressure=0.0, kwa
         # NOTE: minus sign since forces are opposite to gradient.
         G.atoms .= - austrip.(forces_concat)
         virial = AtomsCalculators.virial(new_system, calculator)
-        G.bounding_box .= - collect(Iterators.flatten(virial))
+        G.strain .= - full_to_voigt(virial)
     end
     OptimizationFunction(f; grad=g!)
 end
@@ -66,10 +64,9 @@ function minimize_energy!(system, calculator; pressure=0.0, procedure="relax",
     if procedure == "relax"
         x0 = austrip.(not_clamped_positions(system))
     elseif procedure == "vc_relax"
-        x0 = ComponentVector(atoms = austrip.(reduce(vcat, position(system))),
-                             bounding_box = austrip.(reduce(vcat, bounding_box(system))))
+        x0 = ComponentVector(atoms = austrip.(reduce(vcat, position(system))), strain = zeros(6))
     else
-        print("error")
+        print("Error: unknown optimization procedure. Please use one of [`relax`, `vc_relax`].")
     end
     f_opt = OptimizationFunction(system, calculator; pressure)
     problem = OptimizationProblem(f_opt, x0, nothing)  # Last argument needed in Optimization.jl.
