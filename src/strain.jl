@@ -18,6 +18,7 @@ function bbox_to_matrix(bbox)
 	reduce(hcat, bbox)
 end
 	
+# TODO: deprecate.
 @doc raw"""
 Deform system by applying given strain. Unit cell vectors as well as atomic 
 positions are scaled. For a matrix of strains E, the matrix L of unit cell vectors 

@@ -27,11 +27,11 @@ component `atoms` and `strain`.
 
 """
 function update_positions(system, positions::ComponentVector)
+    deformation_tensor = I + voigt_to_full(austrip.(positions.strain))
     # TODO: Do we want to apply the strain to the atoms too?
-    particles = [Atom(atom; position) for (atom, position)
+    particles = [Atom(atom; position = deformation_tensor * position) for (atom, position)
                  in zip(system, collect.(positions.atoms))]
 
-    deformation_tensor = I + voigt_to_full(austrip.(positions.strain))
     bbox = eachcol(deformation_tensor * bbox_to_matrix(bounding_box(system)))
     AbstractSystem(system; particles, bounding_box=bbox)
 end
