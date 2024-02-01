@@ -44,16 +44,18 @@ function Optimization.OptimizationFunction(system, calculator; pressure=0.0, kwa
         G .= - austrip.(forces_concat)
     end
     function g!(G::ComponentVector, x::ComponentVector, p)
+        deformation_tensor = I + voigt_to_full(austrip.(x.strain))
         new_system = update_not_clamped_positions(system, x * u"bohr")
+        
         state = update_state(system, new_system, calculator.state)
         forces = AtomsCalculators.forces(new_system, calculator; state, kwargs...)
         # Translate the forces vectors on each particle to a single gradient for the optimization parameter.
-        forces_concat = collect(Iterators.flatten(forces[mask]))
+        forces_concat = collect(Iterators.flatten([deformation_tensor * f for f in forces[mask]]))
 
         # NOTE: minus sign since forces are opposite to gradient.
         G.atoms .= - austrip.(forces_concat)
         virial = AtomsCalculators.virial(new_system, calculator)
-        G.strain .= - full_to_voigt(virial)
+        G.strain .= - full_to_voigt(virial / deformation_tensor)
     end
     OptimizationFunction(f; grad=g!)
 end
