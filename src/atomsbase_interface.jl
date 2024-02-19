@@ -37,6 +37,7 @@ function update_positions(system, positions::ComponentVector)
 end
 
 @doc raw"""
+=======
 Creates a new system based on ``system`` where the non clamped positions are
 updated to the ones provided (in the order in which they appear in the system).
 """
@@ -65,6 +66,7 @@ function update_not_clamped_positions(system, positions::ComponentVector)
 end
 
 @doc raw"""
+=======
 Returns a mask for selecting the not clamped atoms in the system.
 
 """
