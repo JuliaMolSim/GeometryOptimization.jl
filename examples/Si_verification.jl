@@ -35,10 +35,9 @@ system_pert = update_positions(system, position(system); bounding_box=bounding_b
 
 
 using LineSearches
-linesearch =  BackTracking(c_1= 1e-4, ρ_hi= 0.5, ρ_lo= 0.1, iterations=4,
-                           order=3, maxstep=Inf)
+linesearch =  BackTracking(c_1= 1e-4, ρ_hi= 0.8, ρ_lo= 0.1, order=2, maxstep=Inf)
 solver = OptimizationOptimJL.LBFGS(; linesearch)
-optim_options = (; solver, f_tol=1e-4, g_tol=1e-4, iterations=3,
+optim_options = (; solver, f_tol=1e-10, g_tol=1e-5, iterations=30,
                  show_trace=true, store_trace = true, allow_f_increases=true)
 
 results = minimize_energy!(system_pert, calculator; procedure="vc_relax", optim_options...)

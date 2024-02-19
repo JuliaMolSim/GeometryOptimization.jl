@@ -42,9 +42,5 @@ basis_kwargs = (; kgrid = [2, 2, 2], Ecut = 10.0)
 scf_kwargs = (; tol = 1e-3)
 calculator = DFTKCalculator(; model_kwargs, basis_kwargs, scf_kwargs, verbose=true)
 
-# Create starting vector.
-x0 = ComponentVector(atoms = austrip.(reduce(vcat, position(al_supercell))),
-                     bounding_box = austrip.(reduce(vcat, bounding_box(al_supercell))))
-
 optim_options = (f_tol=1e-6, iterations=6, show_trace=true)
 results = minimize_energy!(al_supercell, calculator; procedure="vc_relax", optim_options...)
