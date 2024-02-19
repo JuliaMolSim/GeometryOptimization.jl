@@ -1,7 +1,7 @@
 name = "GeometryOptimization"
 uuid = "673bf261-a53d-43b9-876f-d3c1fc8329c2"
 authors = ["JuliaMolSim community"]
-version = "0.0.1"
+version = "0.0.2"
 
 [deps]
 ASEconvert = "3da9722f-58c2-4165-81be-b4d7253e8fd2"
