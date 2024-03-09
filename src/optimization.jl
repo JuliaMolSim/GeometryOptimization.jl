@@ -13,7 +13,7 @@ function Optimization.OptimizationFunction(system, calculator; pressure=0.0, kwa
 
     f = function(x, p)
         new_system = update_not_clamped_positions(system, x * u"bohr")
-        state = update_state(system, new_system, calculator.state)
+        state = update_state(nothing, calculator_state(calculator), system, new_system)
         energy = AtomsCalculators.potential_energy(new_system, calculator; state, kwargs...)
         austrip(energy)
     end
@@ -34,7 +34,7 @@ function Optimization.OptimizationFunction(system, calculator; pressure=0.0, kwa
         deformation_tensor = I + voigt_to_full(austrip.(x.strain))
         new_system = update_not_clamped_positions(system, x * u"bohr")
         
-        state = update_state(system, new_system, calculator.state)
+        state = update_state(nothing, calculator_state(calculator), system, new_system)
         forces = AtomsCalculators.forces(new_system, calculator; state, kwargs...)
         # Translate the forces vectors on each particle to a single gradient for the optimization parameter.
         forces_concat = collect(Iterators.flatten([deformation_tensor * f for f in forces[mask]]))

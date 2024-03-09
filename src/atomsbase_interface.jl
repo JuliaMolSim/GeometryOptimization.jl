@@ -33,7 +33,7 @@ function update_positions(system, positions::ComponentVector)
     particles = [Atom(atom; position = collect((x for x in deformation_tensor * position))) for (atom, position)
                  in zip(system, positions.atoms)]
 
-    bbox = eachcol(deformation_tensor * bbox_to_matrix(bounding_box(system)))
+    bbox = matrix_to_bbox(deformation_tensor * bbox_to_matrix(bounding_box(system)))
     AbstractSystem(system; particles, bounding_box=bbox)
 end
 

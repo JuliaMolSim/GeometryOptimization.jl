@@ -1,4 +1,3 @@
-using DFTK: occupation
 #= Test Geometry Optimization on an aluminium supercell.
 =#
 using LinearAlgebra
