@@ -2,17 +2,6 @@
 # Note that by default all particles in the system are assumed optimizable.
 # IMPORTANT: Note that we always work in cartesian coordinates.
 =#
-using DFTK
-export minimize_energy!
-
-
-function update_state(original_system, new_system, state)
-    if bounding_box(original_system) != bounding_box(new_system)
-        return DFTK.DFTKState()
-    else
-        return state
-    end
-end
     
 """ 
 By default we work in cartesian coordinates.
@@ -22,8 +11,6 @@ are used.
 function Optimization.OptimizationFunction(system, calculator; pressure=0.0, kwargs...)
     mask = not_clamped_mask(system)  # mask is assumed not to change during optim.
 
-    # TODO: Note that this function will dispatch appropriately when called with 
-    # a Component vector.
     f = function(x, p)
         new_system = update_not_clamped_positions(system, x * u"bohr")
         state = update_state(system, new_system, calculator.state)
