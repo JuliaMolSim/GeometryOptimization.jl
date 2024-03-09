@@ -17,6 +17,10 @@ function bbox_to_matrix(bbox)
     reduce(hcat, bbox)
 end
 
+function matrix_to_bbox(matrix)
+    eachcol(matrix)
+end
+
 @doc raw"""
 Compute the strain (in Voigt notation) needed to deform the unit cell `bouding_box` into 
 `deformed_bounding_box`.

@@ -12,7 +12,7 @@ using ComponentArrays
 
 export update_positions, update_not_clamped_positions, clamp_atoms
 include("atomsbase_interface.jl")
-export compute_voigt_strain, voigt_to_full
+export compute_voigt_strain, voigt_to_full, bbox_to_matrix, matrix_to_bbox
 include("strain.jl")
 export minimize_energy!
 include("optimization.jl")
