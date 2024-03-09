@@ -1,4 +1,3 @@
-export apply_voigt_strain, compute_voigt_strain
 
 function voigt_to_full(v)
 	[v[1] .5*v[6] .5*v[5];
@@ -16,23 +15,6 @@ Transform a bounding box in list of vectors form in matrix form
 """
 function bbox_to_matrix(bbox)
 	reduce(hcat, bbox)
-end
-	
-# TODO: deprecate.
-@doc raw"""
-Deform system by applying given strain. Unit cell vectors as well as atomic 
-positions are scaled. For a matrix of strains E, the matrix L of unit cell vectors 
-is scaled accodring to L' = (I + E) L. 
-Input strains should be given as a vector (Voigt notation).
-"""
-function apply_voigt_strain(system, strain)
-	deformation_tensor = I + voigt_to_full(strain)
-	new_lattice = eachcol(
-			      deformation_tensor * bbox_to_matrix(bounding_box(system)))
-	# Also deform coordinates, since internally do not work in fractional coordinates.
-	new_positions = [deformation_tensor * pos for pos in position(system)]
-	new_generalized_positions = ComponentVector(atoms=new_positions , bounding_box=new_lattice)
-	update_positions(system, new_generalized_positions)
 end
 
 @doc raw"""

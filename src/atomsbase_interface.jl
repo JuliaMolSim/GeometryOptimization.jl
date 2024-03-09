@@ -3,8 +3,9 @@
 # utility functions for manipulating systems.
 #
 # IMPORTANT: Note that we always work in cartesian coordinates.
+# BUG: Unitful does not play well with arrays in Julia 1.10. This is why 
+# collect statements are needed to restor array type (otherwise we get Vector{Any}).
 #
-export update_positions, update_not_clamped_positions, clamp_atoms
 
 
 @doc raw"""
@@ -12,8 +13,8 @@ Creates a new system based on ``system`` but with atoms positions updated
 to the ones provided. Can also update lattice vectors if `bounding_box` is provided.
 
 """
-function update_positions(system, positions::AbstractVector{<:AbstractVector{<:Unitful.Length}};
-                          bounding_box=bounding_box(system))
+function update_positions(system, positions::AbstractVector{<:AbstractVector{<:Unitful.Length}},
+        bounding_box=bounding_box(system))
     particles = [Atom(atom; position) for (atom, position) in zip(system, positions)]
     AbstractSystem(system; particles, bounding_box)
 end
@@ -27,10 +28,10 @@ component `atoms` and `strain`.
 
 """
 function update_positions(system, positions::ComponentVector)
-    deformation_tensor = I + voigt_to_full(austrip.(positions.strain))
+    deformation_tensor = I + voigt_to_full(positions.strain)
     # TODO: Do we want to apply the strain to the atoms too?
-    particles = [Atom(atom; position = deformation_tensor * position) for (atom, position)
-                 in zip(system, collect.(positions.atoms))]
+    particles = [Atom(atom; position = collect((x for x in deformation_tensor * position))) for (atom, position)
+                 in zip(system, positions.atoms)]
 
     bbox = eachcol(deformation_tensor * bbox_to_matrix(bounding_box(system)))
     AbstractSystem(system; particles, bounding_box=bbox)
@@ -59,7 +60,7 @@ coordinates and that the `strain` component should be a 6-vector.
 function update_not_clamped_positions(system, positions::ComponentVector)
     mask = not_clamped_mask(system)
     new_positions = deepcopy(position(system))
-    atoms_positions = collect(positions.atoms)
+    atoms_positions = collect((x for x in positions.atoms))
     new_positions[mask] = reinterpret(reshape, SVector{3, eltype(atoms_positions)},
                                       reshape(atoms_positions, 3, :))
     update_positions(system, ComponentVector(; atoms=new_positions, positions.strain))
