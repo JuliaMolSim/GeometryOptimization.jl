@@ -20,7 +20,8 @@ end
 system = AbstractSystem(data; particles)
 
 solver = OptimizationOptimJL.LBFGS()
-optim_options = (f_tol=1e-8, g_tol=1e-8, iterations=10, show_trace=true)
+optim_options = (; solver, f_tol=1e-10, g_tol=1e-5, iterations=30,
+                 show_trace=true, store_trace = true, allow_f_increases=true)
 
 results = minimize_energy!(system, lj; solver, optim_options...)
 println(results)
