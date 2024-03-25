@@ -19,6 +19,13 @@ function update_positions(system, positions::AbstractVector{<:AbstractVector{<:U
     AbstractSystem(system; particles, bounding_box)
 end
 
+# Method for natural units.
+function update_positions(system, positions::AbstractVector{<:AbstractVector{<:Real}},
+        bounding_box=bounding_box(system))
+    particles = [Atom(atom; position=position * u"bohr") for (atom, position) in zip(system, positions)]
+    AbstractSystem(system; particles, bounding_box)
+end
+
 @doc raw"""
 Creates a new system based on ``system`` but with atoms positions 
 updated to the ones provided and lattice vectors deformed according 
@@ -30,23 +37,27 @@ component `atoms` and `strain`.
 function update_positions(system, positions::ComponentVector)
     deformation_tensor = I + voigt_to_full(positions.strain)
     # TODO: Do we want to apply the strain to the atoms too?
-    particles = [Atom(atom; position = collect((x for x in deformation_tensor * position))) for (atom, position)
-                 in zip(system, positions.atoms)]
-
+    strained_positions = [collect((x for x in deformation_tensor * position))
+			  for position in positions.atoms]
     bbox = matrix_to_bbox(deformation_tensor * bbox_to_matrix(bounding_box(system)))
-    AbstractSystem(system; particles, bounding_box=bbox)
+    update_positions(system, strained_positions, bbox)
+end
+
+function set_masked_positions(system, positions_flat)
+    mask = not_clamped_mask(system)
+    new_positions = [austrip.(x) for x in deepcopy(position(system))]
+    positions_flat = austrip.(positions_flat)
+    new_positions[mask] = reinterpret(reshape, SVector{3, eltype(positions_flat)},
+                                      reshape(positions_flat, 3, :))
+    return new_positions
 end
 
 @doc raw"""
-=======
 Creates a new system based on ``system`` where the non clamped positions are
 updated to the ones provided (in the order in which they appear in the system).
 """
-function update_not_clamped_positions(system, positions::AbstractVector{<:Unitful.Length})
-    mask = not_clamped_mask(system)
-    new_positions = deepcopy(position(system))
-    new_positions[mask] = reinterpret(reshape, SVector{3, eltype(positions)},
-                                      reshape(positions, 3, :))
+function update_not_clamped_positions(system, positions::AbstractVector)
+    new_positions = set_masked_positions(system, positions)
     update_positions(system, new_positions)
 end
 
@@ -58,11 +69,7 @@ coordinates and that the `strain` component should be a 6-vector.
 
 """
 function update_not_clamped_positions(system, positions::ComponentVector)
-    mask = not_clamped_mask(system)
-    new_positions = deepcopy(position(system))
-    atoms_positions = collect((x for x in positions.atoms))
-    new_positions[mask] = reinterpret(reshape, SVector{3, eltype(atoms_positions)},
-                                      reshape(atoms_positions, 3, :))
+    new_positions = set_masked_positions(system, positions.atoms)
     update_positions(system, ComponentVector(; atoms=new_positions, positions.strain))
 end
 
