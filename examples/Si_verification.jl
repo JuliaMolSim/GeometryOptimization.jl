@@ -31,7 +31,7 @@ calculator = DFTKCalculator(; model_kwargs, basis_kwargs, scf_kwargs, verbose=tr
 Random.seed!(1234)
 σ = 0.2u"bohr"
 bounding_box_pert = [v + σ * rand(Float64, size(v)) for v in bounding_box(system)]
-system_pert = update_positions(system, position(system); bounding_box=bounding_box_pert)
+system_pert = update_positions(system, position(system), bounding_box_pert)
 
 
 using LineSearches

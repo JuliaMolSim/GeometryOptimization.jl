@@ -12,14 +12,14 @@ function Optimization.OptimizationFunction(system, calculator; pressure=0.0, kwa
     mask = not_clamped_mask(system)  # mask is assumed not to change during optim.
 
     f = function(x, p)
-        new_system = update_not_clamped_positions(system, x * u"bohr")
+        new_system = update_not_clamped_positions(system, x)
         state = update_state(nothing, calculator_state(calculator), system, new_system)
         energy = AtomsCalculators.potential_energy(new_system, calculator; state, kwargs...)
         austrip(energy)
     end
 
     function g!(G, x, p)
-        new_system = update_not_clamped_positions(system, x * u"bohr")
+        new_system = update_not_clamped_positions(system, x)
         # TODO: Determine if here we need a call to update_state.
         energy = AtomsCalculators.potential_energy(new_system, calculator; kwargs...)
 
@@ -32,7 +32,7 @@ function Optimization.OptimizationFunction(system, calculator; pressure=0.0, kwa
     end
     function g!(G::ComponentVector, x::ComponentVector, p)
         deformation_tensor = I + voigt_to_full(austrip.(x.strain))
-        new_system = update_not_clamped_positions(system, x * u"bohr")
+        new_system = update_not_clamped_positions(system, x)
         
         state = update_state(nothing, calculator_state(calculator), system, new_system)
         forces = AtomsCalculators.forces(new_system, calculator; state, kwargs...)
@@ -41,7 +41,7 @@ function Optimization.OptimizationFunction(system, calculator; pressure=0.0, kwa
 
         # NOTE: minus sign since forces are opposite to gradient.
         G.atoms .= - austrip.(forces_concat)
-        virial = AtomsCalculators.virial(new_system, calculator)
+	virial = austrip.(AtomsCalculators.virial(new_system, calculator))
         G.strain .= - full_to_voigt(virial / deformation_tensor)
     end
     OptimizationFunction(f; grad=g!)
