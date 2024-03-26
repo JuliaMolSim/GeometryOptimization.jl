@@ -2,12 +2,18 @@
 
 julia_version = "1.10.0"
 manifest_format = "2.0"
-project_hash = "e3f0ed0f05d10cce184e2706c320fafdad20fe87"
+project_hash = "4d33414bf9793afb1fd7fbb60fd6c8b915896018"
 
 [[deps.ADTypes]]
 git-tree-sha1 = "41c37aa88889c171f1300ceac1313c06e891d245"
 uuid = "47edcb42-4c32-4615-8424-f2b9edc5f35b"
 version = "0.2.6"
+
+[[deps.ASEconvert]]
+deps = ["AtomsBase", "AtomsCalculators", "CondaPkg", "PeriodicTable", "PythonCall", "Unitful", "UnitfulAtomic"]
+git-tree-sha1 = "859d94df6922a66e304e8b4e0c82510f0b6eea11"
+uuid = "3da9722f-58c2-4165-81be-b4d7253e8fd2"
+version = "0.1.6"
 
 [[deps.AbstractFFTs]]
 deps = ["LinearAlgebra"]
@@ -91,7 +97,7 @@ version = "0.3.5"
 
 [[deps.AtomsCalculators]]
 deps = ["AtomsBase", "StaticArrays", "Test", "Unitful"]
-git-tree-sha1 = "0448c56b9aec90a8089207605e52e0a1cd29d02b"
+git-tree-sha1 = "b790ed8afef77ff523ad1c09a7eb73bb065687c3"
 repo-rev = "state"
 repo-url = "https://github.com/CedricTravelletti/AtomsCalculators.jl"
 uuid = "a3e0e189-c65a-42c1-833c-339540406eb1"
@@ -343,7 +349,7 @@ version = "0.3.3"
 
 [[deps.DFTK]]
 deps = ["AbstractFFTs", "Artifacts", "AtomsBase", "AtomsCalculators", "Brillouin", "ChainRulesCore", "Dates", "DftFunctionals", "DocStringExtensions", "FFTW", "ForwardDiff", "GPUArraysCore", "Interpolations", "IterTools", "IterativeSolvers", "LazyArtifacts", "Libxc", "LineSearches", "LinearAlgebra", "LinearMaps", "LoopVectorization", "MPI", "Markdown", "Optim", "PeriodicTable", "PkgVersion", "Polynomials", "PrecompileTools", "Preferences", "Primes", "Printf", "PseudoPotentialIO", "Random", "Roots", "SparseArrays", "SpecialFunctions", "Spglib", "StaticArrays", "Statistics", "TimerOutputs", "Unitful", "UnitfulAtomic"]
-git-tree-sha1 = "10bc44f1e451e1c52f59c441de50b78fe0cb383c"
+git-tree-sha1 = "a7b33533c28b97be08975b30d04d8b152909f432"
 repo-rev = "AtomsCalculators"
 repo-url = "https://github.com/CedricTravelletti/DFTK.jl"
 uuid = "acf6eb54-70d9-11e9-0013-234b7a5f5337"

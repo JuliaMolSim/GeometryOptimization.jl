@@ -4,6 +4,7 @@ authors = ["JuliaMolSim community"]
 version = "0.0.2"
 
 [deps]
+ASEconvert = "3da9722f-58c2-4165-81be-b4d7253e8fd2"
 AtomsBase = "a963bdd2-2df7-4f54-a1ee-49d51e6be12a"
 AtomsCalculators = "a3e0e189-c65a-42c1-833c-339540406eb1"
 ComponentArrays = "b0b7db55-cfe3-40fc-9ded-d10e2dbeff66"
@@ -21,8 +22,8 @@ UnitfulAtomic = "a7773ee8-282e-5fa2-be4e-bd808c38a91a"
 [compat]
 ASEconvert = "0.1"
 AtomsBase = "0.3"
-AtomsCalculators = "0.1"
-DFTK = "0.6"
+AtomsCalculators = "0.1.1"
+DFTK = "0.6.18"
 EmpiricalPotentials = "0.1.0"
 Optimization = "3.20"
 OptimizationOptimJL = "0.1"
