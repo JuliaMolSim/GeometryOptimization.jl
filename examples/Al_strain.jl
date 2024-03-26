@@ -58,3 +58,26 @@ optim_options = (f_tol=1e-6, iterations=6, show_trace=true)
 
 results = minimize_energy!(al_supercell, calculator; optim_options...)
 println(results)
+
+""" Returns the index of the highest occupied band. 
+    `atol` specifies the (fractional) occupations below which 
+    a band is considered unoccupied.
+"""
+function valence_band_index(occupations; atol=1e-36)
+    filter = x -> isapprox(x, 0.; atol)
+    maximum(maximum.(findall.(!filter, occupations)))
+end
+
+function band_gaps(scfres)
+    vi = valence_band_index(occupations; atol)
+    # If the system is metallic, by convenction band gap is zero.
+    if DFTK.is_metal(scfres.eigenvalues, scfres.εF; tol=1e-4)
+        return (; εMax_valence=0.0u"hartree", εMin_conduction=0.0u"hartree",
+                direct_bandgap=0.0u"hartree", valence_band_index=vi)
+    else
+        εMax_valence = maximum([εk[vi] for εk in scfres.eigenvalues]) * u"hartree"
+        εMin_conduction = minimum([εk[vi + 1] for εk in scfres.eigenvalues]) * u"hartree"
+        direct_bandgap = minimum([εk[vi + 1] - εk[vi] for εk in scfres.eigenvalues]) * u"hartree"
+        return (; εMax_valence, εMin_conduction, direct_bandgap, valence_band_index=vi)
+    end
+end

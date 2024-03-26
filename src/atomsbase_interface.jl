@@ -3,33 +3,78 @@
 # utility functions for manipulating systems.
 #
 # IMPORTANT: Note that we always work in cartesian coordinates.
+# BUG: Unitful does not play well with arrays in Julia 1.10. This is why 
+# collect statements are needed to restor array type (otherwise we get Vector{Any}).
 #
-export update_positions, update_not_clamped_positions, clamp_atoms
 
 
 @doc raw"""
 Creates a new system based on ``system`` but with atoms positions updated 
-to the ones provided.
+to the ones provided. Can also update lattice vectors if `bounding_box` is provided.
 
 """
-function update_positions(system, positions::AbstractVector{<:AbstractVector{<:Unitful.Length}})
+function update_positions(system, positions::AbstractVector{<:AbstractVector{<:Unitful.Length}},
+        bounding_box=bounding_box(system))
     particles = [Atom(atom; position) for (atom, position) in zip(system, positions)]
-    AbstractSystem(system; particles)
+    AbstractSystem(system; particles, bounding_box)
+end
+
+# Method for natural units.
+function update_positions(system, positions::AbstractVector{<:AbstractVector{<:Real}},
+        bounding_box=bounding_box(system))
+    particles = [Atom(atom; position=position * u"bohr") for (atom, position) in zip(system, positions)]
+    AbstractSystem(system; particles, bounding_box)
+end
+
+@doc raw"""
+Creates a new system based on ``system`` but with atoms positions 
+updated to the ones provided and lattice vectors deformed according 
+to the provided strain.
+New generalized coordinates should be provided in a ComponentArray with 
+component `atoms` and `strain`.
+
+"""
+function update_positions(system, positions::ComponentVector)
+    deformation_tensor = I + voigt_to_full(positions.strain)
+    # TODO: Do we want to apply the strain to the atoms too?
+    strained_positions = [collect((x for x in deformation_tensor * position))
+			  for position in positions.atoms]
+    bbox = matrix_to_bbox(deformation_tensor * bbox_to_matrix(bounding_box(system)))
+    update_positions(system, strained_positions, bbox)
+end
+
+function set_masked_positions(system, positions_flat)
+    mask = not_clamped_mask(system)
+    new_positions = [austrip.(x) for x in deepcopy(position(system))]
+    positions_flat = austrip.(positions_flat)
+    new_positions[mask] = reinterpret(reshape, SVector{3, eltype(positions_flat)},
+                                      reshape(positions_flat, 3, :))
+    return new_positions
 end
 
 @doc raw"""
 Creates a new system based on ``system`` where the non clamped positions are
 updated to the ones provided (in the order in which they appear in the system).
 """
-function update_not_clamped_positions(system, positions::AbstractVector{<:Unitful.Length})
-    mask = not_clamped_mask(system)
-    new_positions = deepcopy(position(system))
-    new_positions[mask] = reinterpret(reshape, SVector{3, eltype(positions)},
-                                      reshape(positions, 3, :))
+function update_not_clamped_positions(system, positions::AbstractVector)
+    new_positions = set_masked_positions(system, positions)
     update_positions(system, new_positions)
 end
 
 @doc raw"""
+Creates a new system based on ``system`` where the non clamped positions and 
+lattice vectors are updated to the ones provided.
+Note that the `atoms`component of `positions` should be a vector of 
+coordinates and that the `strain` component should be a 6-vector.
+
+"""
+function update_not_clamped_positions(system, positions::ComponentVector)
+    new_positions = set_masked_positions(system, positions.atoms)
+    update_positions(system, ComponentVector(; atoms=new_positions, positions.strain))
+end
+
+@doc raw"""
+=======
 Returns a mask for selecting the not clamped atoms in the system.
 
 """

@@ -4,7 +4,10 @@
     using Unitful
     using UnitfulAtomic
     
-    struct DummyCalculator end
+    struct DummyCalculator
+        state 
+    end
+    DummyCalculator() = DummyCalculator(nothing)
     
     AtomsCalculators.@generate_interface function AtomsCalculators.potential_energy(
             system, calculator::DummyCalculator; kwargs...)
