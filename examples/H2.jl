@@ -1,32 +1,24 @@
-using Printf
-using LinearAlgebra
-using DFTK
+# Geometry optimisation of a hydrogen molecule
+using AtomsBase
+using EmpiricalPotentials
+using GeometryOptimization
 using Unitful
 using UnitfulAtomic
-using OptimizationOptimJL
 
-using GeometryOptimization
-
-
-a = 10.                  # Big box around the atoms.
-lattice = a * I(3)
-H = ElementPsp(:H; psp=load_psp("hgh/lda/h-q1"));
-atoms = [H, H];
-positions = [[0, 0, 0], [0, 0, .16]]
-system = periodic_system(lattice, atoms, positions)
+bounding_box = 10.0u"angstrom" .* [[1, 0, 0.], [0., 1, 0], [0., 0, 1]]
+atoms = [:H => [0, 0, 0.0]u"bohr", :H => [0, 0, 1.9]u"bohr"]
+system = periodic_system(atoms, bounding_box)
 
 # Set everything to optimizable.
-system = clamp_atoms(system, [1])
+# system = clamp_atoms(system, [1])
 
-# Create a simple calculator for the model.
+# Create a simple DFT calculator
 model_kwargs = (; functionals = [:lda_x, :lda_c_pw])
 basis_kwargs = (; kgrid = [1, 1, 1], Ecut = 10.0)
-scf_kwargs = (; tol = 1e-7)
-calculator = DFTKCalculator(system; model_kwargs, basis_kwargs, scf_kwargs)
+scf_kwargs   = (; tol = 1e-7)
+lda = DFTKCalculator(system; model_kwargs, basis_kwargs, scf_kwargs)
 
-solver = OptimizationOptimJL.LBFGS()
-optim_options = (f_tol=1e-32, iterations=20, show_trace=true)
-
-results = minimize_energy!(system, calculator; solver=solver, optim_options...)
+results = minimize_enery!(system, lda)
 println(results)
-@printf "Bond length: %3f bohrs.\n" norm(results.minimizer[1:end])
+optsystem = results.system
+println("Bond length: $(norm(position(optsystem[1]) - position(optsystem[2])))")
