@@ -1,5 +1,6 @@
 module GeometryOptimization
 
+using LinearAlgebra
 using StaticArrays
 using Optimization
 using AtomsBase

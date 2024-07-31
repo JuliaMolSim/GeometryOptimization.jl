@@ -1,60 +1,38 @@
-#= Test Geometry Optimization on an aluminium supercell.
-=#
-using LinearAlgebra
-using DFTK
-using ASEconvert
-using LazyArtifacts
+# Geometry Optimization of an aluminium supercell
+
+using AtomsBase
+using AtomsBuilder
 using AtomsCalculators
-using Unitful
-using UnitfulAtomic
-using Random
-using OptimizationOptimJL
-
+using DFTK
 using GeometryOptimization
+using LazyArtifacts
+using Unitful
+AC = AtomsCalculators
+GO = GeometryOptimization
+setup_threading(n_blas=1)
 
-
-function build_al_supercell(rep=1)
-    pseudodojo_psp = artifact"pd_nc_sr_lda_standard_0.4.1_upf/Al.upf"
-    a = 7.65339 # true lattice constant.
-    lattice = a * Matrix(I, 3, 3)
-    Al = ElementPsp(:Al; psp=load_psp(pseudodojo_psp))
-    atoms     = [Al, Al, Al, Al]
-    positions = [[0.0, 0.0, 0.0], [0.0, 0.5, 0.5], [0.5, 0.0, 0.5], [0.5, 0.5, 0.0]]
-    unit_cell = periodic_system(lattice, atoms, positions)
-
-    # Make supercell in ASE:
-    # We convert our lattice to the conventions used in ASE, make the supercell
-    # and then convert back ...
-    supercell_ase = convert_ase(unit_cell) * pytuple((rep, 1, 1))
-    supercell     = pyconvert(AbstractSystem, supercell_ase)
-
-    # Unfortunately right now the conversion to ASE drops the pseudopotential information,
-    # so we need to reattach it:
-    supercell = attach_psp(supercell; Al=pseudodojo_psp)
-    return supercell
-end;
-
-al_supercell = build_al_supercell(1)
-
-# Create a simple calculator for the model.
-model_kwargs = (; functionals = [:lda_x, :lda_c_pw], temperature = 1e-4)
+# Create a simple LDA-based calculator
+model_kwargs = (; functionals = [:lda_x, :lda_c_pw], temperature = 1e-3)
 basis_kwargs = (; kgrid = [6, 6, 6], Ecut = 30.0)
-scf_kwargs = (; tol = 1e-6)
-calculator = DFTKCalculator(al_supercell; model_kwargs, basis_kwargs, scf_kwargs, verbose=true)
+basis_kwargs = (; kgrid = [4, 4, 4], Ecut = 10.0)
+scf_kwargs   = (; tol=1e-7)
+calc = DFTKCalculator(; model_kwargs, basis_kwargs, scf_kwargs, verbose=true)
 
-energy_true = AtomsCalculators.potential_energy(al_supercell, calculator)
+# Make an aluminium system and compute its energy
+system = bulk(:Al, cubic=true)
+system = attach_psp(system;
+                    Al=artifact"pd_nc_sr_lda_standard_0.4.1_upf/Al.upf")
+energy_reference = AC.potential_energy(system, calc)
 
-# Starting position is a random perturbation of the equilibrium one.
-Random.seed!(1234)
-x0 = vcat(position(al_supercell)...)
-σ = 0.5u"angstrom"; x0_pert = x0 + σ * rand(Float64, size(x0))
-al_supercell = update_not_clamped_positions(al_supercell, x0_pert)
-energy_pert = AtomsCalculators.potential_energy(al_supercell, calculator)
+# Rattle the system
+rattled = attach_psp(rattle!(AbstractSystem(system), 0.3u"Å");
+                    Al=artifact"pd_nc_sr_lda_standard_0.4.1_upf/Al.upf")
 
-println("Initial guess distance (norm) from true parameters $(norm(x0 - x0_pert)).")
-println("Initial regret $(energy_pert - energy_true).")
+energy_pert = AC.potential_energy(rattled, calc)
+println("Initial guess distance    ",
+        maximum(norm, position(rattled) - position(system)))
+println("Initial energy difference $(energy_pert - energy_reference).")
 
-optim_options = (f_tol=1e-6, iterations=6, show_trace=true)
-
-results = minimize_energy!(al_supercell, calculator; optim_options...)
+END
+results = minimize_energy!(rattled, calc, GO.AutoLBFGS(); show_trace=true)
 println(results)

@@ -2,12 +2,10 @@
 # Interface between AtomsBase.jl and GeometryOptimization.jl that provides 
 # utility functions for manipulating systems.
 #
-# IMPORTANT: Note that we always work in cartesian coordinates.
-#
-export update_positions, update_not_clamped_positions, clamp_atoms
+export clamp_atoms
 
 
-@doc raw"""
+"""
 Creates a new system based on ``system`` but with atoms positions updated 
 to the ones provided.
 
@@ -17,7 +15,7 @@ function update_positions(system, positions::AbstractVector{<:AbstractVector{<:U
     AbstractSystem(system; particles)
 end
 
-@doc raw"""
+"""
 Creates a new system based on ``system`` where the non clamped positions are
 updated to the ones provided (in the order in which they appear in the system).
 """
@@ -29,9 +27,8 @@ function update_not_clamped_positions(system, positions::AbstractVector{<:Unitfu
     update_positions(system, new_positions)
 end
 
-@doc raw"""
+"""
 Returns a mask for selecting the not clamped atoms in the system.
-
 """
 function not_clamped_mask(system)
     # If flag not set, the atom is considered not clamped.
@@ -43,12 +40,15 @@ function not_clamped_positions(system)
     Iterators.flatten(system[mask, :position])
 end
 
-@doc raw"""
-    Clamp given atoms in the system. Clamped atoms are fixed and their positions 
-    will not be optimized. The atoms to be clamped should be given as a list of 
-    indices corresponding to their positions in the system.
+"""
+Clamp given atoms in the system. Clamped atoms are fixed and their positions
+will not be optimized. The atoms to be clamped should be given as a list of
+indices corresponding to their positions in the system.
 
-    """
+!!! warn "Experimental"
+    This is this a very experimental interface and will likely change
+    in the future.
+"""
 function clamp_atoms(system, clamped_indexes::Union{AbstractVector{<:Integer},Nothing})
     clamped = falses(length(system))
     clamped[clamped_indexes] .= true

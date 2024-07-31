@@ -20,9 +20,6 @@ function GeometryOptimizationState(system, calculator)
                               AC.zero_virial(system, calculator))
 end
 
-
-# Callback with printing
-
 """
 Turn `system` and `calculator` into a SciML-compatible `OptimizationProblem`.
 Optionally pass a reference to the state of the calculator in order to be able
@@ -83,35 +80,35 @@ compatible with Optimization.jl or [`Auto()`](@ref), [`AutoLBFGS()`](@ref), [`Au
 """
 function minimize_energy!(system, calculator, solver;
                           maxiters=100,
+                          # TODO Check good defaults here
                           tol_energy=Inf*u"eV",
-                          tol_force=1e-6u"eV/Å",
+                          tol_force=1e-5u"eV/Å",
                           tol_virial=1e-6u"eV",
                           callback=(x,y) -> false,
                           kwargs...)
     geoopt_state = GeometryOptimizationState(system, calculator)
-    problem = OptimizationProblem(system, calculator, geoopt_state; sense=Optimization.MinSense())
+    problem = OptimizationProblem(system, calculator, geoopt_state; sense=Optimization.MinSense)
     converged = false
 
     Eold = AC.zero_energy(system, calculator)
-    Fold = AC.zero_forces(system, calculator)
-    Vold = AC.zero_virial(system, calculator)
     function inner_callback(optim_state, ::Any, geoopt_state)
         halt = callback(optim_state, geoopt_state)
         halt && return true
 
-        energy_converged = norm(geoopt_state.energy - Eold) < tol_energy
-        force_converged  = norm(geoopt_state.forces - Fold) < tol_force
-        virial_converged = norm(geoopt_state.virial - Vold) < tol_virial
-        Eold  = geoopt_state.energy
-        Fold .= geoopt_state.forces
-        Vold .= geoopt_state.virial
+        energy_converged = abs(geoopt_state.energy - Eold) < tol_energy
+        force_converged  = maximum(norm, geoopt_state.forces) < tol_force
+        virial_converged = maximum(abs, geoopt_state.virial) < tol_virial
+        @show uconvert(u"eV/Å", maximum(norm, geoopt_state.forces))
+
+        Eold = geoopt_state.energy
         converged =  energy_converged && force_converged && virial_converged
         return converged
     end
 
-    optimres = solve(problem, solver; maxiters, abstol=0, callback=inner_callback, kwargs...)
+    optimres = solve(problem, solver; maxiters, callback=inner_callback, kwargs...)
     (; system=update_not_clamped_positions(system, optimres.u * u"bohr"), converged,
-       energy=optimres.objective, state=calc_state[], optimres.stats, optimres)
+       energy=optimres.objective, state=geoopt_state.calc_state,
+       optimres.stats, optimres)
 end
 
 """Use a heuristic to automatically select the minimisation algorithm"""
