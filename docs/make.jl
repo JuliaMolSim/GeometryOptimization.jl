@@ -24,6 +24,9 @@ makedocs(;
     ),
     pages=[
         "Home" => "index.md",
+        "Examples" => [
+            "examples/aluminium_dftk.md",
+        ],
         "apireference.md",
     ],
 )

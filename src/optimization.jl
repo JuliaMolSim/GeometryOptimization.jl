@@ -21,10 +21,11 @@ function GeometryOptimizationState(system, calculator)
 end
 
 """
-Turn `system` and `calculator` into a SciML-compatible `OptimizationProblem`.
-Optionally pass a reference to the state of the calculator in order to be able
-to extract the updated state. Note that the `system` is not updated and that
-internally atomic units are used.
+    Optimization.OptimizationProblem(system, calculator geoopt_state; kwargs...)
+
+Turn `system`, `calculator` and `geoopt_state::GeometryOptimizationState`
+into a SciML-compatible `OptimizationProblem`. Note that the `system` is not updated
+automatically and that internally atomic units are used.
 """
 function Optimization.OptimizationProblem(system, calculator, geoopt_state; kwargs...)
     mask = not_clamped_mask(system)  # mask is assumed not to change during optimisation
@@ -60,10 +61,18 @@ end
 Minimise the energy of a system using the specified calculator. For now only optimises
 atomic positions. Returns a named tuple including the optimised system as first entry.
 Under the hood this constructs an `Optimization.OptimizationProblem` and uses
-Optimization.jl to solve it using the passed `solver`. `solver` can be any solver
-compatible with Optimization.jl or [`Auto()`](@ref), [`AutoLBFGS()`](@ref), [`AutoCG()`](@ref),
-[`AutoSD()`](@ref)
+Optimization.jl to solve it using the passed `solver`.
 
+Typical arguments passed as `solver` are
+[`GeometryOptimization.Autoselect()`](@ref) (the default),
+[`GeometryOptimization.OptimLBFGS()`](@ref),
+[`GeometryOptimization.OptimCG()`](@ref),
+[`GeometryOptimization.OptimSD()`](@ref).
+These automatically choose some heuristics for setting up the solvers,
+which we found to work well in practice.
+Beyond that any other `solver`
+[compatible with Optimization.jl](https://docs.sciml.ai/Optimization/stable/#Overview-of-the-Optimizers)
+can also be employed here.
 
 ## Keyword arguments:
 - `maxiters`: Maximal number of iterations
@@ -71,7 +80,7 @@ compatible with Optimization.jl or [`Auto()`](@ref), [`AutoLBFGS()`](@ref), [`Au
 - `tol_force`:  Tolerance in the force  to stop the minimisation (all `tol_*` need to be satisfied)
 - `tol_virial`: Tolerance in the virial to stop the minimisation (all `tol_*` need to be satisfied)
 - `maxstep`: Maximal step size (in AU) to be taken in a single optimisation step
-  (not considered in all `solver`s)
+  (not supported for all `solver`s)
 - `callback`: A custom callback, which obtains the pair `(optimization_state, geoopt_state)` and is
   expected to return `false` (continue iterating) or `true` (halt iterations).
 - `kwargs`: All other keyword arguments are passed to the call to `solve`. Note, that
@@ -80,10 +89,9 @@ compatible with Optimization.jl or [`Auto()`](@ref), [`AutoLBFGS()`](@ref), [`Au
 """
 function minimize_energy!(system, calculator, solver;
                           maxiters=100,
-                          # TODO Check good defaults here
                           tol_energy=Inf*u"eV",
-                          tol_force=1e-5u"eV/Å",
-                          tol_virial=1e-6u"eV",
+                          tol_force=1e-4u"eV/Å",  # VASP default
+                          tol_virial=1e-6u"eV",   # TODO How reasonable ?
                           callback=(x,y) -> false,
                           kwargs...)
     geoopt_state = GeometryOptimizationState(system, calculator)
@@ -98,10 +106,9 @@ function minimize_energy!(system, calculator, solver;
         energy_converged = abs(geoopt_state.energy - Eold) < tol_energy
         force_converged  = maximum(norm, geoopt_state.forces) < tol_force
         virial_converged = maximum(abs, geoopt_state.virial) < tol_virial
-        @show uconvert(u"eV/Å", maximum(norm, geoopt_state.forces))
 
         Eold = geoopt_state.energy
-        converged =  energy_converged && force_converged && virial_converged
+        converged = energy_converged && force_converged && virial_converged
         return converged
     end
 
@@ -111,30 +118,39 @@ function minimize_energy!(system, calculator, solver;
        optimres.stats, optimres)
 end
 
-"""Use a heuristic to automatically select the minimisation algorithm"""
-struct Auto end
-function minimize_energy!(system, calculator, ::Auto=Auto(); kwargs...)
-    minimize_energy!(system, calculator, AutoCG(); kwargs...)
+"""Use a heuristic to automatically select the minimisation algorithm
+(Currently mostly [`OptimCG`](@ref))"""
+struct Autoselect end
+function minimize_energy!(system, calculator, ::Autoselect=Autoselect(); kwargs...)
+    minimize_energy!(system, calculator, OptimCG(); kwargs...)
 end
 
-"""Use Optim's LBFGS implementation"""
-struct AutoLBFGS end
-function minimize_energy!(system, calculator, ::AutoLBFGS; maxstep=Inf, kwargs...)
-    solver = Optim.LBFGS(; alphaguess=LineSearches.InitialHagerZhang(),
-                           linesearch=LineSearches.BackTracking(; order=2, maxstep))
+"""Use Optim's LBFGS implementation with some good defaults."""
+struct OptimLBFGS end
+function minimize_energy!(system, calculator, ::OptimLBFGS; 
+                          maxstep=0.8u"bohr", kwargs...)
+    maxstep = austrip(maxstep)
+    solver  = Optim.LBFGS(; alphaguess=LineSearches.InitialHagerZhang(),
+                            linesearch=LineSearches.BackTracking(; order=2, maxstep))
     minimize_energy!(system, calculator, solver; kwargs...)
 end
 
-"""Use Optim's ConjugateGradient implementation"""
-struct AutoCG end
-function minimize_energy!(system, calculator, ::AutoCG; maxstep=Inf, kwargs...)
-    solver = Optim.ConjugateGradient(;linesearch=LineSearches.BackTracking(;order=2, maxstep))
+"""Use Optim's ConjugateGradient implementation with some good defaults."""
+struct OptimCG end
+function minimize_energy!(system, calculator, ::OptimCG;
+                          maxstep=0.8u"bohr", kwargs...)
+    maxstep = austrip(maxstep)
+    solver  = Optim.ConjugateGradient(;
+        linesearch=LineSearches.BackTracking(; order=2, maxstep))
     minimize_energy!(system, calculator, solver; kwargs...)
 end
 
-"""Use Optim's GradientDescent (Steepest Descent) implementation"""
-struct AutoSD end
-function minimize_energy!(system, calculator, ::AutoSD; maxstep=Inf, kwargs...)
-    solver = Optim.GradientDescent(;linesearch=LineSearches.BackTracking(;order=2, maxstep))
+"""Use Optim's GradientDescent (Steepest Descent) implementation with some good defaults."""
+struct OptimSD end
+function minimize_energy!(system, calculator, ::OptimSD;
+                          maxstep=0.8u"bohr", kwargs...)
+    maxstep = austrip(maxstep)
+    solver  = Optim.GradientDescent(;
+        linesearch=LineSearches.BackTracking(; order=2, maxstep))
     minimize_energy!(system, calculator, solver; kwargs...)
 end

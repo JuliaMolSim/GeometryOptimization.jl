@@ -6,7 +6,7 @@ using Unitful
 using UnitfulAtomic
 GO = GeometryOptimization
 
-system = load_system("/home/mfh/.julia/packages/EmpiricalPotentials/APr5T/data/TiAl-1024.xyz")
+system = load_system(joinpath(pkgdir(EmpiricalPotentials), "data/TiAl-1024.xyz")
 
 # Convert to AbstractSystem, so we have the `particles` attribute.
 particles = map(system) do atom
