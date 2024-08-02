@@ -1,6 +1,8 @@
 # Create a dummy AtomsCalculator to test the geometry optimization interfcae.
 @testsetup module TestCalculators
     using AtomsCalculators
+    using Unitful
+    using UnitfulAtomic
     AC = AtomsCalculators
 
     struct DummyCalc end

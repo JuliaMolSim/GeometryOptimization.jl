@@ -5,6 +5,8 @@
 
     using GeometryOptimization
     using AtomsBuilder
+    using Unitful
+    using UnitfulAtomic
     GO = GeometryOptimization
 
     system = bulk(:Al)
