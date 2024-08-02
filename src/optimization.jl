@@ -54,6 +54,9 @@ function Optimization.OptimizationProblem(system, calculator, geoopt_state; kwar
     end
     f_opt = OptimizationFunction(f; grad=g!)
 
+    # TODO Automatically put constraints on positions for periodic systems
+    #      to avoid optimising unneccessarily over R^n, but only over the unit cell.
+
     OptimizationProblem(f_opt, x0, AC.get_parameters(calculator); kwargs...)
 end
 
