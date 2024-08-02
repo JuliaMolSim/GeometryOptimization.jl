@@ -5,6 +5,7 @@ version = "0.0.1"
 
 [deps]
 AtomsBase = "a963bdd2-2df7-4f54-a1ee-49d51e6be12a"
+AtomsBuilder = "f5cc8831-eeb7-4288-8d9f-d6c1ddb77004"
 AtomsCalculators = "a3e0e189-c65a-42c1-833c-339540406eb1"
 DocStringExtensions = "ffbed154-4ef7-542d-bbb7-c09d3a79fcae"
 LinearAlgebra = "37e2e46d-f89d-539d-b4ee-838fcccc9c8e"
@@ -17,6 +18,7 @@ UnitfulAtomic = "a7773ee8-282e-5fa2-be4e-bd808c38a91a"
 
 [compat]
 AtomsBase = "0.3"
+AtomsBuilder = "0.0.4"
 AtomsCalculators = "0.2"
 DocStringExtensions = "0.9"
 LineSearches = "7"
@@ -33,4 +35,4 @@ Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
 TestItemRunner = "f8b46487-2199-4994-9208-9a1283c18c0a"
 
 [targets]
-test = ["Test", "TestItemRunner"]
+test = ["AtomsBuilder", "Test", "TestItemRunner"]
