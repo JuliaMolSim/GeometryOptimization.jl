@@ -21,7 +21,7 @@ using DFTK
 model_kwargs = (; functionals=[:lda_x, :lda_c_pw], temperature=1e-3)
 basis_kwargs = (; kgrid=(3, 3, 3), Ecut=10.0)
 scf_kwargs   = (; tol=1e-5, mixing=KerkerMixing())
-calc = DFTKCalculator(; model_kwargs, basis_kwargs, scf_kwargs, verbose=true)
+calc = DFTKCalculator(; model_kwargs, basis_kwargs, scf_kwargs, verbose=true);
 ```
 
 We attach pseudopotentials to the aluminium system,
@@ -48,10 +48,27 @@ GO = GeometryOptimization
 
 results = minimize_energy!(system, calc, GO.OptimLBFGS();
                            tol_force=1e-4u"eV/Å",
-                           show_trace=true);
+                           show_trace=true)
+results.energy
 ```
 
-The final structure is
+We can view the final structure
 ```@example dftk-aluminium
-system
+results.system
 ```
+
+Some statistics about the optimisation
+```@example dftk-aluminium
+results.stats
+```
+or the details about the selected algorithm:
+```@example dftk-aluminium
+results.alg
+```
+
+The final state of the calculator object is also accessible
+via `results.state` and could be employed for postprocessing
+using the framework of the calculator. E.g. in the case
+of `DFTK`, the `results.state` is what `DFTK` calls an `scfres`
+and could just be used to plot a density of states or plot
+bands or compute response properties.

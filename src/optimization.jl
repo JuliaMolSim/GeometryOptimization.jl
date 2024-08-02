@@ -115,7 +115,7 @@ function minimize_energy!(system, calculator, solver;
     optimres = solve(problem, solver; maxiters, callback=inner_callback, kwargs...)
     (; system=update_not_clamped_positions(system, optimres.u * u"bohr"), converged,
        energy=optimres.objective, state=geoopt_state.calc_state,
-       optimres.stats, optimres)
+       optimres.stats, optimres.alg, optimres)
 end
 
 """Use a heuristic to automatically select the minimisation algorithm

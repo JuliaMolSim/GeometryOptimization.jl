@@ -26,6 +26,7 @@ makedocs(;
         "Home" => "index.md",
         "Examples" => [
             "examples/aluminium_dftk.md",
+            "examples/tial_lj.md",
         ],
         "apireference.md",
     ],
