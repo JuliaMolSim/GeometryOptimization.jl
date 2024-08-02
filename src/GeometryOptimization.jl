@@ -1,5 +1,6 @@
 module GeometryOptimization
 
+using DocStringExtensions
 using LinearAlgebra
 using StaticArrays
 using Optimization
@@ -13,6 +14,13 @@ using OptimizationOptimJL
 using LineSearches
 
 AC = AtomsCalculators
+
+@template METHODS =
+"""
+$(TYPEDSIGNATURES)
+
+$(DOCSTRING)
+"""
 
 include("atomsbase_interface.jl")
 include("optimization.jl")
