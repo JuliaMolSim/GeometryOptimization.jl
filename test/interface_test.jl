@@ -12,7 +12,7 @@
 
     calculator = TestCalculators.DummyCalc()
     for solver in (GO.Autoselect(), GO.OptimCG(), GO.OptimLBFGS(), GO.OptimSD())
-        results = minimize_energy!(system, calculator, solver; optim_options...)
+        results = minimize_energy!(system, calculator, solver)
         @test norm(position(results.system[1]) - position(system[1])) < 1e-5u"bohr"
     end
 end
