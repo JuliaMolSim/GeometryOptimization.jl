@@ -1,3 +1,11 @@
+# Setup julia dependencies for docs generation if not yet done
+import Pkg
+Pkg.activate(@__DIR__)
+if !isfile(joinpath(@__DIR__, "Manifest.toml"))
+    Pkg.develop(Pkg.PackageSpec(path=joinpath(@__DIR__, "..")))
+    Pkg.instantiate()
+end
+
 using GeometryOptimization
 using Documenter
 
@@ -16,6 +24,7 @@ makedocs(;
     ),
     pages=[
         "Home" => "index.md",
+        "apireference.md",
     ],
 )
 

@@ -4,11 +4,7 @@ CurrentModule = GeometryOptimization
 
 # GeometryOptimization
 
-Documentation for [GeometryOptimization](https://github.com/ortner/GeometryOptimization.jl).
+Documentation for [GeometryOptimization](https://github.com/JuliaMolSim/GeometryOptimization.jl).
 
 ```@index
-```
-
-```@autodocs
-Modules = [GeometryOptimization]
 ```
