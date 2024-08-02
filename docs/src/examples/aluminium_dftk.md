@@ -20,8 +20,9 @@ using DFTK
 
 model_kwargs = (; functionals=[:lda_x, :lda_c_pw], temperature=1e-3)
 basis_kwargs = (; kgrid=(3, 3, 3), Ecut=10.0)
-scf_kwargs   = (; tol=1e-5, mixing=KerkerMixing())
-calc = DFTKCalculator(; model_kwargs, basis_kwargs, scf_kwargs, verbose=true);
+scf_kwargs   = (; tol=1e-6, mixing=KerkerMixing())
+calc = DFTKCalculator(; model_kwargs, basis_kwargs, scf_kwargs, verbose=true)
+nothing
 ```
 
 We attach pseudopotentials to the aluminium system,
@@ -29,7 +30,8 @@ i.e. we tell DFTK, that each aluminium atom should be modelled using
 a pseudopotential rather than the full Coulomb potential.
 
 ```@example dftk-aluminium
-system = attach_psp(system; Al="hgh/lda/al-q3");
+system = attach_psp(system; Al="hgh/lda/al-q3")
+nothing
 ```
 
 !!! info "Crude computational parameters"
@@ -49,6 +51,11 @@ GO = GeometryOptimization
 results = minimize_energy!(system, calc, GO.OptimLBFGS();
                            tol_force=1e-4u"eV/Å",
                            show_trace=true)
+nothing
+```
+
+The final energy is
+```@example dftk-aluminium
 results.energy
 ```
 

@@ -94,6 +94,8 @@ function minimize_energy!(system, calculator, solver;
                           tol_virial=1e-6u"eV",   # TODO How reasonable ?
                           callback=(x,y) -> false,
                           kwargs...)
+    system = convert_to_updatable(system)
+
     geoopt_state = GeometryOptimizationState(system, calculator)
     problem = OptimizationProblem(system, calculator, geoopt_state; sense=Optimization.MinSense)
     converged = false

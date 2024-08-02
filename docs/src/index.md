@@ -45,7 +45,3 @@ calculators to employ.
 Note that [`minimize_energy!`](@ref) supports further arguments to fine-tune the
 convergence tolerance or customise the solver selection.
 See the API documentation or the examples to explore this.
-
-
-```@index
-```

@@ -10,13 +10,8 @@ using EmpiricalPotentials
 using GeometryOptimization
 GO = GeometryOptimization
 
-system = load_system(joinpath(pkgdir(EmpiricalPotentials), "data/TiAl-1024.xyz")
-
-# Convert to AbstractSystem, so we have the `particles` attribute.
-particles = map(system) do atom
-    Atom(; pairs(atom)...)
-end
-system = AbstractSystem(data; particles)
+system = load_system(joinpath(pkgdir(EmpiricalPotentials), "data/TiAl-1024.xyz"))
+nothing
 ```
 
 Setup calculator:
@@ -24,15 +19,20 @@ Setup calculator:
 using Unitful
 using UnitfulAtomic
 calc = LennardJones(-1.0u"meV", 3.1u"Å", 13, 13, 6.0u"Å")
+nothing
 ```
 
 Minimise energy:
-```@example tial
+```julia
+## TODO: Should run as @example once EmpiricalPotentials is compatible
+
 results = minimize_energy!(system, calc, GO.OptimCG(); maxiters=10, show_trace=true)
 results.energy
 ```
 
 Final structure:
-```@example tial
+```julia
+## TODO: Should run as @example once EmpiricalPotentials is compatible
+
 results.system
 ```

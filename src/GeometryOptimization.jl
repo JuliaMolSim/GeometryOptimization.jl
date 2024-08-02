@@ -22,7 +22,7 @@ $(TYPEDSIGNATURES)
 $(DOCSTRING)
 """
 
-include("atomsbase_interface.jl")
+include("clamping_updating_positions.jl")
 include("optimization.jl")
 
 end
