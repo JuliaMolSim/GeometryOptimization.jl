@@ -31,25 +31,11 @@ Creates a new system based on ``system`` where the non clamped positions are
 updated to the ones provided (in the order in which they appear in the system).
 """
 function update_not_clamped_positions(system, positions::AbstractVector{<:Unitful.Length})
-    mask = not_clamped_mask(system)
+    mask = [!get(atom, :clamped, false) for atom in system]
     new_positions = deepcopy(position(system))
     new_positions[mask] = reinterpret(reshape, SVector{3, eltype(positions)},
                                       reshape(positions, 3, :))
     update_positions(system, new_positions)
-end
-
-"""
-Returns a mask for selecting the not clamped atoms in the system.
-"""
-function not_clamped_mask(system)
-    # If flag not set, the atom is considered not clamped.
-    [haskey(a, :clamped) ? !a[:clamped] : true for a in system]
-end
-
-function not_clamped_positions(system)
-    mask = not_clamped_mask(system)
-    @assert any(mask)
-    Iterators.flatten(system[mask, :position])
 end
 
 """

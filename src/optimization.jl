@@ -28,14 +28,21 @@ into a SciML-compatible `OptimizationProblem`. Note that the `system` is not upd
 automatically and that internally atomic units are used.
 """
 function Optimization.OptimizationProblem(system, calculator, geoopt_state; kwargs...)
-    mask = not_clamped_mask(system)  # mask is assumed not to change during optimisation
+    if isempty(system)
+        throw(ArgumentError("Cannot optimise a system without atoms."))
+    end
+
+    # Get the mask of all atoms which are not clamped (i.e. which are optimised)
+    mask = [!get(atom, :clamped, false) for atom in system]
     if !any(mask)
         throw(ArgumentError("Cannot optimise systems where all atoms are clamped."))
     end
 
     # Use current system parameters as starting positions.
     # Some optimisers modify x0 in-place, so need a mutable type.
-    x0 = austrip.(not_clamped_positions(system))
+    LT = eltype(system[1, :position])
+    nonclamped_positions = reinterpret(reshape, LT, system[mask, :position])
+    x0 = austrip.(vec(nonclamped_positions))
 
     f = function(x::AbstractVector{<:Real}, ps)
         new_system = update_not_clamped_positions(system, x * u"bohr")
