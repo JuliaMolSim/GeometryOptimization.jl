@@ -3,13 +3,14 @@
     # This is a fake test. It does not really test anything,
     # just that the interface code compiles and works properly.
 
-    using GeometryOptimization
     using AtomsBuilder
+    using GeometryOptimization
+    using LinearAlgebra
     using Unitful
     using UnitfulAtomic
     GO = GeometryOptimization
 
-    system = bulk(:Al)
+    system = rattle!(bulk(:Al; cubic=true), 0.1u"Å")
     system = clamp_atoms(system, [1])
 
     calculator = TestCalculators.DummyCalc()

@@ -10,7 +10,7 @@
     AC.length_unit(::DummyCalc) = u"bohr"
 
     AC.@generate_interface function AC.potential_energy(system, calc::DummyCalc; kwargs...)
-        AC.zero_energy(calc)
+        AC.zero_energy(system, calc)
     end
 
     AC.@generate_interface function AC.forces(system, calc::DummyCalc; kwargs...)

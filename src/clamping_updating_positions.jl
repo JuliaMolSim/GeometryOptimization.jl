@@ -48,6 +48,7 @@ end
 
 function not_clamped_positions(system)
     mask = not_clamped_mask(system)
+    @assert any(mask)
     Iterators.flatten(system[mask, :position])
 end
 

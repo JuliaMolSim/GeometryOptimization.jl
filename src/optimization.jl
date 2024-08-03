@@ -29,6 +29,9 @@ automatically and that internally atomic units are used.
 """
 function Optimization.OptimizationProblem(system, calculator, geoopt_state; kwargs...)
     mask = not_clamped_mask(system)  # mask is assumed not to change during optimisation
+    if !any(mask)
+        throw(ArgumentError("Cannot optimise systems where all atoms are clamped."))
+    end
 
     # Use current system parameters as starting positions.
     # Some optimisers modify x0 in-place, so need a mutable type.
