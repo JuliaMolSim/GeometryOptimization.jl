@@ -100,13 +100,24 @@ can also be employed here.
   if special `kwargs` should be passed to the `Optimization.OptimizationProblem` the user
   needs to setup the problem manually (e.g. `OptimizationProblem(system, calculator)`)
 """
-function minimize_energy!(system, calculator, solver;
-                          maxiters=100,
-                          tol_energy=Inf*u"eV",
-                          tol_force=1e-4u"eV/Å",  # VASP default
-                          tol_virial=1e-6u"eV",   # TODO How reasonable ?
-                          callback=(x,y) -> false,
-                          kwargs...)
+function minimize_energy!(system, calculator, solver; kwargs...)
+    _minimize_energy!(system, calculator, solver; kwargs...)
+end
+
+# Function that does all the work. The idea is that calculator implementations
+# can provide more specific methods for minimize_energy! calling the function below.
+# This allows to adjust (based on the calculator type) the default parameters,
+# do some additional calculator-specific setup (e.g. callbacks) and so on. Then
+# by calling this function the actual minimisation is started off.
+function _minimize_energy!(system, calculator, solver;
+                           maxiters=100,
+                           tol_energy=Inf*u"eV",
+                           tol_force=1e-4u"eV/Å",  # VASP default
+                           tol_virial=1e-6u"eV",   # TODO How reasonable ?
+                           maxstep=0.8u"bohr",
+                           callback=(x,y) -> false,
+                           kwargs...)
+    solver = setup_solver(system, calculator, solver; maxstep)
     system = convert_to_updatable(system)
 
     geoopt_state = GeometryOptimizationState(system, calculator)
@@ -133,39 +144,36 @@ function minimize_energy!(system, calculator, solver;
        optimres.stats, optimres.alg, optimres)
 end
 
+# Default setup_solver function just passes things through
+setup_solver(system, calculator, solver::Any; kwargs...) = solver
+
 """Use a heuristic to automatically select the minimisation algorithm
-(Currently mostly [`OptimCG`](@ref))"""
+(Currently [`OptimCG`](@ref), but this may change silently)"""
 struct Autoselect end
-function minimize_energy!(system, calculator, ::Autoselect=Autoselect(); kwargs...)
-    minimize_energy!(system, calculator, OptimCG(); kwargs...)
+function setup_solver(system, calculator, ::Autoselect=Autoselect(); kwargs...)
+    setup_solver(system, calculator, OptimCG(); kwargs...)
 end
 
 """Use Optim's LBFGS implementation with some good defaults."""
 struct OptimLBFGS end
-function minimize_energy!(system, calculator, ::OptimLBFGS; 
-                          maxstep=0.8u"bohr", kwargs...)
-    maxstep = austrip(maxstep)
-    solver  = Optim.LBFGS(; alphaguess=LineSearches.InitialHagerZhang(),
-                            linesearch=LineSearches.BackTracking(; order=2, maxstep))
-    minimize_energy!(system, calculator, solver; kwargs...)
+function setup_solver(system, calculator, ::OptimLBFGS; maxstep, kwargs...)
+    # TODO Maybe directly specialise the method on ::Optim.LBFGS and don't
+    #      provide the GeometryOptimisation.OptimLBFGS() marker struct at all,
+    #      similar for CG and SD ?
+    linesearch = LineSearches.BackTracking(; order=2, maxstep=austrip(maxstep))
+    Optim.LBFGS(; linesearch, alphaguess=LineSearches.InitialHagerZhang())
 end
 
 """Use Optim's ConjugateGradient implementation with some good defaults."""
 struct OptimCG end
-function minimize_energy!(system, calculator, ::OptimCG;
-                          maxstep=0.8u"bohr", kwargs...)
-    maxstep = austrip(maxstep)
-    solver  = Optim.ConjugateGradient(;
-        linesearch=LineSearches.BackTracking(; order=2, maxstep))
-    minimize_energy!(system, calculator, solver; kwargs...)
+function setup_solver(system, calculator, ::OptimCG; maxstep, kwargs...)
+    linesearch = LineSearches.BackTracking(; order=2, maxstep=austrip(maxstep))
+    Optim.ConjugateGradient(; linesearch)
 end
 
 """Use Optim's GradientDescent (Steepest Descent) implementation with some good defaults."""
 struct OptimSD end
-function minimize_energy!(system, calculator, ::OptimSD;
-                          maxstep=0.8u"bohr", kwargs...)
-    maxstep = austrip(maxstep)
-    solver  = Optim.GradientDescent(;
-        linesearch=LineSearches.BackTracking(; order=2, maxstep))
-    minimize_energy!(system, calculator, solver; kwargs...)
+function setup_solver(system, calculator, ::OptimSD; maxstep, kwargs...)
+    linesearch = LineSearches.BackTracking(; order=2, maxstep=austrip(maxstep))
+    Optim.GradientDescent(; linesearch)
 end
