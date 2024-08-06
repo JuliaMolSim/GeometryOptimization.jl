@@ -100,7 +100,7 @@ can also be employed here.
   if special `kwargs` should be passed to the `Optimization.OptimizationProblem` the user
   needs to setup the problem manually (e.g. `OptimizationProblem(system, calculator)`)
 """
-function minimize_energy!(system, calculator, solver; kwargs...)
+function minimize_energy!(system, calculator, solver=Autoselect(); kwargs...)
     _minimize_energy!(system, calculator, solver; kwargs...)
 end
 
@@ -129,9 +129,9 @@ function _minimize_energy!(system, calculator, solver;
         halt = callback(optim_state, geoopt_state)
         halt && return true
 
-        energy_converged = abs(geoopt_state.energy - Eold) < tol_energy
-        force_converged  = maximum(norm, geoopt_state.forces) < tol_force
-        virial_converged = maximum(abs, geoopt_state.virial) < tol_virial
+        energy_converged = austrip(abs(geoopt_state.energy - Eold))    < austrip(tol_energy)
+        force_converged  = austrip(maximum(norm, geoopt_state.forces)) < austrip(tol_force)
+        virial_converged = austrip(maximum(abs, geoopt_state.virial))  < austrip(tol_virial)
 
         Eold = geoopt_state.energy
         converged = energy_converged && force_converged && virial_converged
@@ -150,7 +150,7 @@ setup_solver(system, calculator, solver::Any; kwargs...) = solver
 """Use a heuristic to automatically select the minimisation algorithm
 (Currently [`OptimCG`](@ref), but this may change silently)"""
 struct Autoselect end
-function setup_solver(system, calculator, ::Autoselect=Autoselect(); kwargs...)
+function setup_solver(system, calculator, ::Autoselect; kwargs...)
     setup_solver(system, calculator, OptimCG(); kwargs...)
 end
 
