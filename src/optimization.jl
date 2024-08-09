@@ -131,7 +131,7 @@ function _minimize_energy!(system, calculator, solver;
 
         energy_converged = austrip(abs(geoopt_state.energy - Eold))    < austrip(tol_energy)
         force_converged  = austrip(maximum(norm, geoopt_state.forces)) < austrip(tol_force)
-        virial_converged = austrip(maximum(abs, geoopt_state.virial))  < austrip(tol_virial)
+        virial_converged = austrip(maximum(abs,  geoopt_state.virial)) < austrip(tol_virial)
 
         Eold = geoopt_state.energy
         converged = energy_converged && force_converged && virial_converged
@@ -140,8 +140,8 @@ function _minimize_energy!(system, calculator, solver;
 
     optimres = solve(problem, solver; maxiters, callback=inner_callback, kwargs...)
     (; system=update_not_clamped_positions(system, optimres.u * u"bohr"), converged,
-       energy=optimres.objective, state=geoopt_state.calc_state,
-       optimres.stats, optimres.alg, optimres)
+       energy=optimres.objective, geoopt_state.forces, geoopt_state.virial,
+       state=geoopt_state.calc_state, optimres.stats, optimres.alg, optimres)
 end
 
 # Default setup_solver function just passes things through
