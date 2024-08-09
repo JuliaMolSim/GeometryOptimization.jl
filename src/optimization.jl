@@ -104,6 +104,43 @@ function minimize_energy!(system, calculator, solver=Autoselect(); kwargs...)
     _minimize_energy!(system, calculator, solver; kwargs...)
 end
 
+struct GeoOptTabularPrint
+end
+function (cb::GeoOptTabularPrint)(optim_state, geoopt_state)
+    show_force = true  # TODO Set to false if have no forces
+    show_time  = true
+
+    if optim_state.iter == 0
+        label_force = show_force ? ("   max(Force)", "   ----------") : ("", "")
+        label_time  = show_time ? ("   Δtime", "   ------") : ("", "")
+        println("n     Energy            log10(ΔE)", label_force[1], label_time[1])
+        println("---   ---------------   ---------", label_force[2], label_time[2])
+    end
+    return false
+
+    fstr = 
+
+    tstr = " "^9
+    if show_time
+        deltatime_ns = 0
+        tstr = @sprintf "   % 6s" TimerOutputs.prettytime(deltatime_ns)
+    end
+
+
+    # iteration
+    # change in energy (logscale)
+    # current force
+    # current virial
+    # maximal atomic displacement
+    # trace of lattice deformation matrix
+    # timing
+    # other flags (e.g. 
+
+
+
+    return false
+end
+
 # Function that does all the work. The idea is that calculator implementations
 # can provide more specific methods for minimize_energy! calling the function below.
 # This allows to adjust (based on the calculator type) the default parameters,
