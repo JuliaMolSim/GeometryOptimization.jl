@@ -2,7 +2,6 @@
 # Interface between AtomsBase.jl and GeometryOptimization.jl that provides 
 # utility functions for manipulating systems.
 #
-export clamp_atoms
 
 """
 Convert the input system to a kind of system we can work with, i.e. one where

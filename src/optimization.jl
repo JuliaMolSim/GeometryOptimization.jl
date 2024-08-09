@@ -3,21 +3,25 @@
 # We always work in cartesian coordinates.
 #
 
-export minimize_energy!
-
 using AtomsCalculators: Energy, Forces, calculate
 
 mutable struct GeometryOptimizationState
-    calc_state  # Reference to the current calculator state
-    energy      # Most recent energy value
-    forces      # Most recent force value
-    virial      # Most recent virial value
+    calc_state          # Reference to the most recent calculator state
+    energy              # Current energy value
+    forces              # Current force value
+    virial              # Current virial value
+    energy_change       # Change in energy since previous step
+    start_time::UInt64  # Time when the calculation started from time_ns()
 end
-function GeometryOptimizationState(system, calculator)
-    GeometryOptimizationState(AC.get_state(calculator),
-                              AC.zero_energy(system, calculator),
-                              AC.zero_forces(system, calculator),
-                              AC.zero_virial(system, calculator))
+function GeometryOptimizationState(system, calculator; start_time=time_ns())
+    GeometryOptimizationState(
+        AC.get_state(calculator),
+        AC.zero_energy(system, calculator),
+        AC.zero_forces(system, calculator),
+        AC.zero_virial(system, calculator),
+        AC.zero_energy(system, calculator),
+        start_time,
+    )
 end
 
 """
@@ -48,7 +52,6 @@ function Optimization.OptimizationProblem(system, calculator, geoopt_state; kwar
         new_system = update_not_clamped_positions(system, x * u"bohr")
         res = calculate(Energy(), new_system, calculator, ps, geoopt_state.calc_state)
         geoopt_state.calc_state = res.state
-        geoopt_state.energy = res.energy
         austrip(res.energy), geoopt_state
     end
     g! = function(G::AbstractVector{<:Real}, x::AbstractVector{<:Real}, ps)
@@ -89,11 +92,14 @@ can also be employed here.
 
 ## Keyword arguments:
 - `maxiters`: Maximal number of iterations
+- `maxtime`:  Maximal allowed runtime (in seconds)
 - `tol_energy`: Tolerance in the energy to stop the minimisation (all `tol_*` need to be satisfied)
 - `tol_force`:  Tolerance in the force  to stop the minimisation (all `tol_*` need to be satisfied)
 - `tol_virial`: Tolerance in the virial to stop the minimisation (all `tol_*` need to be satisfied)
 - `maxstep`: Maximal step size (in AU or length units) to be taken in a single optimisation step
   (not supported for all `solver`s)
+- `verbosity`: Printing level. The idea is that `0` is silent, `1` displays the optimisation
+  progress and `≥ 2` starts displaying things from the calculator as well (e.g SCF iterations).
 - `callback`: A custom callback, which obtains the pair `(optimization_state, geoopt_state)` and is
   expected to return `false` (continue iterating) or `true` (halt iterations).
 - `kwargs`: All other keyword arguments are passed to the call to `solve`. Note, that
@@ -104,43 +110,6 @@ function minimize_energy!(system, calculator, solver=Autoselect(); kwargs...)
     _minimize_energy!(system, calculator, solver; kwargs...)
 end
 
-struct GeoOptTabularPrint
-end
-function (cb::GeoOptTabularPrint)(optim_state, geoopt_state)
-    show_force = true  # TODO Set to false if have no forces
-    show_time  = true
-
-    if optim_state.iter == 0
-        label_force = show_force ? ("   max(Force)", "   ----------") : ("", "")
-        label_time  = show_time ? ("   Δtime", "   ------") : ("", "")
-        println("n     Energy            log10(ΔE)", label_force[1], label_time[1])
-        println("---   ---------------   ---------", label_force[2], label_time[2])
-    end
-    return false
-
-    fstr = 
-
-    tstr = " "^9
-    if show_time
-        deltatime_ns = 0
-        tstr = @sprintf "   % 6s" TimerOutputs.prettytime(deltatime_ns)
-    end
-
-
-    # iteration
-    # change in energy (logscale)
-    # current force
-    # current virial
-    # maximal atomic displacement
-    # trace of lattice deformation matrix
-    # timing
-    # other flags (e.g. 
-
-
-
-    return false
-end
-
 # Function that does all the work. The idea is that calculator implementations
 # can provide more specific methods for minimize_energy! calling the function below.
 # This allows to adjust (based on the calculator type) the default parameters,
@@ -148,11 +117,13 @@ end
 # by calling this function the actual minimisation is started off.
 function _minimize_energy!(system, calculator, solver;
                            maxiters=100,
+                           maxtime=60*60*24*365,   # 1 year
                            tol_energy=Inf*u"eV",
                            tol_force=1e-4u"eV/Å",  # VASP default
                            tol_virial=1e-6u"eV",   # TODO How reasonable ?
                            maxstep=0.8u"bohr",
-                           callback=(x,y) -> false,
+                           verbosity=0,
+                           callback=default_printing_callback(verbosity),
                            kwargs...)
     solver = setup_solver(system, calculator, solver; maxstep)
     system = convert_to_updatable(system)
@@ -161,24 +132,37 @@ function _minimize_energy!(system, calculator, solver;
     problem = OptimizationProblem(system, calculator, geoopt_state; sense=Optimization.MinSense)
     converged = false
 
-    Eold = AC.zero_energy(system, calculator)
+    Eold = 0  # Atomic units
     function inner_callback(optim_state, ::Any, geoopt_state)
+        geoopt_state.energy        = optim_state.objective * u"hartree"
+        geoopt_state.energy_change = (optim_state.objective - Eold) * u"hartree"
+
         halt = callback(optim_state, geoopt_state)
         halt && return true
 
-        energy_converged = austrip(abs(geoopt_state.energy - Eold))    < austrip(tol_energy)
+        energy_converged = optim_state.objective - Eold < austrip(tol_energy)
         force_converged  = austrip(maximum(norm, geoopt_state.forces)) < austrip(tol_force)
         virial_converged = austrip(maximum(abs,  geoopt_state.virial)) < austrip(tol_virial)
 
-        Eold = geoopt_state.energy
+        Eold = optim_state.objective
         converged = energy_converged && force_converged && virial_converged
         return converged
     end
 
-    optimres = solve(problem, solver; maxiters, callback=inner_callback, kwargs...)
+    optimres = solve(problem, solver; maxiters, maxtime, callback=inner_callback, kwargs...)
     (; system=update_not_clamped_positions(system, optimres.u * u"bohr"), converged,
        energy=optimres.objective, geoopt_state.forces, geoopt_state.virial,
        state=geoopt_state.calc_state, optimres.stats, optimres.alg, optimres)
+end
+
+function default_printing_callback(verbosity::Integer)
+    if verbosity <= 0
+        return (os, gs) -> false
+    elseif verbosity == 1
+        return GeoOptDefaultPrint(; always_show_header=false)
+    elseif verbosity ≥  2
+        return GeoOptDefaultPrint(; always_show_header=true)
+    end
 end
 
 # Default setup_solver function just passes things through

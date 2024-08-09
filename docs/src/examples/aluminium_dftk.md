@@ -20,8 +20,8 @@ using DFTK
 
 model_kwargs = (; functionals=[:lda_x, :lda_c_pw], temperature=1e-3)
 basis_kwargs = (; kgrid=(3, 3, 3), Ecut=10.0)
-scf_kwargs   = (; tol=1e-6, mixing=KerkerMixing())
-calc = DFTKCalculator(; model_kwargs, basis_kwargs, scf_kwargs, verbose=true)
+scf_kwargs   = (; mixing=KerkerMixing())
+calc = DFTKCalculator(; model_kwargs, basis_kwargs, scf_kwargs)
 nothing
 ```
 
@@ -42,17 +42,23 @@ nothing
 We perform the structure optimisation using the LBFGS solver
 from Optim with solver parameters adapted for our geometry optimisation setting.
 This is selected by passing the [GeometryOptimization.OptimLBFGS](@ref)
-solver as the third argument.
+solver as the third argument. The `verbosity=2` flag makes sure we get
+output from both the geometry optimisation as well as the inner SCF solver.
 
 ```@example dftk-aluminium
 using GeometryOptimization
 GO = GeometryOptimization
 
 results = minimize_energy!(system, calc, GO.OptimLBFGS();
-                           tol_force=1e-4u"eV/Å",
-                           show_trace=true)
+                           tol_force=1e-4u"eV/Å", verbosity=2)
 nothing
 ```
+
+!!! tip "Automatically adapted calculator parameters"
+    Some calculators (such as DFTK) are able to adapt to the keyword arguments
+    and parameters passed to `minimize_energy!`. In this case the SCF tolerance
+    is automatically adapted according to the convergence parameters
+    (here `tol_force`) passed to `minimize_energy!`.
 
 The final energy is
 ```@example dftk-aluminium

@@ -26,7 +26,7 @@ Minimise energy:
 ```julia
 ## TODO: Should run as @example once EmpiricalPotentials is compatible
 
-results = minimize_energy!(system, calc, GO.OptimCG(); maxiters=10, show_trace=true)
+results = minimize_energy!(system, calc, GO.OptimCG(); maxiters=10, verbosity=1)
 results.energy
 ```
 
