@@ -92,7 +92,7 @@ can also be employed here.
 - `tol_energy`: Tolerance in the energy to stop the minimisation (all `tol_*` need to be satisfied)
 - `tol_force`:  Tolerance in the force  to stop the minimisation (all `tol_*` need to be satisfied)
 - `tol_virial`: Tolerance in the virial to stop the minimisation (all `tol_*` need to be satisfied)
-- `maxstep`: Maximal step size (in AU) to be taken in a single optimisation step
+- `maxstep`: Maximal step size (in AU or length units) to be taken in a single optimisation step
   (not supported for all `solver`s)
 - `callback`: A custom callback, which obtains the pair `(optimization_state, geoopt_state)` and is
   expected to return `false` (continue iterating) or `true` (halt iterations).
