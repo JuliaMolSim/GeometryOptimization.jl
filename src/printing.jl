@@ -43,15 +43,23 @@ function (cb::GeoOptDefaultPrint)(optim_state, geoopt_state)
         ("Δtime",       6, tstr),
     ]
     if !isnothing(cb.callback_extra_fields)
-        append!(data, cb.additional_fields(optim_state, geoopt_state))
+        append!(data, cb.callback_extra_fields(geoopt_state.calc_state))
     end
 
+    if cb.always_show_header
+        hlines = :all
+        show_header = true
+    elseif optim_state.iter == 0
+        hlines = [0, 1]
+        show_header = true
+    else
+        hlines = :none
+        show_header = false
+    end
     title = iszero(optim_state.iter) ? "Geometry optimisation convergence (in atomic units)" : ""
-    show_header = optim_state.iter == 0 || cb.always_show_header
     pretty_table(reshape(getindex.(data, 3), 1, length(data));
-                 header=Symbol.(getindex.(data, 1)), title,
-                 columns_width=getindex.(data, 2),
-                 show_header, hlines=show_header ? [0, 1] : :none)
+                 header=Symbol.(getindex.(data, 1)), columns_width=getindex.(data, 2),
+                 title, show_header, hlines)
 
     flush(stdout)
     return false

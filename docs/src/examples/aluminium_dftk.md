@@ -50,7 +50,7 @@ using GeometryOptimization
 GO = GeometryOptimization
 
 results = minimize_energy!(system, calc, GO.OptimLBFGS();
-                           tol_force=1e-4u"eV/Å", verbosity=2)
+                           tol_forces=1e-4u"eV/Å", verbosity=2)
 nothing
 ```
 
@@ -58,7 +58,7 @@ nothing
     Some calculators (such as DFTK) are able to adapt to the keyword arguments
     and parameters passed to `minimize_energy!`. In this case the SCF tolerance
     is automatically adapted according to the convergence parameters
-    (here `tol_force`) passed to `minimize_energy!`.
+    (here `tol_forces`) passed to `minimize_energy!`.
 
 The final energy is
 ```@example dftk-aluminium

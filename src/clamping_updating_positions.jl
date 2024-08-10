@@ -47,6 +47,7 @@ indices corresponding to their positions in the system.
     in the future.
 """
 function clamp_atoms(system, clamped_indexes::Union{AbstractVector{<:Integer},Nothing})
+    system = convert_to_updatable(system)
     clamped = falses(length(system))
     clamped[clamped_indexes] .= true
     particles = [Atom(atom; clamped=msk) for (atom, msk) in zip(system, clamped)]

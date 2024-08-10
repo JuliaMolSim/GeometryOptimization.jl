@@ -94,14 +94,16 @@ can also be employed here.
 - `maxiters`: Maximal number of iterations
 - `maxtime`:  Maximal allowed runtime (in seconds)
 - `tol_energy`: Tolerance in the energy to stop the minimisation (all `tol_*` need to be satisfied)
-- `tol_force`:  Tolerance in the force  to stop the minimisation (all `tol_*` need to be satisfied)
+- `tol_forces`:  Tolerance in the force  to stop the minimisation (all `tol_*` need to be satisfied)
 - `tol_virial`: Tolerance in the virial to stop the minimisation (all `tol_*` need to be satisfied)
 - `maxstep`: Maximal step size (in AU or length units) to be taken in a single optimisation step
   (not supported for all `solver`s)
 - `verbosity`: Printing level. The idea is that `0` is silent, `1` displays the optimisation
   progress and `≥ 2` starts displaying things from the calculator as well (e.g SCF iterations).
 - `callback`: A custom callback, which obtains the pair `(optimization_state, geoopt_state)` and is
-  expected to return `false` (continue iterating) or `true` (halt iterations).
+  expected to return `false` (continue iterating) or `true` (halt iterations). Note that
+  specifying this overwrites the default printing callback. The calculation thus becomes
+  silent unless a [`GeoOptDefaultPrint`](@ref) is included in the callback.
 - `kwargs`: All other keyword arguments are passed to the call to `solve`. Note, that
   if special `kwargs` should be passed to the `Optimization.OptimizationProblem` the user
   needs to setup the problem manually (e.g. `OptimizationProblem(system, calculator)`)
@@ -116,13 +118,13 @@ end
 # do some additional calculator-specific setup (e.g. callbacks) and so on. Then
 # by calling this function the actual minimisation is started off.
 function _minimize_energy!(system, calculator, solver;
-                           maxiters=100,
-                           maxtime=60*60*24*365,   # 1 year
+                           maxiters::Integer=100,
+                           maxtime::Integer=60*60*24*365,  # 1 year
                            tol_energy=Inf*u"eV",
-                           tol_force=1e-4u"eV/Å",  # VASP default
-                           tol_virial=1e-6u"eV",   # TODO How reasonable ?
+                           tol_forces=1e-4u"eV/Å",  # VASP default
+                           tol_virial=1e-6u"eV",    # TODO How reasonable ?
                            maxstep=0.8u"bohr",
-                           verbosity=0,
+                           verbosity::Integer=0,
                            callback=default_printing_callback(verbosity),
                            kwargs...)
     solver = setup_solver(system, calculator, solver; maxstep)
@@ -141,7 +143,7 @@ function _minimize_energy!(system, calculator, solver;
         halt && return true
 
         energy_converged = optim_state.objective - Eold < austrip(tol_energy)
-        force_converged  = austrip(maximum(norm, geoopt_state.forces)) < austrip(tol_force)
+        force_converged  = austrip(maximum(norm, geoopt_state.forces)) < austrip(tol_forces)
         virial_converged = austrip(maximum(abs,  geoopt_state.virial)) < austrip(tol_virial)
 
         Eold = optim_state.objective
@@ -151,17 +153,15 @@ function _minimize_energy!(system, calculator, solver;
 
     optimres = solve(problem, solver; maxiters, maxtime, callback=inner_callback, kwargs...)
     (; system=update_not_clamped_positions(system, optimres.u * u"bohr"), converged,
-       energy=optimres.objective, geoopt_state.forces, geoopt_state.virial,
+       energy=optimres.objective * u"hartree", geoopt_state.forces, geoopt_state.virial,
        state=geoopt_state.calc_state, optimres.stats, optimres.alg, optimres)
 end
 
 function default_printing_callback(verbosity::Integer)
     if verbosity <= 0
         return (os, gs) -> false
-    elseif verbosity == 1
-        return GeoOptDefaultPrint(; always_show_header=false)
-    elseif verbosity ≥  2
-        return GeoOptDefaultPrint(; always_show_header=true)
+    else
+        return GeoOptDefaultPrint(; always_show_header=verbosity > 1)
     end
 end
 
