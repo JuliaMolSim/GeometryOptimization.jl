@@ -6,6 +6,7 @@
 using AtomsCalculators: Energy, Forces, calculate
 
 mutable struct GeometryOptimizationState
+    calculator
     calc_state          # Reference to the most recent calculator state
     energy              # Current energy value
     forces              # Current force value
@@ -15,6 +16,7 @@ mutable struct GeometryOptimizationState
 end
 function GeometryOptimizationState(system, calculator; start_time=time_ns())
     GeometryOptimizationState(
+        calculator,
         AC.get_state(calculator),
         AC.zero_energy(system, calculator),
         AC.zero_forces(system, calculator),
@@ -125,7 +127,7 @@ function _minimize_energy!(system, calculator, solver;
                            tol_virial=1e-6u"eV",    # TODO How reasonable ?
                            maxstep=0.8u"bohr",
                            verbosity::Integer=0,
-                           callback=default_printing_callback(verbosity),
+                           callback=GeoOptDefaultCallback(verbosity),
                            kwargs...)
     solver = setup_solver(system, calculator, solver; maxstep)
     system = convert_to_updatable(system)
@@ -152,17 +154,10 @@ function _minimize_energy!(system, calculator, solver;
     end
 
     optimres = solve(problem, solver; maxiters, maxtime, callback=inner_callback, kwargs...)
+    converged || @warn "Geometry optimisation not converged."
     (; system=update_not_clamped_positions(system, optimres.u * u"bohr"), converged,
        energy=optimres.objective * u"hartree", geoopt_state.forces, geoopt_state.virial,
        state=geoopt_state.calc_state, optimres.stats, optimres.alg, optimres)
-end
-
-function default_printing_callback(verbosity::Integer)
-    if verbosity <= 0
-        return (os, gs) -> false
-    else
-        return GeoOptDefaultPrint(; always_show_header=verbosity > 1)
-    end
 end
 
 # Default setup_solver function just passes things through

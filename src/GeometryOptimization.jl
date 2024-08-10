@@ -27,6 +27,6 @@ include("optimization.jl")
 include("printing.jl")
 
 export minimize_energy!
-export GeoOptDefaultPrint
+export GeoOptDefaultCallback
 
 end
