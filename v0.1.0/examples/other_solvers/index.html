@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><title>Using a different Optimization.jl compatible solver · GeometryOptimization.jl</title><meta name="title" content="Using a different Optimization.jl compatible solver · GeometryOptimization.jl"/><meta property="og:title" content="Using a different Optimization.jl compatible solver · GeometryOptimization.jl"/><meta property="twitter:title" content="Using a different Optimization.jl compatible solver · GeometryOptimization.jl"/><meta name="description" content="Documentation for GeometryOptimization.jl."/><meta property="og:description" content="Documentation for GeometryOptimization.jl."/><meta property="twitter:description" content="Documentation for GeometryOptimization.jl."/><meta property="og:url" content="https://JuliaMolSim.github.io/GeometryOptimization.jl/examples/other_solvers/"/><meta property="twitter:url" content="https://JuliaMolSim.github.io/GeometryOptimization.jl/examples/other_solvers/"/><link rel="canonical" href="https://JuliaMolSim.github.io/GeometryOptimization.jl/examples/other_solvers/"/><script data-outdated-warner src="../../assets/warner.js"></script><link href="https://cdnjs.cloudflare.com/ajax/libs/lato-font/3.0.0/css/lato-font.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/juliamono/0.050/juliamono.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/fontawesome.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/solid.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/brands.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.8/katex.min.css" rel="stylesheet" type="text/css"/><script>documenterBaseURL="../.."</script><script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.6/require.min.js" data-main="../../assets/documenter.js"></script><script src="../../search_index.js"></script><script src="../../siteinfo.js"></script><script src="../../../versions.js"></script><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../../assets/themes/catppuccin-mocha.css" data-theme-name="catppuccin-mocha"/><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../../assets/themes/catppuccin-macchiato.css" data-theme-name="catppuccin-macchiato"/><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../../assets/themes/catppuccin-frappe.css" data-theme-name="catppuccin-frappe"/><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../../assets/themes/catppuccin-latte.css" data-theme-name="catppuccin-latte"/><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../../assets/themes/documenter-dark.css" data-theme-name="documenter-dark" data-theme-primary-dark/><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../../assets/themes/documenter-light.css" data-theme-name="documenter-light" data-theme-primary/><script src="../../assets/themeswap.js"></script></head><body><div id="documenter"><nav class="docs-sidebar"><div class="docs-package-name"><span class="docs-autofit"><a href="../../">GeometryOptimization.jl</a></span></div><button class="docs-search-query input is-rounded is-small is-clickable my-2 mx-auto py-1 px-2" id="documenter-search-query">Search docs (Ctrl + /)</button><ul class="docs-menu"><li><a class="tocitem" href="../../">Home</a></li><li><span class="tocitem">Examples</span><ul><li><a class="tocitem" href="../aluminium_dftk/">Aluminium supercell using density-functional theory</a></li><li class="is-active"><a class="tocitem" href>Using a different Optimization.jl compatible solver</a></li><li><a class="tocitem" href="../tial_lj/">TiAl structure optimisation</a></li></ul></li><li><a class="tocitem" href="../../apireference/">API reference</a></li></ul><div class="docs-version-selector field has-addons"><div class="control"><span class="docs-label button is-static is-size-7">Version</span></div><div class="docs-selector control is-expanded"><div class="select is-fullwidth is-size-7"><select id="documenter-version-selector"></select></div></div></div></nav><div class="docs-main"><header class="docs-navbar"><a class="docs-sidebar-button docs-navbar-link fa-solid fa-bars is-hidden-desktop" id="documenter-sidebar-button" href="#"></a><nav class="breadcrumb"><ul class="is-hidden-mobile"><li><a class="is-disabled">Examples</a></li><li class="is-active"><a href>Using a different Optimization.jl compatible solver</a></li></ul><ul class="is-hidden-tablet"><li class="is-active"><a href>Using a different Optimization.jl compatible solver</a></li></ul></nav><div class="docs-right"><a class="docs-navbar-link" href="https://github.com/JuliaMolSim/GeometryOptimization.jl/blob/main/docs/src/examples/other_solvers.md#" title="Edit source on GitHub"><span class="docs-icon fa-solid"></span></a><a class="docs-settings-button docs-navbar-link fa-solid fa-gear" id="documenter-settings-button" href="#" title="Settings"></a><a class="docs-article-toggle-button fa-solid fa-chevron-up" id="documenter-article-toggle-button" href="javascript:;" title="Collapse all docstrings"></a></div></header><article class="content" id="documenter-page"><h1 id="Using-a-different-Optimization.jl-compatible-solver"><a class="docs-heading-anchor" href="#Using-a-different-Optimization.jl-compatible-solver">Using a different Optimization.jl compatible solver</a><a id="Using-a-different-Optimization.jl-compatible-solver-1"></a><a class="docs-heading-anchor-permalink" href="#Using-a-different-Optimization.jl-compatible-solver" title="Permalink"></a></h1><p>In this example we perform the simplistic optimisation the bond length of a Hydrogen molecule using a trust region quasi-Newton method from <a href="https://github.com/JuliaOpt/NLopt.jl">NLopt</a>.</p><p>We create a calculator employing the <a href="https://dftk.org/">density-functional toolkit</a> to compute energies and forces at using the LDA density functional.</p><pre><code class="language-julia hljs">using DFTK
+
+model_kwargs = (; functionals=[:lda_x, :lda_c_pw])
+basis_kwargs = (; kgrid=(1, 1, 1), Ecut=20.0)
+scf_kwargs   = (; tol=1e-6)
+calc = DFTKCalculator(; model_kwargs, basis_kwargs, scf_kwargs)
+nothing</code></pre><p>and we build the hydrogen molecular system, where we attach pseudopotential information for DFTK:</p><pre><code class="language-julia hljs">using AtomsBuilder
+using Unitful
+using UnitfulAtomic
+
+bounding_box = [[10.0, 0.0, 0.0], [0.0, 10.0, 0.0], [0.0, 0.0, 10.0]]u&quot;Å&quot;
+system = periodic_system([:H =&gt; [0, 0, 1.]u&quot;bohr&quot;,
+                          :H =&gt; [0, 0, 3.]u&quot;bohr&quot;],
+                         bounding_box)
+system = attach_psp(system; H=&quot;hgh/lda/h-q1&quot;)
+nothing</code></pre><p>We now run <a href="../../apireference/#GeometryOptimization.minimize_energy!"><code>GeometryOptimization.minimize_energy!</code></a>, but notably pass the <code>NLopt.LD_TNEWTON</code> solver from <code>NLopt</code> as the third argument to employ this solver. Extra keyword argument to <code>NLopt</code> can be added, e.g. here the <code>maxevel=100</code>, which limits the solver to 100 function evaluations:</p><pre><code class="language-julia hljs">using GeometryOptimization
+using OptimizationNLopt
+solver = NLopt.LD_TNEWTON()
+
+results = minimize_energy!(system, calc, solver;
+                           tol_forces=1e-4u&quot;eV/Å&quot;, verbosity=1,
+                           maxeval=100)
+nothing</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi"><span class="sgr1">Geometry optimisation convergence (in atomic units)
+┌─────┬─────────────────┬───────────┬────────────┬────────┐
+│   n │          Energy │ log10(ΔE) │ max(Force) │  Δtime │
+├─────┼─────────────────┼───────────┼────────────┼────────┤
+│   0 │ -1.099079330550 │           │  0.0792827 │  15.2s │
+Geometry optimisation convergence (in atomic units)
+┌─────┬─────────────────┬───────────┬────────────┬────────┐
+│   n │          Energy │ log10(ΔE) │ max(Force) │  Δtime │
+├─────┼─────────────────┼───────────┼────────────┼────────┤
+│   0 │ -1.099079334095 │           │  0.0792826 │  19.2s │
+Geometry optimisation convergence (in atomic units)
+┌─────┬─────────────────┬───────────┬────────────┬────────┐
+│   n │          Energy │ log10(ΔE) │ max(Force) │  Δtime │
+├─────┼─────────────────┼───────────┼────────────┼────────┤
+│   0 │ -1.103509073416 │           │  0.0767557 │  26.0s │
+Geometry optimisation convergence (in atomic units)
+┌─────┬─────────────────┬───────────┬────────────┬────────┐
+│   n │          Energy │ log10(ΔE) │ max(Force) │  Δtime │
+├─────┼─────────────────┼───────────┼────────────┼────────┤
+│   0 │ -1.122497100222 │           │  0.0617739 │  32.4s │
+Geometry optimisation convergence (in atomic units)
+┌─────┬─────────────────┬───────────┬────────────┬────────┐
+│   n │          Energy │ log10(ΔE) │ max(Force) │  Δtime │
+├─────┼─────────────────┼───────────┼────────────┼────────┤
+│   0 │ -1.122497102985 │           │  0.0617739 │  36.5s │
+Geometry optimisation convergence (in atomic units)
+┌─────┬─────────────────┬───────────┬────────────┬────────┐
+│   n │          Energy │ log10(ΔE) │ max(Force) │  Δtime │
+├─────┼─────────────────┼───────────┼────────────┼────────┤
+│   0 │ -1.126610206965 │           │ 0.00810519 │  43.0s │
+Geometry optimisation convergence (in atomic units)
+┌─────┬─────────────────┬───────────┬────────────┬────────┐
+│   n │          Energy │ log10(ΔE) │ max(Force) │  Δtime │
+├─────┼─────────────────┼───────────┼────────────┼────────┤
+│   0 │ -1.126610207327 │           │ 0.00810507 │  46.8s │
+Geometry optimisation convergence (in atomic units)
+┌─────┬─────────────────┬───────────┬────────────┬────────┐
+│   n │          Energy │ log10(ΔE) │ max(Force) │  Δtime │
+├─────┼─────────────────┼───────────┼────────────┼────────┤
+│   0 │ -1.126632969027 │           │ 0.00703137 │  51.9s │
+Geometry optimisation convergence (in atomic units)
+┌─────┬─────────────────┬───────────┬────────────┬────────┐
+│   n │          Energy │ log10(ΔE) │ max(Force) │  Δtime │
+├─────┼─────────────────┼───────────┼────────────┼────────┤
+│   0 │ -1.126632969342 │           │ 0.00703102 │  56.2s │
+Geometry optimisation convergence (in atomic units)
+┌─────┬─────────────────┬───────────┬────────────┬────────┐
+│   n │          Energy │ log10(ΔE) │ max(Force) │  Δtime │
+├─────┼─────────────────┼───────────┼────────────┼────────┤
+│   0 │ -1.126639066467 │           │ 0.00671625 │  61.5s │
+Geometry optimisation convergence (in atomic units)
+┌─────┬─────────────────┬───────────┬────────────┬────────┐
+│   n │          Energy │ log10(ΔE) │ max(Force) │  Δtime │
+├─────┼─────────────────┼───────────┼────────────┼────────┤
+│   0 │ -1.126702848546 │           │ 0.0008602… │  67.3s │
+Geometry optimisation convergence (in atomic units)
+┌─────┬─────────────────┬───────────┬────────────┬────────┐
+│   n │          Energy │ log10(ΔE) │ max(Force) │  Δtime │
+├─────┼─────────────────┼───────────┼────────────┼────────┤
+│   0 │ -1.126702848585 │           │ 0.0008600… │  71.5s │
+Geometry optimisation convergence (in atomic units)
+┌─────┬─────────────────┬───────────┬────────────┬────────┐
+│   n │          Energy │ log10(ΔE) │ max(Force) │  Δtime │
+├─────┼─────────────────┼───────────┼────────────┼────────┤
+│   0 │ -1.126703015369 │           │ 0.0007932… │  76.5s │
+Geometry optimisation convergence (in atomic units)
+┌─────┬─────────────────┬───────────┬────────────┬────────┐
+│   n │          Energy │ log10(ΔE) │ max(Force) │  Δtime │
+├─────┼─────────────────┼───────────┼────────────┼────────┤
+│   0 │ -1.126703938785 │           │ 0.00012547 │  81.6s │
+Geometry optimisation convergence (in atomic units)
+┌─────┬─────────────────┬───────────┬────────────┬────────┐
+│   n │          Energy │ log10(ΔE) │ max(Force) │  Δtime │
+├─────┼─────────────────┼───────────┼────────────┼────────┤
+│   0 │ -1.126703938790 │           │ 0.0001257… │  85.4s │
+Geometry optimisation convergence (in atomic units)
+┌─────┬─────────────────┬───────────┬────────────┬────────┐
+│   n │          Energy │ log10(ΔE) │ max(Force) │  Δtime │
+├─────┼─────────────────┼───────────┼────────────┼────────┤
+│   0 │ -1.126703959822 │           │ 4.19541e-5 │  90.6s │
+Geometry optimisation convergence (in atomic units)
+┌─────┬─────────────────┬───────────┬────────────┬────────┐
+│   n │          Energy │ log10(ΔE) │ max(Force) │  Δtime │
+├─────┼─────────────────┼───────────┼────────────┼────────┤
+│   0 │ -1.126703959824 │           │ 4.19136e-5 │  94.6s │
+Geometry optimisation convergence (in atomic units)
+┌─────┬─────────────────┬───────────┬────────────┬────────┐
+│   n │          Energy │ log10(ΔE) │ max(Force) │  Δtime │
+├─────┼─────────────────┼───────────┼────────────┼────────┤
+│   0 │ -1.126703961408 │           │ 2.64558e-5 │  99.3s │
+Geometry optimisation convergence (in atomic units)
+┌─────┬─────────────────┬───────────┬────────────┬────────┐
+│   n │          Energy │ log10(ΔE) │ max(Force) │  Δtime │
+├─────┼─────────────────┼───────────┼────────────┼────────┤
+│   0 │ -1.126703961409 │           │ 2.64242e-5 │   103s │
+Geometry optimisation convergence (in atomic units)
+┌─────┬─────────────────┬───────────┬────────────┬────────┐
+│   n │          Energy │ log10(ΔE) │ max(Force) │  Δtime │
+├─────┼─────────────────┼───────────┼────────────┼────────┤
+│   0 │ -1.126703962163 │           │ 1.39549e-5 │   108s │
+Geometry optimisation convergence (in atomic units)
+┌─────┬─────────────────┬───────────┬────────────┬────────┐
+│   n │          Energy │ log10(ΔE) │ max(Force) │  Δtime │
+├─────┼─────────────────┼───────────┼────────────┼────────┤
+│   0 │ -1.126703962164 │           │ 1.39276e-5 │   113s │
+Geometry optimisation convergence (in atomic units)
+┌─────┬─────────────────┬───────────┬────────────┬────────┐
+│   n │          Energy │ log10(ΔE) │ max(Force) │  Δtime │
+├─────┼─────────────────┼───────────┼────────────┼────────┤
+│   0 │ -1.126703962394 │           │ 6.37453e-6 │   117s │
+Geometry optimisation convergence (in atomic units)
+┌─────┬─────────────────┬───────────┬────────────┬────────┐
+│   n │          Energy │ log10(ΔE) │ max(Force) │  Δtime │
+├─────┼─────────────────┼───────────┼────────────┼────────┤
+│   0 │ -1.126703962395 │           │ 6.30984e-6 │   121s │
+Geometry optimisation convergence (in atomic units)
+┌─────┬─────────────────┬───────────┬────────────┬────────┐
+│   n │          Energy │ log10(ΔE) │ max(Force) │  Δtime │
+├─────┼─────────────────┼───────────┼────────────┼────────┤
+│   0 │ -1.126703962419 │           │ 4.86209e-6 │   126s │
+Geometry optimisation convergence (in atomic units)
+┌─────┬─────────────────┬───────────┬────────────┬────────┐
+│   n │          Energy │ log10(ΔE) │ max(Force) │  Δtime │
+├─────┼─────────────────┼───────────┼────────────┼────────┤
+│   0 │ -1.126703962419 │           │ 4.84359e-6 │   130s │
+Geometry optimisation convergence (in atomic units)
+┌─────┬─────────────────┬───────────┬────────────┬────────┐
+│   n │          Energy │ log10(ΔE) │ max(Force) │  Δtime │
+├─────┼─────────────────┼───────────┼────────────┼────────┤
+│   0 │ -1.126703962453 │           │ 9.48633e-7 │   134s │
+<span class="sgr33">┌ Warning: </span></span>NLopt failed to converge: FORCED_STOP
+<span class="sgr33"><span class="sgr1">└ </span></span><span class="sgr90">@ OptimizationNLopt ~/.julia/packages/OptimizationNLopt/LsFvb/src/OptimizationNLopt.jl:209</span></code></pre><p>The final hydrogen bond length is:</p><pre><code class="language-julia hljs">using LinearAlgebra
+norm(position(results.system[1]) - position(results.system[2]))</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi">1.4726093777669687 a₀</code></pre></article><nav class="docs-footer"><a class="docs-footer-prevpage" href="../aluminium_dftk/">« Aluminium supercell using density-functional theory</a><a class="docs-footer-nextpage" href="../tial_lj/">TiAl structure optimisation »</a><div class="flexbox-break"></div><p class="footer-message">Powered by <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> and the <a href="https://julialang.org/">Julia Programming Language</a>.</p></nav></div><div class="modal" id="documenter-settings"><div class="modal-background"></div><div class="modal-card"><header class="modal-card-head"><p class="modal-card-title">Settings</p><button class="delete"></button></header><section class="modal-card-body"><p><label class="label">Theme</label><div class="select"><select id="documenter-themepicker"><option value="auto">Automatic (OS)</option><option value="documenter-light">documenter-light</option><option value="documenter-dark">documenter-dark</option><option value="catppuccin-latte">catppuccin-latte</option><option value="catppuccin-frappe">catppuccin-frappe</option><option value="catppuccin-macchiato">catppuccin-macchiato</option><option value="catppuccin-mocha">catppuccin-mocha</option></select></div></p><hr/><p>This document was generated with <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> version 1.5.0 on <span class="colophon-date" title="Saturday 10 August 2024 18:45">Saturday 10 August 2024</span>. Using Julia version 1.10.4.</p></section><footer class="modal-card-foot"></footer></div></div></div></body></html>
