@@ -102,10 +102,10 @@ can also be employed here.
   (not supported for all `solver`s)
 - `verbosity`: Printing level. The idea is that `0` is silent, `1` displays the optimisation
   progress and `≥ 2` starts displaying things from the calculator as well (e.g SCF iterations).
-- `callback`: A custom callback, which obtains the pair `(optimization_state, geoopt_state)` and is
-  expected to return `false` (continue iterating) or `true` (halt iterations). Note that
-  specifying this overwrites the default printing callback. The calculation thus becomes
-  silent unless a [`GeoOptDefaultPrint`](@ref) is included in the callback.
+- `callback`: A custom callback, which obtains the pair `(optimization_state, geoopt_state)`
+  and is expected to return `false` (continue iterating) or `true` (halt iterations). Note
+  that specifying this overwrites the default printing callback. The calculation thus becomes
+  silent unless a [`GeoOptDefaultCallback`](@ref) is included in the callback.
 - `kwargs`: All other keyword arguments are passed to the call to `solve`. Note, that
   if special `kwargs` should be passed to the `Optimization.OptimizationProblem` the user
   needs to setup the problem manually (e.g. `OptimizationProblem(system, calculator)`)
