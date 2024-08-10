@@ -27,8 +27,8 @@ system = isolated_system([:H => [0, 0, 0.0]u"bohr",
                           :H => [0, 0, 1.9]u"bohr"])
 calc = LennardJones(-1.17u"hartree", 0.743u"angstrom", 1, 1, 0.6u"nm")
 
-# Run the geometry optimisation
-results = minimize_energy!(system, calc)
+# Run the geometry optimisation (using verbosity=1 to print the progress)
+results = minimize_energy!(system, calc; verbosity=1)
 
 # Inspect the results
 optimised_system = results.system

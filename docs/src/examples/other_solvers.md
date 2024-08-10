@@ -46,7 +46,7 @@ using OptimizationNLopt
 solver = NLopt.LD_TNEWTON()
 
 results = minimize_energy!(system, calc, solver;
-                           tol_force=1e-4u"eV/Å", maxeval=100)
+                           tol_forces=1e-4u"eV/Å", maxeval=100)
 nothing
 ```
 

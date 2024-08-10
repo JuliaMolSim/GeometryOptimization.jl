@@ -2,7 +2,6 @@
 # Interface between AtomsBase.jl and GeometryOptimization.jl that provides 
 # utility functions for manipulating systems.
 #
-export clamp_atoms
 
 """
 Convert the input system to a kind of system we can work with, i.e. one where
@@ -48,6 +47,7 @@ indices corresponding to their positions in the system.
     in the future.
 """
 function clamp_atoms(system, clamped_indexes::Union{AbstractVector{<:Integer},Nothing})
+    system = convert_to_updatable(system)
     clamped = falses(length(system))
     clamped[clamped_indexes] .= true
     particles = [Atom(atom; clamped=msk) for (atom, msk) in zip(system, clamped)]
