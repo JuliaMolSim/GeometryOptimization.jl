@@ -7,19 +7,19 @@ system = rattle!(bulk(:Al; cubic=true), 0.2u&quot;Å&quot;)</code></pre><pre cla
                                 0     4.05        0;
                                 0        0     4.05]u&quot;Å&quot;
 
-    Atom(Al, [-0.119765, 0.0949991, 0.128963]u&quot;Å&quot;)
-    Atom(Al, [-0.0133242,  2.11708,  2.20204]u&quot;Å&quot;)
-    Atom(Al, [ 1.84431, -0.00574315,  2.11054]u&quot;Å&quot;)
-    Atom(Al, [  2.1766,  2.14559, 0.0497439]u&quot;Å&quot;)
+    Atom(Al, [0.111802, -0.0839764, 0.142998]u&quot;Å&quot;)
+    Atom(Al, [-0.139051,  1.93335,  2.13575]u&quot;Å&quot;)
+    Atom(Al, [ 2.00949, 0.0572747,    1.834]u&quot;Å&quot;)
+    Atom(Al, [ 1.89594,  2.04893, 0.150897]u&quot;Å&quot;)
 
       .---------.  
      /|         |  
-    * |    Al   |  
+    * |         |  
     | |        Al  
     | |         |  
-    | .---------.  
+    | Al-Al-----.  
     |/    Al   /   
-    *---------Al   
+    *---------*    
 </code></pre><p>Next we create a calculator employing the <a href="https://dftk.org/">density-functional toolkit</a> to compute energies and forces at using the LDA density functional.</p><pre><code class="language-julia hljs">using DFTK
 
 model_kwargs = (; functionals=[:lda_x, :lda_c_pw], temperature=1e-3)
@@ -37,58 +37,65 @@ nothing</code></pre><pre class="documenter-example-output"><code class="nohighli
 ┌─────┬─────────────────┬───────────┬────────────┬────────┐
 │   n │          Energy │ log10(ΔE) │ max(Force) │  Δtime │
 ├─────┼─────────────────┼───────────┼────────────┼────────┤
-│   0 │ -8.385313849283 │           │  0.0152939 │  36.8s │
+│   0 │ -8.380171006968 │           │  0.0230888 │  36.6s │
 └─────┴─────────────────┴───────────┴────────────┴────────┘
 
 
 ┌─────┬─────────────────┬───────────┬────────────┬────────┐
 │   n │          Energy │ log10(ΔE) │ max(Force) │  Δtime │
 ├─────┼─────────────────┼───────────┼────────────┼────────┤
-│   1 │ -8.390228416290 │     -2.31 │ 0.00352347 │  6.67s │
+│   1 │ -8.388963769205 │     -2.06 │ 0.00757999 │  6.91s │
 └─────┴─────────────────┴───────────┴────────────┴────────┘
 
 
 ┌─────┬─────────────────┬───────────┬────────────┬────────┐
 │   n │          Energy │ log10(ΔE) │ max(Force) │  Δtime │
 ├─────┼─────────────────┼───────────┼────────────┼────────┤
-│   2 │ -8.390575508217 │     -3.46 │ 0.00019851 │  7.37s │
+│   2 │ -8.390556395382 │     -2.80 │ 0.00092093 │  6.75s │
 └─────┴─────────────────┴───────────┴────────────┴────────┘
 
 
 ┌─────┬─────────────────┬───────────┬────────────┬────────┐
 │   n │          Energy │ log10(ΔE) │ max(Force) │  Δtime │
 ├─────┼─────────────────┼───────────┼────────────┼────────┤
-│   3 │ -8.390576562682 │     -5.98 │ 1.38787e-5 │  4.97s │
+│   3 │ -8.390576196789 │     -4.70 │ 0.0001168… │  6.10s │
 └─────┴─────────────────┴───────────┴────────────┴────────┘
 
 
 ┌─────┬─────────────────┬───────────┬────────────┬────────┐
 │   n │          Energy │ log10(ΔE) │ max(Force) │  Δtime │
 ├─────┼─────────────────┼───────────┼────────────┼────────┤
-│   4 │ -8.390576568351 │     -8.25 │ 1.52671e-6 │  3.89s │
-└─────┴─────────────────┴───────────┴────────────┴────────┘</span></code></pre><div class="admonition is-success"><header class="admonition-header">Automatically adapted calculator parameters</header><div class="admonition-body"><p>Some calculators (such as DFTK) are able to adapt to the keyword arguments and parameters passed to <code>minimize_energy!</code>. In this case the SCF tolerance is automatically adapted according to the convergence parameters (here <code>tol_forces</code>) passed to <code>minimize_energy!</code>.</p></div></div><p>The final energy is</p><pre><code class="language-julia hljs">results.energy</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi">-8.390576568351461 Eₕ</code></pre><p>We can view the final structure</p><pre><code class="language-julia hljs">results.system</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi">FlexibleSystem(Al₄, periodic = TTT):
+│   4 │ -8.390576580220 │     -6.42 │ 1.47019e-5 │  4.82s │
+└─────┴─────────────────┴───────────┴────────────┴────────┘
+
+
+┌─────┬─────────────────┬───────────┬────────────┬────────┐
+│   n │          Energy │ log10(ΔE) │ max(Force) │  Δtime │
+├─────┼─────────────────┼───────────┼────────────┼────────┤
+│   5 │ -8.390576586266 │     -8.22 │ 1.41494e-6 │  3.05s │
+└─────┴─────────────────┴───────────┴────────────┴────────┘</span></code></pre><div class="admonition is-success"><header class="admonition-header">Automatically adapted calculator parameters</header><div class="admonition-body"><p>Some calculators (such as DFTK) are able to adapt to the keyword arguments and parameters passed to <code>minimize_energy!</code>. In this case the SCF tolerance is automatically adapted according to the convergence parameters (here <code>tol_forces</code>) passed to <code>minimize_energy!</code>.</p></div></div><p>The final energy is</p><pre><code class="language-julia hljs">results.energy</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi">-8.390576586266073 Eₕ</code></pre><p>We can view the final structure</p><pre><code class="language-julia hljs">results.system</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi">FlexibleSystem(Al₄, periodic = TTT):
     bounding_box      : [    4.05        0        0;
                                 0     4.05        0;
                                 0        0     4.05]u&quot;Å&quot;
 
-    Atom(Al, [-0.040533, 0.075482, 0.110335]u&quot;Å&quot;)
-    Atom(Al, [-0.0405576,  2.10049,  2.13534]u&quot;Å&quot;)
-    Atom(Al, [ 1.98445, 0.0754926,  2.13531]u&quot;Å&quot;)
-    Atom(Al, [ 1.98446,  2.10046, 0.110316]u&quot;Å&quot;)
+    Atom(Al, [-0.0429491, -0.0236082, 0.0534041]u&quot;Å&quot;)
+    Atom(Al, [-0.0429661,  2.00139,  2.07842]u&quot;Å&quot;)
+    Atom(Al, [ 1.98204, -0.0235959,  2.07842]u&quot;Å&quot;)
+    Atom(Al, [ 1.98206,   2.0014, 0.0533988]u&quot;Å&quot;)
 
       .---------.  
      /|         |  
-    * |         |  
+    * |    Al   |  
     | |        Al  
-    | |  Al     |  
-    | .---------.  
+    | |         |  
+    | .---------Al 
     |/    Al   /   
-    *---------Al   
+    *---------*    
 </code></pre><p>Some statistics about the optimisation</p><pre><code class="language-julia hljs">results.stats</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi">SciMLBase.OptimizationStats
-Number of iterations:                              4
-Time in seconds:                                   57.889385
-Number of function evaluations:                    9
-Number of gradient evaluations:                    5
+Number of iterations:                              5
+Time in seconds:                                   62.499339
+Number of function evaluations:                    11
+Number of gradient evaluations:                    6
 Number of hessian evaluations:                     0</code></pre><p>or the details about the selected algorithm:</p><pre><code class="language-julia hljs">results.alg</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi">Optim.LBFGS{Nothing, LineSearches.InitialHagerZhang{Float64}, LineSearches.BackTracking{Float64, Int64}, Optim.var&quot;#20#22&quot;}(10, LineSearches.InitialHagerZhang{Float64}
   ψ0: Float64 0.01
   ψ1: Float64 0.2
@@ -106,4 +113,4 @@ Number of hessian evaluations:                     0</code></pre><p>or the detai
   order: Int64 2
   maxstep: Float64 0.8
   cache: Nothing nothing
-, nothing, Optim.var&quot;#20#22&quot;(), Optim.Flat(), true)</code></pre><p>The final state of the calculator object is also accessible via <code>results.state</code> and could be employed for postprocessing using the framework of the calculator. E.g. in the case of <code>DFTK</code>, the <code>results.state</code> is what <code>DFTK</code> calls an <code>scfres</code> and could just be used to plot a density of states or plot bands or compute response properties.</p></article><nav class="docs-footer"><a class="docs-footer-prevpage" href="../../">« Home</a><a class="docs-footer-nextpage" href="../other_solvers/">Using a different Optimization.jl compatible solver »</a><div class="flexbox-break"></div><p class="footer-message">Powered by <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> and the <a href="https://julialang.org/">Julia Programming Language</a>.</p></nav></div><div class="modal" id="documenter-settings"><div class="modal-background"></div><div class="modal-card"><header class="modal-card-head"><p class="modal-card-title">Settings</p><button class="delete"></button></header><section class="modal-card-body"><p><label class="label">Theme</label><div class="select"><select id="documenter-themepicker"><option value="auto">Automatic (OS)</option><option value="documenter-light">documenter-light</option><option value="documenter-dark">documenter-dark</option><option value="catppuccin-latte">catppuccin-latte</option><option value="catppuccin-frappe">catppuccin-frappe</option><option value="catppuccin-macchiato">catppuccin-macchiato</option><option value="catppuccin-mocha">catppuccin-mocha</option></select></div></p><hr/><p>This document was generated with <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> version 1.5.0 on <span class="colophon-date" title="Saturday 10 August 2024 17:51">Saturday 10 August 2024</span>. Using Julia version 1.10.4.</p></section><footer class="modal-card-foot"></footer></div></div></div></body></html>
+, nothing, Optim.var&quot;#20#22&quot;(), Optim.Flat(), true)</code></pre><p>The final state of the calculator object is also accessible via <code>results.state</code> and could be employed for postprocessing using the framework of the calculator. E.g. in the case of <code>DFTK</code>, the <code>results.state</code> is what <code>DFTK</code> calls an <code>scfres</code> and could just be used to plot a density of states or plot bands or compute response properties.</p></article><nav class="docs-footer"><a class="docs-footer-prevpage" href="../../">« Home</a><a class="docs-footer-nextpage" href="../other_solvers/">Using a different Optimization.jl compatible solver »</a><div class="flexbox-break"></div><p class="footer-message">Powered by <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> and the <a href="https://julialang.org/">Julia Programming Language</a>.</p></nav></div><div class="modal" id="documenter-settings"><div class="modal-background"></div><div class="modal-card"><header class="modal-card-head"><p class="modal-card-title">Settings</p><button class="delete"></button></header><section class="modal-card-body"><p><label class="label">Theme</label><div class="select"><select id="documenter-themepicker"><option value="auto">Automatic (OS)</option><option value="documenter-light">documenter-light</option><option value="documenter-dark">documenter-dark</option><option value="catppuccin-latte">catppuccin-latte</option><option value="catppuccin-frappe">catppuccin-frappe</option><option value="catppuccin-macchiato">catppuccin-macchiato</option><option value="catppuccin-mocha">catppuccin-mocha</option></select></div></p><hr/><p>This document was generated with <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> version 1.5.0 on <span class="colophon-date" title="Saturday 10 August 2024 18:18">Saturday 10 August 2024</span>. Using Julia version 1.10.4.</p></section><footer class="modal-card-foot"></footer></div></div></div></body></html>

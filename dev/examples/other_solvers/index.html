@@ -4,7 +4,7 @@
 model_kwargs = (; functionals=[:lda_x, :lda_c_pw])
 basis_kwargs = (; kgrid=(1, 1, 1), Ecut=20.0)
 scf_kwargs   = (; tol=1e-6)
-calc = DFTKCalculator(; model_kwargs, basis_kwargs, scf_kwargs, verbose=true)
+calc = DFTKCalculator(; model_kwargs, basis_kwargs, scf_kwargs)
 nothing</code></pre><p>and we build the hydrogen molecular system, where we attach pseudopotential information for DFTK:</p><pre><code class="language-julia hljs">using AtomsBuilder
 using Unitful
 using UnitfulAtomic
@@ -19,221 +19,233 @@ using OptimizationNLopt
 solver = NLopt.LD_TNEWTON()
 
 results = minimize_energy!(system, calc, solver;
-                           tol_forces=1e-4u&quot;eV/Å&quot;, maxeval=100)
-nothing</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi">n     Energy            log10(ΔE)   log10(Δρ)   Diag   Δtime
----   ---------------   ---------   ---------   ----   ------
-  1   -1.098042793423                   -1.04   12.0    2.76s
-  2   -1.099050955322       -3.00       -1.75    1.0    4.78s
-  3   -1.099071523865       -4.69       -2.56    1.0    300ms
-  4   -1.099078425827       -5.16       -2.97    2.0    352ms
-  5   -1.099079329071       -6.04       -4.26    2.0    365ms
-  6   -1.099079330497       -8.85       -5.13    1.0    312ms
-  7   -1.099079330549      -10.28       -6.10    1.0    322ms
-n     Energy            log10(ΔE)   log10(Δρ)   Diag   Δtime
----   ---------------   ---------   ---------   ----   ------
-  1   -1.099079330550                   -7.08    1.0    884ms
-n     Energy            log10(ΔE)   log10(Δρ)   Diag   Δtime
----   ---------------   ---------   ---------   ----   ------
-  1   -1.099079334095                   -7.59    1.0    198ms
-n     Energy            log10(ΔE)   log10(Δρ)   Diag   Δtime
----   ---------------   ---------   ---------   ----   ------
-  1   -1.099079334095                   -7.91    1.0    196ms
-n     Energy            log10(ΔE)   log10(Δρ)   Diag   Δtime
----   ---------------   ---------   ---------   ----   ------
-  1   -1.099079332935                   -7.99    1.0    190ms
-n     Energy            log10(ΔE)   log10(Δρ)   Diag   Δtime
----   ---------------   ---------   ---------   ----   ------
-  1   -1.099079332935                   -8.32    1.0    200ms
-n     Energy            log10(ΔE)   log10(Δρ)   Diag   Δtime
----   ---------------   ---------   ---------   ----   ------
-  1   -1.103186473995                   -1.92    1.0    424ms
-  2   -1.103210617223       -4.62       -2.85    1.0    294ms
-  3   -1.103211429834       -6.09       -3.44    2.0    336ms
-  4   -1.103211458905       -7.54       -3.99    1.0    291ms
-  5   -1.103211462284       -8.47       -5.25    1.0    306ms
-  6   -1.103211462329      -10.35       -5.73    2.0    346ms
-  7   -1.103211462330      -12.06       -6.71    1.0    349ms
-n     Energy            log10(ΔE)   log10(Δρ)   Diag   Δtime
----   ---------------   ---------   ---------   ----   ------
-  1   -1.103211462330                   -7.29    1.0    189ms
-n     Energy            log10(ΔE)   log10(Δρ)   Diag   Δtime
----   ---------------   ---------   ---------   ----   ------
-  1   -1.116418129401                   -0.74    2.0    232ms
-  2   -1.122332039068       -2.23       -1.87    1.0    284ms
-  3   -1.122364953311       -4.48       -2.56    1.0    288ms
-  4   -1.122365494273       -6.27       -3.45    1.0    302ms
-  5   -1.122365513006       -7.73       -4.16    1.0    307ms
-  6   -1.122365514855       -8.73       -5.30    1.0    337ms
-  7   -1.122365514881      -10.57       -5.84    2.0    612ms
-  8   -1.122365514882      -13.13       -6.63    1.0    545ms
-n     Energy            log10(ΔE)   log10(Δρ)   Diag   Δtime
----   ---------------   ---------   ---------   ----   ------
-  1   -1.122365514882                   -8.00    1.0    192ms
-n     Energy            log10(ΔE)   log10(Δρ)   Diag   Δtime
----   ---------------   ---------   ---------   ----   ------
-  1   -1.122365517693                   -7.83    1.0    187ms
-n     Energy            log10(ΔE)   log10(Δρ)   Diag   Δtime
----   ---------------   ---------   ---------   ----   ------
-  1   -1.122365517693                   -8.67    1.0    192ms
-n     Energy            log10(ΔE)   log10(Δρ)   Diag   Δtime
----   ---------------   ---------   ---------   ----   ------
-  1   -1.126333147317                   -1.39    1.0    192ms
-  2   -1.126605965918       -3.56       -2.41    1.0    283ms
-  3   -1.126610827378       -5.31       -3.03    1.0    288ms
-  4   -1.126610919788       -7.03       -4.39    1.0    294ms
-  5   -1.126610921089       -8.89       -5.00    2.0    601ms
-  6   -1.126610921102      -10.91       -5.36    1.0    304ms
-  7   -1.126610921106      -11.39       -6.31    1.0    311ms
-n     Energy            log10(ΔE)   log10(Δρ)   Diag   Δtime
----   ---------------   ---------   ---------   ----   ------
-  1   -1.126610921106                   -7.10    1.0    196ms
-n     Energy            log10(ΔE)   log10(Δρ)   Diag   Δtime
----   ---------------   ---------   ---------   ----   ------
-  1   -1.126610921467                   -7.78    1.0    197ms
-n     Energy            log10(ΔE)   log10(Δρ)   Diag   Δtime
----   ---------------   ---------   ---------   ----   ------
-  1   -1.126610921467                   -8.86    1.0    198ms
-n     Energy            log10(ΔE)   log10(Δρ)   Diag   Δtime
----   ---------------   ---------   ---------   ----   ------
-  1   -1.126633314391                   -3.03    1.0    198ms
-  2   -1.126633456826       -6.85       -4.08    1.0    294ms
-  3   -1.126633459715       -8.54       -4.69    1.0    297ms
-  4   -1.126633459768      -10.28       -6.08    1.0    587ms
-n     Energy            log10(ΔE)   log10(Δρ)   Diag   Δtime
----   ---------------   ---------   ---------   ----   ------
-  1   -1.126633459769                   -6.82    1.0    197ms
-n     Energy            log10(ΔE)   log10(Δρ)   Diag   Δtime
----   ---------------   ---------   ---------   ----   ------
-  1   -1.126633460082                   -7.78    1.0    195ms
-n     Energy            log10(ΔE)   log10(Δρ)   Diag   Δtime
----   ---------------   ---------   ---------   ----   ------
-  1   -1.126633460082                   -8.52    1.0    192ms
-n     Energy            log10(ΔE)   log10(Δρ)   Diag   Δtime
----   ---------------   ---------   ---------   ----   ------
-  1   -1.126639536418                   -3.55    1.0    192ms
-  2   -1.126639548990       -7.90       -4.61    1.0    301ms
-  3   -1.126639549246       -9.59       -5.21    1.0    295ms
-  4   -1.126639549250      -11.33       -6.60    1.0    301ms
-n     Energy            log10(ΔE)   log10(Δρ)   Diag   Δtime
----   ---------------   ---------   ---------   ----   ------
-  1   -1.126639549250                   -7.35    1.0    195ms
-n     Energy            log10(ΔE)   log10(Δρ)   Diag   Δtime
----   ---------------   ---------   ---------   ----   ------
-  1   -1.126695129502                   -2.17    1.0    194ms
-  2   -1.126702734384       -5.12       -3.21    1.0    310ms
-  3   -1.126702888919       -6.81       -3.82    1.0    537ms
-  4   -1.126702891841       -8.53       -5.20    1.0    295ms
-  5   -1.126702891882      -10.40       -5.75    2.0    359ms
-  6   -1.126702891882      -12.58       -6.20    1.0    309ms
-n     Energy            log10(ΔE)   log10(Δρ)   Diag   Δtime
----   ---------------   ---------   ---------   ----   ------
-  1   -1.126702891882                   -6.83    1.0    194ms
-n     Energy            log10(ΔE)   log10(Δρ)   Diag   Δtime
----   ---------------   ---------   ---------   ----   ------
-  1   -1.126702891920                   -7.32    1.0    190ms
-n     Energy            log10(ΔE)   log10(Δρ)   Diag   Δtime
----   ---------------   ---------   ---------   ----   ------
-  1   -1.126702891920                   -8.08    1.0    191ms
-n     Energy            log10(ΔE)   log10(Δρ)   Diag   Δtime
----   ---------------   ---------   ---------   ----   ------
-  1   -1.126703052444                   -4.21    1.0    201ms
-  2   -1.126703053058       -9.21       -5.26    1.0    318ms
-  3   -1.126703053071      -10.89       -5.87    1.0    544ms
-  4   -1.126703053071      -12.63       -7.24    1.0    299ms
-n     Energy            log10(ΔE)   log10(Δρ)   Diag   Δtime
----   ---------------   ---------   ---------   ----   ------
-  1   -1.126703053071                   -8.00    1.0    194ms
-n     Energy            log10(ΔE)   log10(Δρ)   Diag   Δtime
----   ---------------   ---------   ---------   ----   ------
-  1   -1.126703823275                   -3.08    1.0    195ms
-  2   -1.126703937098       -6.94       -4.12    1.0    287ms
-  3   -1.126703939497       -8.62       -4.73    1.0    291ms
-  4   -1.126703939542      -10.34       -6.10    1.0    301ms
-n     Energy            log10(ΔE)   log10(Δρ)   Diag   Δtime
----   ---------------   ---------   ---------   ----   ------
-  1   -1.126703939543                   -6.88    1.0    204ms
-n     Energy            log10(ΔE)   log10(Δρ)   Diag   Δtime
----   ---------------   ---------   ---------   ----   ------
-  1   -1.126703939549                   -7.61    1.0    204ms
-n     Energy            log10(ΔE)   log10(Δρ)   Diag   Δtime
----   ---------------   ---------   ---------   ----   ------
-  1   -1.126703939549                   -8.30    1.0    189ms
-n     Energy            log10(ΔE)   log10(Δρ)   Diag   Δtime
----   ---------------   ---------   ---------   ----   ------
-  1   -1.126703958939                   -4.12    1.0    199ms
-  2   -1.126703959886       -9.02       -5.16    1.0    294ms
-  3   -1.126703959906      -10.70       -5.77    1.0    292ms
-  4   -1.126703959906      -12.43       -7.14    1.0    580ms
-n     Energy            log10(ΔE)   log10(Δρ)   Diag   Δtime
----   ---------------   ---------   ---------   ----   ------
-  1   -1.126703959906                   -7.90    1.0    190ms
-n     Energy            log10(ΔE)   log10(Δρ)   Diag   Δtime
----   ---------------   ---------   ---------   ----   ------
-  1   -1.126703959908                   -7.91    1.0    195ms
-n     Energy            log10(ΔE)   log10(Δρ)   Diag   Δtime
----   ---------------   ---------   ---------   ----   ------
-  1   -1.126703959908                   -8.82    1.0    209ms
-n     Energy            log10(ΔE)   log10(Δρ)   Diag   Δtime
----   ---------------   ---------   ---------   ----   ------
-  1   -1.126703961422                   -4.85    1.0    190ms
-  2   -1.126703961455      -10.48       -5.89    1.0    286ms
-  3   -1.126703961456      -12.16       -6.50    1.0    293ms
-n     Energy            log10(ΔE)   log10(Δρ)   Diag   Δtime
----   ---------------   ---------   ---------   ----   ------
-  1   -1.126703961456                   -7.88    1.0    195ms
-n     Energy            log10(ΔE)   log10(Δρ)   Diag   Δtime
----   ---------------   ---------   ---------   ----   ------
-  1   -1.126703961457                   -7.97    1.0    196ms
-n     Energy            log10(ΔE)   log10(Δρ)   Diag   Δtime
----   ---------------   ---------   ---------   ----   ------
-  1   -1.126703961457                   -9.03    1.0    212ms
-n     Energy            log10(ΔE)   log10(Δρ)   Diag   Δtime
----   ---------------   ---------   ---------   ----   ------
-  1   -1.126703962157                   -4.95    1.0    196ms
-  2   -1.126703962178      -10.68       -5.99    1.0    295ms
-  3   -1.126703962178      -12.36       -6.60    1.0    309ms
-n     Energy            log10(ΔE)   log10(Δρ)   Diag   Δtime
----   ---------------   ---------   ---------   ----   ------
-  1   -1.126703962178                   -7.98    1.0    207ms
-n     Energy            log10(ΔE)   log10(Δρ)   Diag   Δtime
----   ---------------   ---------   ---------   ----   ------
-  1   -1.126703962179                   -7.95    1.0    195ms
-n     Energy            log10(ΔE)   log10(Δρ)   Diag   Δtime
----   ---------------   ---------   ---------   ----   ------
-  1   -1.126703962179                   -8.94    1.0    196ms
-n     Energy            log10(ΔE)   log10(Δρ)   Diag   Δtime
----   ---------------   ---------   ---------   ----   ------
-  1   -1.126703962391                   -5.16    1.0    206ms
-  2   -1.126703962399      -11.10       -6.20    1.0    319ms
-n     Energy            log10(ΔE)   log10(Δρ)   Diag   Δtime
----   ---------------   ---------   ---------   ----   ------
-  1   -1.126703962399                   -6.98    1.0    193ms
-n     Energy            log10(ΔE)   log10(Δρ)   Diag   Δtime
----   ---------------   ---------   ---------   ----   ------
-  1   -1.126703962400                   -7.92    1.0    198ms
-n     Energy            log10(ΔE)   log10(Δρ)   Diag   Δtime
----   ---------------   ---------   ---------   ----   ------
-  1   -1.126703962400                   -9.12    1.0    196ms
-n     Energy            log10(ΔE)   log10(Δρ)   Diag   Δtime
----   ---------------   ---------   ---------   ----   ------
-  1   -1.126703962422                   -5.88    1.0    199ms
-  2   -1.126703962422      -12.54       -6.92    1.0    290ms
-n     Energy            log10(ΔE)   log10(Δρ)   Diag   Δtime
----   ---------------   ---------   ---------   ----   ------
-  1   -1.126703962422                   -7.72    1.0    198ms
-n     Energy            log10(ΔE)   log10(Δρ)   Diag   Δtime
----   ---------------   ---------   ---------   ----   ------
-  1   -1.126703962422                   -7.88    1.0    193ms
-n     Energy            log10(ΔE)   log10(Δρ)   Diag   Δtime
----   ---------------   ---------   ---------   ----   ------
-  1   -1.126703962422                   -8.67    1.0    194ms
-n     Energy            log10(ΔE)   log10(Δρ)   Diag   Δtime
----   ---------------   ---------   ---------   ----   ------
-  1   -1.126703962451                   -5.45    1.0    199ms
-  2   -1.126703962453      -11.69       -6.50    1.0    296ms
-n     Energy            log10(ΔE)   log10(Δρ)   Diag   Δtime
----   ---------------   ---------   ---------   ----   ------
-  1   -1.126703962453                   -7.27    1.0    192ms
-<span class="sgr33"><span class="sgr1">┌ Warning: </span></span>NLopt failed to converge: FORCED_STOP
+                           tol_forces=1e-4u&quot;eV/Å&quot;, verbosity=1,
+                           maxeval=100)
+nothing</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi"><span class="sgr1">Geometry optimisation convergence (in atomic units)
+┌─────┬─────────────────┬───────────┬────────────┬────────┐
+│   n │          Energy │ log10(ΔE) │ max(Force) │  Δtime │
+├─────┼─────────────────┼───────────┼────────────┼────────┤
+│   0 │ -1.099079330550 │           │  0.0792827 │  15.2s │
+Geometry optimisation convergence (in atomic units)
+┌─────┬─────────────────┬───────────┬────────────┬────────┐
+│   n │          Energy │ log10(ΔE) │ max(Force) │  Δtime │
+├─────┼─────────────────┼───────────┼────────────┼────────┤
+│   0 │ -1.099079334095 │           │  0.0792827 │  19.3s │
+Geometry optimisation convergence (in atomic units)
+┌─────┬─────────────────┬───────────┬────────────┬────────┐
+│   n │          Energy │ log10(ΔE) │ max(Force) │  Δtime │
+├─────┼─────────────────┼───────────┼────────────┼────────┤
+│   0 │ -1.111006617886 │           │  0.0699367 │  26.0s │
+Geometry optimisation convergence (in atomic units)
+┌─────┬─────────────────┬───────────┬────────────┬────────┐
+│   n │          Energy │ log10(ΔE) │ max(Force) │  Δtime │
+├─────┼─────────────────┼───────────┼────────────┼────────┤
+│   0 │ -1.111006621013 │           │  0.0699368 │  30.0s │
+Geometry optimisation convergence (in atomic units)
+┌─────┬─────────────────┬───────────┬────────────┬────────┐
+│   n │          Energy │ log10(ΔE) │ max(Force) │  Δtime │
+├─────┼─────────────────┼───────────┼────────────┼────────┤
+│   0 │ -1.119764808106 │           │  0.0537166 │  36.7s │
+Geometry optimisation convergence (in atomic units)
+┌─────┬─────────────────┬───────────┬────────────┬────────┐
+│   n │          Energy │ log10(ΔE) │ max(Force) │  Δtime │
+├─────┼─────────────────┼───────────┼────────────┼────────┤
+│   0 │ -1.119764810508 │           │  0.0537168 │  40.7s │
+Geometry optimisation convergence (in atomic units)
+┌─────┬─────────────────┬───────────┬────────────┬────────┐
+│   n │          Energy │ log10(ΔE) │ max(Force) │  Δtime │
+├─────┼─────────────────┼───────────┼────────────┼────────┤
+│   0 │ -1.124526862461 │           │  0.0336317 │  47.3s │
+Geometry optimisation convergence (in atomic units)
+┌─────┬─────────────────┬───────────┬────────────┬────────┐
+│   n │          Energy │ log10(ΔE) │ max(Force) │  Δtime │
+├─────┼─────────────────┼───────────┼────────────┼────────┤
+│   0 │ -1.124526863965 │           │  0.0336319 │  51.5s │
+Geometry optimisation convergence (in atomic units)
+┌─────┬─────────────────┬───────────┬────────────┬────────┐
+│   n │          Energy │ log10(ΔE) │ max(Force) │  Δtime │
+├─────┼─────────────────┼───────────┼────────────┼────────┤
+│   0 │ -1.126239307034 │           │  0.0166545 │  57.8s │
+Geometry optimisation convergence (in atomic units)
+┌─────┬─────────────────┬───────────┬────────────┬────────┐
+│   n │          Energy │ log10(ΔE) │ max(Force) │  Δtime │
+├─────┼─────────────────┼───────────┼────────────┼────────┤
+│   0 │ -1.126239307778 │           │  0.0166547 │  62.1s │
+Geometry optimisation convergence (in atomic units)
+┌─────┬─────────────────┬───────────┬────────────┬────────┐
+│   n │          Energy │ log10(ΔE) │ max(Force) │  Δtime │
+├─────┼─────────────────┼───────────┼────────────┼────────┤
+│   0 │ -1.126632312500 │           │  0.0067684 │  68.5s │
+Geometry optimisation convergence (in atomic units)
+┌─────┬─────────────────┬───────────┬────────────┬────────┐
+│   n │          Energy │ log10(ΔE) │ max(Force) │  Δtime │
+├─────┼─────────────────┼───────────┼────────────┼────────┤
+│   0 │ -1.126632312803 │           │ 0.00676846 │  72.4s │
+Geometry optimisation convergence (in atomic units)
+┌─────┬─────────────────┬───────────┬────────────┬────────┐
+│   n │          Energy │ log10(ΔE) │ max(Force) │  Δtime │
+├─────┼─────────────────┼───────────┼────────────┼────────┤
+│   0 │ -1.126694874984 │           │  0.0024442 │  78.9s │
+Geometry optimisation convergence (in atomic units)
+┌─────┬─────────────────┬───────────┬────────────┬────────┐
+│   n │          Energy │ log10(ΔE) │ max(Force) │  Δtime │
+├─────┼─────────────────┼───────────┼────────────┼────────┤
+│   0 │ -1.126694875094 │           │ 0.00244435 │  82.8s │
+Geometry optimisation convergence (in atomic units)
+┌─────┬─────────────────┬───────────┬────────────┬────────┐
+│   n │          Energy │ log10(ΔE) │ max(Force) │  Δtime │
+├─────┼─────────────────┼───────────┼────────────┼────────┤
+│   0 │ -1.126702906409 │           │ 0.0008375… │  88.4s │
+Geometry optimisation convergence (in atomic units)
+┌─────┬─────────────────┬───────────┬────────────┬────────┐
+│   n │          Energy │ log10(ΔE) │ max(Force) │  Δtime │
+├─────┼─────────────────┼───────────┼────────────┼────────┤
+│   0 │ -1.126702906447 │           │ 0.0008374… │  92.7s │
+Geometry optimisation convergence (in atomic units)
+┌─────┬─────────────────┬───────────┬────────────┬────────┐
+│   n │          Energy │ log10(ΔE) │ max(Force) │  Δtime │
+├─────┼─────────────────┼───────────┼────────────┼────────┤
+│   0 │ -1.126703168687 │           │ 0.0007263… │  97.7s │
+Geometry optimisation convergence (in atomic units)
+┌─────┬─────────────────┬───────────┬────────────┬────────┐
+│   n │          Energy │ log10(ΔE) │ max(Force) │  Δtime │
+├─────┼─────────────────┼───────────┼────────────┼────────┤
+│   0 │ -1.126703168719 │           │ 0.0007263… │   102s │
+Geometry optimisation convergence (in atomic units)
+┌─────┬─────────────────┬───────────┬────────────┬────────┐
+│   n │          Energy │ log10(ΔE) │ max(Force) │  Δtime │
+├─────┼─────────────────┼───────────┼────────────┼────────┤
+│   0 │ -1.126703574279 │           │ 0.0005083… │   107s │
+Geometry optimisation convergence (in atomic units)
+┌─────┬─────────────────┬───────────┬────────────┬────────┐
+│   n │          Energy │ log10(ΔE) │ max(Force) │  Δtime │
+├─────┼─────────────────┼───────────┼────────────┼────────┤
+│   0 │ -1.126703574301 │           │ 0.0005082… │   111s │
+Geometry optimisation convergence (in atomic units)
+┌─────┬─────────────────┬───────────┬────────────┬────────┐
+│   n │          Energy │ log10(ΔE) │ max(Force) │  Δtime │
+├─────┼─────────────────┼───────────┼────────────┼────────┤
+│   0 │ -1.126703697227 │           │ 0.0004202… │   116s │
+Geometry optimisation convergence (in atomic units)
+┌─────┬─────────────────┬───────────┬────────────┬────────┐
+│   n │          Energy │ log10(ΔE) │ max(Force) │  Δtime │
+├─────┼─────────────────┼───────────┼────────────┼────────┤
+│   0 │ -1.126703697246 │           │ 0.0004202… │   121s │
+Geometry optimisation convergence (in atomic units)
+┌─────┬─────────────────┬───────────┬────────────┬────────┐
+│   n │          Energy │ log10(ΔE) │ max(Force) │  Δtime │
+├─────┼─────────────────┼───────────┼────────────┼────────┤
+│   0 │ -1.126703855546 │           │ 0.0002669… │   126s │
+Geometry optimisation convergence (in atomic units)
+┌─────┬─────────────────┬───────────┬────────────┬────────┐
+│   n │          Energy │ log10(ΔE) │ max(Force) │  Δtime │
+├─────┼─────────────────┼───────────┼────────────┼────────┤
+│   0 │ -1.126703855558 │           │ 0.0002669… │   130s │
+Geometry optimisation convergence (in atomic units)
+┌─────┬─────────────────┬───────────┬────────────┬────────┐
+│   n │          Energy │ log10(ΔE) │ max(Force) │  Δtime │
+├─────┼─────────────────┼───────────┼────────────┼────────┤
+│   0 │ -1.126703899642 │           │ 0.0002046… │   136s │
+Geometry optimisation convergence (in atomic units)
+┌─────┬─────────────────┬───────────┬────────────┬────────┐
+│   n │          Energy │ log10(ΔE) │ max(Force) │  Δtime │
+├─────┼─────────────────┼───────────┼────────────┼────────┤
+│   0 │ -1.126703899651 │           │ 0.0002046… │   139s │
+Geometry optimisation convergence (in atomic units)
+┌─────┬─────────────────┬───────────┬────────────┬────────┐
+│   n │          Energy │ log10(ΔE) │ max(Force) │  Δtime │
+├─────┼─────────────────┼───────────┼────────────┼────────┤
+│   0 │ -1.126703944957 │           │ 0.0001080… │   145s │
+Geometry optimisation convergence (in atomic units)
+┌─────┬─────────────────┬───────────┬────────────┬────────┐
+│   n │          Energy │ log10(ΔE) │ max(Force) │  Δtime │
+├─────┼─────────────────┼───────────┼────────────┼────────┤
+│   0 │ -1.126703944962 │           │ 0.0001080… │   149s │
+Geometry optimisation convergence (in atomic units)
+┌─────┬─────────────────┬───────────┬────────────┬────────┐
+│   n │          Energy │ log10(ΔE) │ max(Force) │  Δtime │
+├─────┼─────────────────┼───────────┼────────────┼────────┤
+│   0 │ -1.126703954857 │           │ 7.12466e-5 │   154s │
+Geometry optimisation convergence (in atomic units)
+┌─────┬─────────────────┬───────────┬────────────┬────────┐
+│   n │          Energy │ log10(ΔE) │ max(Force) │  Δtime │
+├─────┼─────────────────┼───────────┼────────────┼────────┤
+│   0 │ -1.126703954861 │           │ 7.11876e-5 │   158s │
+Geometry optimisation convergence (in atomic units)
+┌─────┬─────────────────┬───────────┬────────────┬────────┐
+│   n │          Energy │ log10(ΔE) │ max(Force) │  Δtime │
+├─────┼─────────────────┼───────────┼────────────┼────────┤
+│   0 │ -1.126703958213 │           │ 5.32268e-5 │   163s │
+Geometry optimisation convergence (in atomic units)
+┌─────┬─────────────────┬───────────┬────────────┬────────┐
+│   n │          Energy │ log10(ΔE) │ max(Force) │  Δtime │
+├─────┼─────────────────┼───────────┼────────────┼────────┤
+│   0 │ -1.126703958215 │           │  5.3192e-5 │   167s │
+Geometry optimisation convergence (in atomic units)
+┌─────┬─────────────────┬───────────┬────────────┬────────┐
+│   n │          Energy │ log10(ΔE) │ max(Force) │  Δtime │
+├─────┼─────────────────┼───────────┼────────────┼────────┤
+│   0 │ -1.126703961072 │           │ 3.04064e-5 │   172s │
+Geometry optimisation convergence (in atomic units)
+┌─────┬─────────────────┬───────────┬────────────┬────────┐
+│   n │          Energy │ log10(ΔE) │ max(Force) │  Δtime │
+├─────┼─────────────────┼───────────┼────────────┼────────┤
+│   0 │ -1.126703961073 │           │  3.0365e-5 │   177s │
+Geometry optimisation convergence (in atomic units)
+┌─────┬─────────────────┬───────────┬────────────┬────────┐
+│   n │          Energy │ log10(ΔE) │ max(Force) │  Δtime │
+├─────┼─────────────────┼───────────┼────────────┼────────┤
+│   0 │ -1.126703961890 │           │ 1.94866e-5 │   181s │
+Geometry optimisation convergence (in atomic units)
+┌─────┬─────────────────┬───────────┬────────────┬────────┐
+│   n │          Energy │ log10(ΔE) │ max(Force) │  Δtime │
+├─────┼─────────────────┼───────────┼────────────┼────────┤
+│   0 │ -1.126703961891 │           │ 1.94004e-5 │   185s │
+Geometry optimisation convergence (in atomic units)
+┌─────┬─────────────────┬───────────┬────────────┬────────┐
+│   n │          Energy │ log10(ΔE) │ max(Force) │  Δtime │
+├─────┼─────────────────┼───────────┼────────────┼────────┤
+│   0 │ -1.126703962069 │           │ 1.60594e-5 │   190s │
+Geometry optimisation convergence (in atomic units)
+┌─────┬─────────────────┬───────────┬────────────┬────────┐
+│   n │          Energy │ log10(ΔE) │ max(Force) │  Δtime │
+├─────┼─────────────────┼───────────┼────────────┼────────┤
+│   0 │ -1.126703962070 │           │ 1.60271e-5 │   194s │
+Geometry optimisation convergence (in atomic units)
+┌─────┬─────────────────┬───────────┬────────────┬────────┐
+│   n │          Energy │ log10(ΔE) │ max(Force) │  Δtime │
+├─────┼─────────────────┼───────────┼────────────┼────────┤
+│   0 │ -1.126703962344 │           │ 8.64794e-6 │   198s │
+Geometry optimisation convergence (in atomic units)
+┌─────┬─────────────────┬───────────┬────────────┬────────┐
+│   n │          Energy │ log10(ΔE) │ max(Force) │  Δtime │
+├─────┼─────────────────┼───────────┼────────────┼────────┤
+│   0 │ -1.126703962344 │           │ 8.58428e-6 │   203s │
+Geometry optimisation convergence (in atomic units)
+┌─────┬─────────────────┬───────────┬────────────┬────────┐
+│   n │          Energy │ log10(ΔE) │ max(Force) │  Δtime │
+├─────┼─────────────────┼───────────┼────────────┼────────┤
+│   0 │ -1.126703962390 │           │ 6.58383e-6 │   207s │
+Geometry optimisation convergence (in atomic units)
+┌─────┬─────────────────┬───────────┬────────────┬────────┐
+│   n │          Energy │ log10(ΔE) │ max(Force) │  Δtime │
+├─────┼─────────────────┼───────────┼────────────┼────────┤
+│   0 │ -1.126703962390 │           │ 6.56092e-6 │   212s │
+Geometry optimisation convergence (in atomic units)
+┌─────┬─────────────────┬───────────┬────────────┬────────┐
+│   n │          Energy │ log10(ΔE) │ max(Force) │  Δtime │
+├─────┼─────────────────┼───────────┼────────────┼────────┤
+│   0 │ -1.126703962447 │           │ 2.31545e-6 │   216s │
+Geometry optimisation convergence (in atomic units)
+┌─────┬─────────────────┬───────────┬────────────┬────────┐
+│   n │          Energy │ log10(ΔE) │ max(Force) │  Δtime │
+├─────┼─────────────────┼───────────┼────────────┼────────┤
+│   0 │ -1.126703962447 │           │ 2.27309e-6 │   220s │
+Geometry optimisation convergence (in atomic units)
+┌─────┬─────────────────┬───────────┬────────────┬────────┐
+│   n │          Energy │ log10(ΔE) │ max(Force) │  Δtime │
+├─────┼─────────────────┼───────────┼────────────┼────────┤
+│   0 │ -1.126703962451 │           │ 1.72405e-6 │   224s │
+<span class="sgr33">┌ Warning: </span></span>NLopt failed to converge: FORCED_STOP
 <span class="sgr33"><span class="sgr1">└ </span></span><span class="sgr90">@ OptimizationNLopt ~/.julia/packages/OptimizationNLopt/LsFvb/src/OptimizationNLopt.jl:209</span></code></pre><p>The final hydrogen bond length is:</p><pre><code class="language-julia hljs">using LinearAlgebra
-norm(position(results.system[1]) - position(results.system[2]))</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi">1.4726097327720067 a₀</code></pre></article><nav class="docs-footer"><a class="docs-footer-prevpage" href="../aluminium_dftk/">« Aluminium supercell using density-functional theory</a><a class="docs-footer-nextpage" href="../tial_lj/">TiAl structure optimisation »</a><div class="flexbox-break"></div><p class="footer-message">Powered by <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> and the <a href="https://julialang.org/">Julia Programming Language</a>.</p></nav></div><div class="modal" id="documenter-settings"><div class="modal-background"></div><div class="modal-card"><header class="modal-card-head"><p class="modal-card-title">Settings</p><button class="delete"></button></header><section class="modal-card-body"><p><label class="label">Theme</label><div class="select"><select id="documenter-themepicker"><option value="auto">Automatic (OS)</option><option value="documenter-light">documenter-light</option><option value="documenter-dark">documenter-dark</option><option value="catppuccin-latte">catppuccin-latte</option><option value="catppuccin-frappe">catppuccin-frappe</option><option value="catppuccin-macchiato">catppuccin-macchiato</option><option value="catppuccin-mocha">catppuccin-mocha</option></select></div></p><hr/><p>This document was generated with <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> version 1.5.0 on <span class="colophon-date" title="Saturday 10 August 2024 17:51">Saturday 10 August 2024</span>. Using Julia version 1.10.4.</p></section><footer class="modal-card-foot"></footer></div></div></div></body></html>
+norm(position(results.system[1]) - position(results.system[2]))</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi">1.4726165557981967 a₀</code></pre></article><nav class="docs-footer"><a class="docs-footer-prevpage" href="../aluminium_dftk/">« Aluminium supercell using density-functional theory</a><a class="docs-footer-nextpage" href="../tial_lj/">TiAl structure optimisation »</a><div class="flexbox-break"></div><p class="footer-message">Powered by <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> and the <a href="https://julialang.org/">Julia Programming Language</a>.</p></nav></div><div class="modal" id="documenter-settings"><div class="modal-background"></div><div class="modal-card"><header class="modal-card-head"><p class="modal-card-title">Settings</p><button class="delete"></button></header><section class="modal-card-body"><p><label class="label">Theme</label><div class="select"><select id="documenter-themepicker"><option value="auto">Automatic (OS)</option><option value="documenter-light">documenter-light</option><option value="documenter-dark">documenter-dark</option><option value="catppuccin-latte">catppuccin-latte</option><option value="catppuccin-frappe">catppuccin-frappe</option><option value="catppuccin-macchiato">catppuccin-macchiato</option><option value="catppuccin-mocha">catppuccin-mocha</option></select></div></p><hr/><p>This document was generated with <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> version 1.5.0 on <span class="colophon-date" title="Saturday 10 August 2024 18:18">Saturday 10 August 2024</span>. Using Julia version 1.10.4.</p></section><footer class="modal-card-foot"></footer></div></div></div></body></html>
