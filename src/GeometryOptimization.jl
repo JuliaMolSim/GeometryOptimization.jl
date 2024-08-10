@@ -24,7 +24,7 @@ $(DOCSTRING)
 
 include("clamping_updating_positions.jl")
 include("optimization.jl")
-include("printing.jl")
+include("callbacks.jl")
 
 export minimize_energy!
 export GeoOptDefaultCallback
