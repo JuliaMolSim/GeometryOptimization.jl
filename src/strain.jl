@@ -18,7 +18,7 @@ function bbox_to_matrix(bbox)
 end
 
 function matrix_to_bbox(matrix)
-    eachcol(matrix)
+    collect.(eachcol(matrix))
 end
 
 @doc raw"""
