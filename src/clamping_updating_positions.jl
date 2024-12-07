@@ -31,7 +31,7 @@ updated to the ones provided (in the order in which they appear in the system).
 """
 function update_not_clamped_positions(system, positions::AbstractVector{<:Unitful.Length})
     mask = [!get(atom, :clamped, false) for atom in system]
-    new_positions = deepcopy(position(system))
+    new_positions = deepcopy(position(system, :))
     new_positions[mask] = reinterpret(reshape, SVector{3, eltype(positions)},
                                       reshape(positions, 3, :))
     update_positions(system, new_positions)
