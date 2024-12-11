@@ -11,12 +11,12 @@ to compute energies and forces at using the LDA density functional.
 
 ```@example other-solvers
 using DFTK
+using PseudoPotentialData
 
-model_kwargs = (; functionals=[:lda_x, :lda_c_pw])
+pseudopotentials = PseudoFamily("dojo.nc.sr.lda.v0_4_1.oncvpsp3.standard.upf")
+model_kwargs = (; functionals=LDA(), pseudopotentials)
 basis_kwargs = (; kgrid=(1, 1, 1), Ecut=20.0)
-scf_kwargs   = (; tol=1e-6)
-calc = DFTKCalculator(; model_kwargs, basis_kwargs, scf_kwargs)
-nothing
+calc = DFTKCalculator(; model_kwargs, basis_kwargs)
 ```
 
 and we build the hydrogen molecular system,
@@ -31,7 +31,6 @@ bounding_box = [[10.0, 0.0, 0.0], [0.0, 10.0, 0.0], [0.0, 0.0, 10.0]]u"Å"
 system = periodic_system([:H => [0, 0, 1.]u"bohr",
                           :H => [0, 0, 3.]u"bohr"],
                          bounding_box)
-system = attach_psp(system; H="hgh/lda/h-q1")
 nothing
 ```
 
