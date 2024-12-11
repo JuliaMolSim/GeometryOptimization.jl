@@ -3,28 +3,30 @@
 TODO Write some text motivating this example
 
 Setup system:
-```@example tial
-using AtomsBase
+```julia
+## TODO: Should run as @example once EmpiricalPotentials is compatible with AB 0.5
 using AtomsIO
 using EmpiricalPotentials
-using GeometryOptimization
-GO = GeometryOptimization
 
 system = load_system(joinpath(pkgdir(EmpiricalPotentials), "data/TiAl-1024.xyz"))
 nothing
 ```
 
 Setup calculator:
-```@example tial
+```julia
+## TODO: Should run as @example once EmpiricalPotentials is compatible with AB 0.5
 using Unitful
 using UnitfulAtomic
+
 calc = LennardJones(-1.0u"meV", 3.1u"Å", 13, 13, 6.0u"Å")
 nothing
 ```
 
 Minimise energy:
 ```julia
-## TODO: Should run as @example once EmpiricalPotentials is compatible
+## TODO: Should run as @example once EmpiricalPotentials is compatible with AB 0.5
+using GeometryOptimization
+GO = GeometryOptimization
 
 results = minimize_energy!(system, calc, GO.OptimCG(); maxiters=10, verbosity=1)
 results.energy
@@ -32,7 +34,7 @@ results.energy
 
 Final structure:
 ```julia
-## TODO: Should run as @example once EmpiricalPotentials is compatible
+## TODO: Should run as @example once EmpiricalPotentials is compatible with AB 0.5
 
 results.system
 ```

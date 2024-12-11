@@ -15,27 +15,22 @@ system = rattle!(bulk(:Al; cubic=true), 0.2u"Å")
 Next we create a calculator employing the
 [density-functional toolkit](https://dftk.org/)
 to compute energies and forces at using the LDA density functional.
+As pseudopotentials we use the [PseudoDojo](http://pseudo-dojo.org) as available
+in the [PseudoPotentialData](https://github.com/JuliaMolSim/PseudoPotentialData.jl/)
+package.
 ```@example dftk-aluminium
 using DFTK
+using PseudoPotentialData
 
-model_kwargs = (; functionals=[:lda_x, :lda_c_pw], temperature=1e-3)
+pseudopotentials = PseudoFamily("dojo.nc.sr.lda.v0_4_1.oncvpsp3.standard.upf")
+model_kwargs = (; functionals=LDA(), temperature=1e-3, pseudopotentials)
 basis_kwargs = (; kgrid=(3, 3, 3), Ecut=10.0)
 scf_kwargs   = (; mixing=KerkerMixing())
 calc = DFTKCalculator(; model_kwargs, basis_kwargs, scf_kwargs)
-nothing
-```
-
-We attach pseudopotentials to the aluminium system,
-i.e. we tell DFTK, that each aluminium atom should be modelled using
-a pseudopotential rather than the full Coulomb potential.
-
-```@example dftk-aluminium
-system = attach_psp(system; Al="hgh/lda/al-q3")
-nothing
 ```
 
 !!! info "Crude computational parameters"
-    Note, that these numerical parameters are chosen rather crudely in order
+    Note, that the numerical parameters above are chosen rather crudely in order
     to give a fast runtime on CI systems. For production calculations one would
     require larger computational parameters.
 
