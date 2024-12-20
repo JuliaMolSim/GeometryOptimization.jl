@@ -3,8 +3,7 @@
 TODO Write some text motivating this example
 
 Setup system:
-```julia
-## TODO: Should run as @example once EmpiricalPotentials is compatible with AB 0.5
+```@example tial
 using AtomsIO
 using EmpiricalPotentials
 
@@ -13,8 +12,7 @@ nothing
 ```
 
 Setup calculator:
-```julia
-## TODO: Should run as @example once EmpiricalPotentials is compatible with AB 0.5
+```@example tial
 using Unitful
 using UnitfulAtomic
 
@@ -23,8 +21,7 @@ nothing
 ```
 
 Minimise energy:
-```julia
-## TODO: Should run as @example once EmpiricalPotentials is compatible with AB 0.5
+```@example tial
 using GeometryOptimization
 GO = GeometryOptimization
 
@@ -33,8 +30,6 @@ results.energy
 ```
 
 Final structure:
-```julia
-## TODO: Should run as @example once EmpiricalPotentials is compatible with AB 0.5
-
+```@example tial
 results.system
 ```
