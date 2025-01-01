@@ -118,7 +118,6 @@ function _minimize_energy!(system, calculator, solver;
     system = convert_to_updatable(system)
 
     # TODO Think carefully whether this is the best interface and integration
-    #      Some tests for DofManager
     clamp = [iatom for (iatom, atom) in enumerate(system) if get(atom, :clamp, false)]
     dofmgr = DofManager(system; variablecell, clamp)
     geoopt_state = GeometryOptimizationState(system, calculator)
