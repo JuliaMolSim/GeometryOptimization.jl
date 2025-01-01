@@ -11,10 +11,12 @@ produces output as well.
 struct GeoOptDefaultCallback
     verbosity::Int
     always_show_header::Bool
+    show_virial::Bool
     prev_time::Ref{UInt64}
 end
-function GeoOptDefaultCallback(verbosity=1; always_show_header=verbosity > 1)
-    GeoOptDefaultCallback(verbosity, always_show_header, Ref{UInt64}(0))
+function GeoOptDefaultCallback(verbosity=1;
+                               show_virial=true, always_show_header=verbosity > 1)
+    GeoOptDefaultCallback(verbosity, always_show_header, show_virial, Ref{UInt64}(0))
 end
 
 format_log8(value) = (value < 0 ? " " : "+") * (@sprintf "%8.2f" log10(abs(value)))
@@ -40,11 +42,18 @@ function (cb::GeoOptDefaultCallback)(optim_state, geoopt_state)
         ("log10(ΔE)",   9, logΔE),
         ("max(Force)", 10, fstr),
         # TODO Maximal atomic displacement
-        # TODO Current virial, trace of lattice deformation matrix
-        ("Δtime",       6, tstr),
-        # TODO Would be nice to have some simple way to add in
-        #      a few calculator-specific things (e.g. total number of SCF iterations)
     ]
+    if cb.show_virial
+        maxvirial = austrip(maximum(abs, geoopt_state.virial))
+        pressure  = -austrip(tr(geoopt_state.virial)) / 3
+        vstr = iszero(maxvirial) ? "" : round(maxvirial, sigdigits=8)
+        pstr = iszero(pressure)  ? "" : round(pressure,  sigdigits=2)
+        push!(fields, ("max(Virial)", 11, vstr))
+        push!(fields, ("Pressure",     8, pstr))
+    end
+    push!(fields, ("Δtime", 6, tstr))
+    # TODO Would be nice to have some simple way to add in
+    #      a few calculator-specific things (e.g. total number of SCF iterations)
 
     if cb.always_show_header
         hlines = :all

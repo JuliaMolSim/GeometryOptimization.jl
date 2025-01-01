@@ -112,7 +112,8 @@ function _minimize_energy!(system, calculator, solver;
                            tol_virial=1e-6u"eV",    # TODO How reasonable ?
                            maxstep=0.8u"bohr",
                            verbosity::Integer=0,
-                           callback=GeoOptDefaultCallback(verbosity),
+                           callback=GeoOptDefaultCallback(verbosity;
+                                                          show_virial=variablecell),
                            kwargs...)
     solver = setup_solver(system, calculator, solver; maxstep)
     system = convert_to_updatable(system)
