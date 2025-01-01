@@ -36,7 +36,7 @@ calc = LennardJones(emins, rmins, 5.0u"Å")
 results = minimize_energy!(system, calc; verbosity=1)
 
 # Inspect the results
-optimised_system = results.system
+optsystem = results.system
 optimised_bondlength = norm(position(optsystem[1]) - position(optsystem[2]))
 nothing  # hide
 ```
