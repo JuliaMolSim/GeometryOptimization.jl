@@ -5,7 +5,7 @@ using PseudoPotentialData
 pseudopotentials = PseudoFamily(&quot;dojo.nc.sr.lda.v0_4_1.oncvpsp3.standard.upf&quot;)
 model_kwargs = (; functionals=LDA(), pseudopotentials)
 basis_kwargs = (; kgrid=(1, 1, 1), Ecut=20.0)
-calc = DFTKCalculator(; model_kwargs, basis_kwargs)</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi">DFTKCalculator(functionals=Xc(lda_x, lda_c_pw), pseudopotentials=PseudoFamily(&quot;dojo.nc.sr.lda.v0_4_1.oncvpsp3.standard.upf&quot;), Ecut=20.0, kgrid=(1, 1, 1))</code></pre><p>and we build the hydrogen molecular system, where we attach pseudopotential information for DFTK:</p><pre><code class="language-julia hljs">using AtomsBuilder
+calc = DFTKCalculator(; model_kwargs, basis_kwargs)</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi">DFTKCalculator(functionals=Xc(lda_x, lda_c_pw), pseudopotentials=PseudoFamily(&quot;dojo.nc.sr.lda.v0_4_1.standard.upf&quot;), Ecut=20.0, kgrid=(1, 1, 1))</code></pre><p>and we build the hydrogen molecular system, where we attach pseudopotential information for DFTK:</p><pre><code class="language-julia hljs">using AtomsBuilder
 using Unitful
 using UnitfulAtomic
 
@@ -24,77 +24,97 @@ nothing</code></pre><pre class="documenter-example-output"><code class="nohighli
 ┌─────┬─────────────────┬───────────┬────────────┬────────┐
 │   n │          Energy │ log10(ΔE) │ max(Force) │  Δtime │
 ├─────┼─────────────────┼───────────┼────────────┼────────┤
-│   0 │ -1.105713124409 │           │  0.0820222 │  23.0s │
+│   0 │ -1.105713124409 │           │  0.0820222 │  22.4s │
 Geometry optimisation convergence (in atomic units)
 ┌─────┬─────────────────┬───────────┬────────────┬────────┐
 │   n │          Energy │ log10(ΔE) │ max(Force) │  Δtime │
 ├─────┼─────────────────┼───────────┼────────────┼────────┤
-│   0 │ -1.105713128077 │           │  0.0820221 │  29.3s │
+│   0 │ -1.105713128077 │           │  0.0820221 │  28.3s │
 Geometry optimisation convergence (in atomic units)
 ┌─────┬─────────────────┬───────────┬────────────┬────────┐
 │   n │          Energy │ log10(ΔE) │ max(Force) │  Δtime │
 ├─────┼─────────────────┼───────────┼────────────┼────────┤
-│   0 │ -0.991710319629 │           │   0.708813 │  40.3s │
+│   0 │ -0.621163876849 │           │    2.39074 │  39.1s │
 Geometry optimisation convergence (in atomic units)
 ┌─────┬─────────────────┬───────────┬────────────┬────────┐
 │   n │          Energy │ log10(ΔE) │ max(Force) │  Δtime │
 ├─────┼─────────────────┼───────────┼────────────┼────────┤
-│   0 │ -1.115510150720 │           │  0.0753715 │  51.1s │
+│   0 │ -1.108497440290 │           │  0.0805858 │  49.1s │
 Geometry optimisation convergence (in atomic units)
 ┌─────┬─────────────────┬───────────┬────────────┬────────┐
 │   n │          Energy │ log10(ΔE) │ max(Force) │  Δtime │
 ├─────┼─────────────────┼───────────┼────────────┼────────┤
-│   0 │ -1.115510154090 │           │  0.0753715 │  56.9s │
+│   0 │ -1.108497443894 │           │  0.0805858 │  54.8s │
 Geometry optimisation convergence (in atomic units)
 ┌─────┬─────────────────┬───────────┬────────────┬────────┐
 │   n │          Energy │ log10(ΔE) │ max(Force) │  Δtime │
 ├─────┼─────────────────┼───────────┼────────────┼────────┤
-│   0 │ -0.867078803015 │           │    1.25184 │  69.3s │
+│   0 │ -0.566346116566 │           │    2.65786 │  65.5s │
 Geometry optimisation convergence (in atomic units)
 ┌─────┬─────────────────┬───────────┬────────────┬────────┐
 │   n │          Energy │ log10(ΔE) │ max(Force) │  Δtime │
 ├─────┼─────────────────┼───────────┼────────────┼────────┤
-│   0 │ -1.131278338713 │           │  0.0601197 │  80.6s │
+│   0 │ -1.110858013789 │           │  0.0791164 │  75.4s │
 Geometry optimisation convergence (in atomic units)
 ┌─────┬─────────────────┬───────────┬────────────┬────────┐
 │   n │          Energy │ log10(ΔE) │ max(Force) │  Δtime │
 ├─────┼─────────────────┼───────────┼────────────┼────────┤
-│   0 │ -1.131278341402 │           │  0.0601197 │  86.4s │
+│   0 │ -1.110858017327 │           │  0.0791164 │  81.1s │
 Geometry optimisation convergence (in atomic units)
 ┌─────┬─────────────────┬───────────┬────────────┬────────┐
 │   n │          Energy │ log10(ΔE) │ max(Force) │  Δtime │
 ├─────┼─────────────────┼───────────┼────────────┼────────┤
-│   0 │ -1.135194353916 │           │ 0.00808694 │  95.5s │
+│   0 │ +6.842662285501 │           │    90.6393 │  91.1s │
 Geometry optimisation convergence (in atomic units)
 ┌─────┬─────────────────┬───────────┬────────────┬────────┐
 │   n │          Energy │ log10(ΔE) │ max(Force) │  Δtime │
 ├─────┼─────────────────┼───────────┼────────────┼────────┤
-│   0 │ -1.135194354278 │           │ 0.00808692 │   101s │
+│   0 │ -0.952243965586 │           │   0.878782 │   101s │
 Geometry optimisation convergence (in atomic units)
 ┌─────┬─────────────────┬───────────┬────────────┬────────┐
 │   n │          Energy │ log10(ΔE) │ max(Force) │  Δtime │
 ├─────┼─────────────────┼───────────┼────────────┼────────┤
-│   0 │ -1.135287569738 │           │ 0.0006919… │   111s │
+│   0 │ -1.133913998052 │           │  0.0330721 │   113s │
 Geometry optimisation convergence (in atomic units)
 ┌─────┬─────────────────┬───────────┬────────────┬────────┐
 │   n │          Energy │ log10(ΔE) │ max(Force) │  Δtime │
 ├─────┼─────────────────┼───────────┼────────────┼────────┤
-│   0 │ -1.135287569769 │           │ 0.0006919… │   116s │
+│   0 │ -1.133913999531 │           │  0.0330721 │   119s │
 Geometry optimisation convergence (in atomic units)
 ┌─────┬─────────────────┬───────────┬────────────┬────────┐
 │   n │          Energy │ log10(ΔE) │ max(Force) │  Δtime │
 ├─────┼─────────────────┼───────────┼────────────┼────────┤
-│   0 │ -1.135288288514 │           │ 5.42489e-6 │   125s │
+│   0 │ -1.135273219155 │           │ 0.00319236 │   129s │
 Geometry optimisation convergence (in atomic units)
 ┌─────┬─────────────────┬───────────┬────────────┬────────┐
 │   n │          Energy │ log10(ΔE) │ max(Force) │  Δtime │
 ├─────┼─────────────────┼───────────┼────────────┼────────┤
-│   0 │ -1.135288288515 │           │ 5.40955e-6 │   130s │
+│   0 │ -1.135273219298 │           │ 0.00319234 │   134s │
 Geometry optimisation convergence (in atomic units)
 ┌─────┬─────────────────┬───────────┬────────────┬────────┐
 │   n │          Energy │ log10(ΔE) │ max(Force) │  Δtime │
 ├─────┼─────────────────┼───────────┼────────────┼────────┤
-│   0 │ -1.135288288559 │           │ 1.80699e-7 │   137s │
+│   0 │ -1.135288264127 │           │ 0.0001273… │   143s │
+Geometry optimisation convergence (in atomic units)
+┌─────┬─────────────────┬───────────┬────────────┬────────┐
+│   n │          Energy │ log10(ΔE) │ max(Force) │  Δtime │
+├─────┼─────────────────┼───────────┼────────────┼────────┤
+│   0 │ -1.135288264133 │           │ 0.0001273… │   149s │
+Geometry optimisation convergence (in atomic units)
+┌─────┬─────────────────┬───────────┬────────────┬────────┐
+│   n │          Energy │ log10(ΔE) │ max(Force) │  Δtime │
+├─────┼─────────────────┼───────────┼────────────┼────────┤
+│   0 │ -1.135288288518 │           │ 5.21151e-6 │   157s │
+Geometry optimisation convergence (in atomic units)
+┌─────┬─────────────────┬───────────┬────────────┬────────┐
+│   n │          Energy │ log10(ΔE) │ max(Force) │  Δtime │
+├─────┼─────────────────┼───────────┼────────────┼────────┤
+│   0 │ -1.135288288518 │           │ 5.19649e-6 │   163s │
+Geometry optimisation convergence (in atomic units)
+┌─────┬─────────────────┬───────────┬────────────┬────────┐
+│   n │          Energy │ log10(ΔE) │ max(Force) │  Δtime │
+├─────┼─────────────────┼───────────┼────────────┼────────┤
+│   0 │ -1.135288288559 │           │ 6.77148e-8 │   170s │
 <span class="sgr33">┌ Warning: </span></span>NLopt failed to converge: FORCED_STOP
 <span class="sgr33"><span class="sgr1">└ </span></span><span class="sgr90">@ OptimizationNLopt ~/.julia/packages/OptimizationNLopt/LsFvb/src/OptimizationNLopt.jl:209</span></code></pre><p>The final hydrogen bond length is:</p><pre><code class="language-julia hljs">using LinearAlgebra
-norm(position(results.system[1]) - position(results.system[2]))</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi">1.4524731713114938 a₀</code></pre></article><nav class="docs-footer"><a class="docs-footer-prevpage" href="../aluminium_dftk/">« Aluminium supercell using density-functional theory</a><a class="docs-footer-nextpage" href="../tial_lj/">TiAl structure optimisation »</a><div class="flexbox-break"></div><p class="footer-message">Powered by <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> and the <a href="https://julialang.org/">Julia Programming Language</a>.</p></nav></div><div class="modal" id="documenter-settings"><div class="modal-background"></div><div class="modal-card"><header class="modal-card-head"><p class="modal-card-title">Settings</p><button class="delete"></button></header><section class="modal-card-body"><p><label class="label">Theme</label><div class="select"><select id="documenter-themepicker"><option value="auto">Automatic (OS)</option><option value="documenter-light">documenter-light</option><option value="documenter-dark">documenter-dark</option><option value="catppuccin-latte">catppuccin-latte</option><option value="catppuccin-frappe">catppuccin-frappe</option><option value="catppuccin-macchiato">catppuccin-macchiato</option><option value="catppuccin-mocha">catppuccin-mocha</option></select></div></p><hr/><p>This document was generated with <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> version 1.8.0 on <span class="colophon-date" title="Thursday 12 December 2024 21:34">Thursday 12 December 2024</span>. Using Julia version 1.11.2.</p></section><footer class="modal-card-foot"></footer></div></div></div></body></html>
+norm(position(results.system[1]) - position(results.system[2]))</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi">1.452473512034036 a₀</code></pre></article><nav class="docs-footer"><a class="docs-footer-prevpage" href="../aluminium_dftk/">« Aluminium supercell using density-functional theory</a><a class="docs-footer-nextpage" href="../tial_lj/">TiAl structure optimisation »</a><div class="flexbox-break"></div><p class="footer-message">Powered by <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> and the <a href="https://julialang.org/">Julia Programming Language</a>.</p></nav></div><div class="modal" id="documenter-settings"><div class="modal-background"></div><div class="modal-card"><header class="modal-card-head"><p class="modal-card-title">Settings</p><button class="delete"></button></header><section class="modal-card-body"><p><label class="label">Theme</label><div class="select"><select id="documenter-themepicker"><option value="auto">Automatic (OS)</option><option value="documenter-light">documenter-light</option><option value="documenter-dark">documenter-dark</option><option value="catppuccin-latte">catppuccin-latte</option><option value="catppuccin-frappe">catppuccin-frappe</option><option value="catppuccin-macchiato">catppuccin-macchiato</option><option value="catppuccin-mocha">catppuccin-mocha</option></select></div></p><hr/><p>This document was generated with <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> version 1.8.0 on <span class="colophon-date" title="Wednesday 1 January 2025 16:16">Wednesday 1 January 2025</span>. Using Julia version 1.11.2.</p></section><footer class="modal-card-foot"></footer></div></div></div></body></html>
