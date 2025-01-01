@@ -3,7 +3,7 @@
 [![Stable](https://img.shields.io/badge/docs-stable-blue.svg)](https://JuliaMolSim.github.io/GeometryOptimization.jl/stable/)
 [![Dev](https://img.shields.io/badge/docs-dev-blue.svg)](https://JuliaMolSim.github.io/GeometryOptimization.jl/dev/)
 [![Build Status](https://github.com/JuliaMolSim/GeometryOptimization.jl/actions/workflows/CI.yml/badge.svg?branch=main)](https://github.com/JuliaMolSim/GeometryOptimization.jl/actions/workflows/CI.yml?query=branch%3Amain)
-[![Coverage](https://codecov.io/gh/JuliaMolSim/GeometryOptimization.jl/branch/master/graph/badge.svg)](https://codecov.io/gh/JuliaMolSim/GeometryOptimization.jl)
+[![Coverage](https://codecov.io/gh/JuliaMolSim/GeometryOptimization.jl/branch/main/graph/badge.svg)](https://codecov.io/gh/JuliaMolSim/GeometryOptimization.jl)
 
 A package for optimising the structural parameters of an atomistic system,
 i.e. the step usually referred to as
