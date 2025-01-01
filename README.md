@@ -3,7 +3,7 @@
 [![Stable](https://img.shields.io/badge/docs-stable-blue.svg)](https://JuliaMolSim.github.io/GeometryOptimization.jl/stable/)
 [![Dev](https://img.shields.io/badge/docs-dev-blue.svg)](https://JuliaMolSim.github.io/GeometryOptimization.jl/dev/)
 [![Build Status](https://github.com/JuliaMolSim/GeometryOptimization.jl/actions/workflows/CI.yml/badge.svg?branch=main)](https://github.com/JuliaMolSim/GeometryOptimization.jl/actions/workflows/CI.yml?query=branch%3Amain)
-[![Coverage](https://codecov.io/gh/JuliaMolSim/GeometryOptimization.jl/branch/master/graph/badge.svg)](https://codecov.io/gh/JuliaMolSim/GeometryOptimization.jl)
+[![Coverage](https://codecov.io/gh/JuliaMolSim/GeometryOptimization.jl/branch/main/graph/badge.svg)](https://codecov.io/gh/JuliaMolSim/GeometryOptimization.jl)
 
 A package for optimising the structural parameters of an atomistic system,
 i.e. the step usually referred to as
@@ -29,22 +29,24 @@ molecule using a simple Lennard Jones potential:
 using AtomsBase
 using EmpiricalPotentials
 using GeometryOptimization
+using LinearAlgebra
 using Unitful
 using UnitfulAtomic
 
 # Setup system and calculator
-system = isolated_system([:H => [0, 0, 0.0]u"bohr",
-                          :H => [0, 0, 1.9]u"bohr"])
-
+cell_vectors = ([10.0, 0.0, 0.0]u"Å", [0.0, 10.0, 0.0]u"Å", [0.0, 0.0, 10.0]u"Å")
+system = periodic_system([:H => [0, 0, 0.0]u"bohr",
+                          :H => [0, 0, 1.9]u"bohr"],
+                         cell_vectors)
 zH = 1
 emins = Dict((zH, zH) => -1.17u"hartree", )
-rmins = Dict((zH, zH) => 0.743u"Å", )
+rmins = Dict((zH, zH) =>  0.743u"Å",      )
 calc = LennardJones(emins, rmins, 5.0u"Å")
 
 # Run the geometry optimisation
 results = minimize_energy!(system, calc)
 
 # Inspect the results
-optimised  = results.system
-bondlength = norm(position(optimised[1]) - position(optimised[2]))
+optsystem = results.system
+optimised_bondlength = norm(position(optsystem[1]) - position(optsystem[2]))
 ```

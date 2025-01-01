@@ -38,9 +38,10 @@ julia = "1.10"
 [extras]
 ASEconvert = "3da9722f-58c2-4165-81be-b4d7253e8fd2"
 AtomsBuilder = "f5cc8831-eeb7-4288-8d9f-d6c1ddb77004"
+EmpiricalPotentials = "38527215-9240-4c91-a638-d4250620c9e2"
 PythonCall = "6099a3de-0909-46bc-b1f4-468b9a2dfc0d"
 Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
 TestItemRunner = "f8b46487-2199-4994-9208-9a1283c18c0a"
 
 [targets]
-test = ["ASEconvert", "AtomsBuilder", "PythonCall", "Test", "TestItemRunner"]
+test = ["ASEconvert", "AtomsBuilder", "EmpiricalPotentials", "PythonCall", "Test", "TestItemRunner"]

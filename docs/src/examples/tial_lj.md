@@ -8,7 +8,7 @@ using AtomsIO
 using EmpiricalPotentials
 
 system = load_system(joinpath(pkgdir(EmpiricalPotentials), "data/TiAl-1024.xyz"))
-nothing
+nothing  # hide
 ```
 
 Setup calculator:
@@ -28,7 +28,7 @@ rmins = Dict( (zAl, zAl) => 2.7u"Å",
               (zAl, zTi) => 3.2u"Å",
               (zTi, zTi) => 3.0u"Å" )
 calc = LennardJones(emins, rmins, rcut)
-nothing
+nothing  # hide
 ```
 
 Minimise energy:
@@ -37,7 +37,7 @@ using GeometryOptimization
 GO = GeometryOptimization
 
 results = minimize_energy!(system, calc, GO.OptimCG(); maxiters=10, verbosity=1)
-results.energy
+nothing  # hide
 ```
 
 Final structure:

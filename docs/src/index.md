@@ -14,28 +14,31 @@ The source code can be found [on github](https://github.com/JuliaMolSim/Geometry
 We consider the optimisation of the bondlength of a hydrogen
 molecule using a simple Lennard Jones potential:
 
-```julia
-## TODO: Should run as @example once EmpiricalPotentials is compatible
+```@example
 using AtomsBase
 using EmpiricalPotentials
 using GeometryOptimization
+using LinearAlgebra
 using Unitful
 using UnitfulAtomic
 
 # Setup system and calculator
-system = isolated_system([:H => [0, 0, 0.0]u"bohr",
-                          :H => [0, 0, 1.9]u"bohr"])
+cell_vectors = ([10.0, 0.0, 0.0]u"Å", [0.0, 10.0, 0.0]u"Å", [0.0, 0.0, 10.0]u"Å")
+system = periodic_system([:H => [0, 0, 0.0]u"bohr",
+                          :H => [0, 0, 1.9]u"bohr"],
+                         cell_vectors)
 zH = 1
 emins = Dict((zH, zH) => -1.17u"hartree", )
-rmins = Dict((zH, zH) => 0.743u"Å", )
+rmins = Dict((zH, zH) =>  0.743u"Å",      )
 calc = LennardJones(emins, rmins, 5.0u"Å")
 
 # Run the geometry optimisation (using verbosity=1 to print the progress)
 results = minimize_energy!(system, calc; verbosity=1)
 
 # Inspect the results
-optimised_system = results.system
+optsystem = results.system
 optimised_bondlength = norm(position(optsystem[1]) - position(optsystem[2]))
+nothing  # hide
 ```
 
 The idea is that
