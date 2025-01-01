@@ -33,12 +33,13 @@ using Unitful
 using UnitfulAtomic
 
 # Setup system and calculator
-system = isolated_system([:H => [0, 0, 0.0]u"bohr",
-                          :H => [0, 0, 1.9]u"bohr"])
-
+cell_vectors = ([10.0, 0.0, 0.0]u"Å", [0.0, 10.0, 0.0]u"Å", [0.0, 0.0, 10.0]u"Å")
+system = periodic_system([:H => [0, 0, 0.0]u"bohr",
+                          :H => [0, 0, 1.9]u"bohr"],
+                         cell_vectors)
 zH = 1
 emins = Dict((zH, zH) => -1.17u"hartree", )
-rmins = Dict((zH, zH) => 0.743u"Å", )
+rmins = Dict((zH, zH) =>  0.743u"Å",      )
 calc = LennardJones(emins, rmins, 5.0u"Å")
 
 # Run the geometry optimisation
