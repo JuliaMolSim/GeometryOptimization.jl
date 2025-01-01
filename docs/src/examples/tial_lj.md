@@ -16,7 +16,18 @@ Setup calculator:
 using Unitful
 using UnitfulAtomic
 
-calc = LennardJones(-1.0u"meV", 3.1u"Å", 13, 13, 6.0u"Å")
+# Note: These are completely made up parameters,
+#       please do not use in production
+rcut = 5.0u"Å"
+zAl = atomic_number(ChemicalSpecies(:Al))
+zTi = atomic_number(ChemicalSpecies(:Ti))
+emins = Dict( (zAl, zAl) => -1.0u"eV",
+              (zAl, zTi) => -1.234u"eV",
+              (zTi, zTi) => -0.345u"eV" )
+rmins = Dict( (zAl, zAl) => 2.7u"Å",
+              (zAl, zTi) => 3.2u"Å",
+              (zTi, zTi) => 3.0u"Å" )
+calc = LennardJones(emins, rmins, rcut)
 nothing
 ```
 

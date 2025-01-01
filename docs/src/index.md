@@ -25,7 +25,10 @@ using UnitfulAtomic
 # Setup system and calculator
 system = isolated_system([:H => [0, 0, 0.0]u"bohr",
                           :H => [0, 0, 1.9]u"bohr"])
-calc = LennardJones(-1.17u"hartree", 0.743u"angstrom", 1, 1, 0.6u"nm")
+zH = 1
+emins = Dict((zH, zH) => -1.17u"hartree", )
+rmins = Dict((zH, zH) => 0.743u"Å", )
+calc = LennardJones(emins, rmins, 5.0u"Å")
 
 # Run the geometry optimisation (using verbosity=1 to print the progress)
 results = minimize_energy!(system, calc; verbosity=1)
