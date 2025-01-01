@@ -29,6 +29,7 @@ molecule using a simple Lennard Jones potential:
 using AtomsBase
 using EmpiricalPotentials
 using GeometryOptimization
+using LinearAlgebra
 using Unitful
 using UnitfulAtomic
 
