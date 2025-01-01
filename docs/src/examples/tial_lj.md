@@ -37,7 +37,7 @@ using GeometryOptimization
 GO = GeometryOptimization
 
 results = minimize_energy!(system, calc, GO.OptimCG(); maxiters=10, verbosity=1)
-results.energy
+nothing  # hide
 ```
 
 Final structure:
