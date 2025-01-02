@@ -44,7 +44,7 @@ function (cb::GeoOptDefaultCallback)(optim_state, geoopt_state)
         ("n",           3, optim_state.iter),
         ("Energy",     15, Estr),
         ("log10(ΔE)",   9, logΔE),
-        ("max(Force)", 10, fstr),
+        ("max(Force)", 11, fstr),
         # TODO Maximal atomic displacement
     ]
     if cb.show_virial
