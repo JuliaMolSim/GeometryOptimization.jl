@@ -25,6 +25,13 @@ using EmpiricalPotentials
 using GeometryOptimization
 
 sw = StillingerWeber()
-silicon = minimize_energy!(silicon_posrattle, sw; variablecell=true).system
+silicon = minimize_energy!(silicon_posrattle, sw;
+                           variablecell=true, verbosity=1, tol_virial=1e-4u"hartree").system
+nothing  # hide
+```
 
+Final structure:
+
+```@example silicon
+silicon
 ```
