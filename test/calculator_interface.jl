@@ -20,10 +20,23 @@
     AC.@generate_interface function AC.forces(system, calc::DummyCalc; kwargs...)
         AC.zero_forces(system, calc)
     end
-
+    AC.@generate_interface function AC.virial(system, calc::DummyCalc; kwargs...)
+        AC.zero_virial(system, calc)
+    end
     system = GO.clamp_atoms(bulk(:Al; cubic=true), [1])
-    for solver in (GO.Autoselect(), GO.OptimCG(), GO.OptimLBFGS(), GO.OptimSD())
-        results = minimize_energy!(system, DummyCalc(), solver; verbosity=1)
-        @test norm(position(results.system[1]) - position(system[1])) < 1e-5u"bohr"
+
+    @testset "minimize_energy! with fixed cell" begin
+        for solver in (GO.Autoselect(), GO.OptimCG(), GO.OptimLBFGS(), GO.OptimSD())
+            results = minimize_energy!(system, DummyCalc(), solver)
+            @test norm(position(results.system[1]) - position(system[1])) < 1e-5u"bohr"
+        end
+    end
+
+    @testset "minimize_energy! with variable cell" begin
+        for solver in (GO.Autoselect(), GO.OptimCG(), GO.OptimLBFGS(), GO.OptimSD())
+            results = minimize_energy!(system, DummyCalc(), solver;
+                                       verbosity=1, variablecell=true)
+            @test norm(position(results.system[1]) - position(system[1])) < 1e-5u"bohr"
+        end
     end
 end
