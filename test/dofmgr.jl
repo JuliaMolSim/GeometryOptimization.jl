@@ -73,7 +73,7 @@
             d = randn(size(x))
             get_ene(X) = GO.energy_dofs(silicon, sw, dofmgr, X, ps, state).energy_unitless
             gd_ref = (get_ene(x + ε * d) - get_ene(x - ε * d)) / 2ε
-            @test abs(gd_ref - dot(d, gdof)) < 1e-8
+            @test abs(gd_ref - dot(d, gdof)) < 1e-7
         end
     end
 

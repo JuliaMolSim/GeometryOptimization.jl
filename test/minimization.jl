@@ -11,6 +11,10 @@
     GO = GeometryOptimization
     calculator = StillingerWeber()
 
+    # Equilibrate a perturbed Si crystal with frozen cell
+    # the positions should move back into crystalline,
+    # hence up to a shift resutls.system must be the same as silicon_final
+
     # Get a minimised reference
     silicon_final = minimize_energy!(bulk(:Si; cubic=true), calculator;
                                      tol_forces=1e-10, maxiters=200).system
