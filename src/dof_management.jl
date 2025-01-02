@@ -8,7 +8,7 @@ DofManager(sys; variablecell = false, r0 =..., free=..., clamp=..., mask=...)
 * `variablecell` determines whether the cell is fixed or allowed to change
   during optimization
 * `r0` is a reference length-scale, default set to one (in the unit of sys),
-   this is used to non-dimensionalize the degrees of freedom. 
+   this is used to non-dimensionalize the degrees of freedom.
 
 In addition set at most one of the kwargs:
 * no kwarg: all atoms are free
@@ -21,23 +21,25 @@ In addition set at most one of the kwargs:
 On call to the constructor, `DofManager` stores positions and cell
 `X0, C0`, dofs are understood *relative* to this initial configuration.
 `get_dofs(sys, dm::DofManager)` returns a vector that represents the
-non-dimensional displacement and a deformation matrix `(U, F)`. The new configuration extracted from a dof vector 
-is understood as 
-* The new cell: `C = F * C0` 
+non-dimensional displacement and a deformation matrix `(U, F)`. The new configuration extracted from a dof vector
+is understood as
+* The new cell: `C = F * C0`
 * The new positions: `𝐫[i] = F * (X0[i] + U[i] * r0)`
 One aspect of this definition is that clamped atom positions still change via
-the deformation `F`. This is natural in the context of optimizing the 
-cell shape. 
+the deformation `F`. This is natural in the context of optimizing the
+cell shape.
 """
 mutable struct DofManager{D,T}
-   variablecell::Bool
-   ifree::Vector{Int}   # extract the free position dofs
-   r0::T
-   X0::Vector{SVector{D,T}}       # reference positions
-   C0::NTuple{D, SVector{D, T}}   # reference cell
+    variablecell::Bool
+    ifree::Vector{Int}   # extract the free position dofs
+    r0::T
+    X0::Vector{SVector{D,T}}       # reference positions
+    C0::NTuple{D, SVector{D, T}}   # reference cell
 end
+# TODO Why is this  mutable ?
 
-# NOTES: 
+
+# NOTES:
 #  - length units are implicitly given by the units in X0, C0, r0.
 #    there should be no explicit length-unit stripping but this should be
 #    implicitly through the reference length-scale r0
@@ -101,7 +103,7 @@ end
 length_unit(dm::DofManager)      = unit(dm.r0)
 length_unit(sys::AbstractSystem) = unit(position(sys, 1)[1])
 function check_length_units(sys, dm::DofManager)
-    if length_unit(dm) != length_unit(sys) 
+    if length_unit(dm) != length_unit(sys)
         error("System `sys` and DofManager have inconsistent units.")
     end
     if length(sys) != length(dm.X0)
@@ -112,14 +114,14 @@ end
 variablecell(dofmgr::DofManager) = dofmgr.variablecell
 fixedcell(dofmgr::DofManager)    = !variablecell(dofmgr)
 
-# there is a type-instability here!! 
+# there is a type-instability here!!
 _posdofs(x, dofmgr::DofManager) = dofmgr.variablecell ? (@view x[1:end-9]) : x
 
 function _pos2dofs(U::AbstractVector{SVector{3, T}}, dofmgr) where {T}
     @view(reinterpret(T, U)[dofmgr.ifree])
 end
 
-function _dofs2pos(x::AbstractVector{T}, dofmgr)  where {T} 
+function _dofs2pos(x::AbstractVector{T}, dofmgr)  where {T}
    u = zeros(T, 3 * length(dofmgr.X0))
    u[dofmgr.ifree] .= _posdofs(x, dofmgr)
    return reinterpret(SVector{3, T}, u)
@@ -147,7 +149,7 @@ function get_dofs(sys::AbstractSystem, dofmgr::DofManager)
         #   (otherwise we would have problems inverting)
         bb = cell_vectors(sys)
         F = ustrip.(hcat(bb...)) / ustrip.(hcat(dofmgr.C0...))
-        # Xi = F * (X0i + Ui * r0)  =>  Ui = (F \ Xi - X0i) / r0 
+        # Xi = F * (X0i + Ui * r0)  =>  Ui = (F \ Xi - X0i) / r0
         U = [ (F \ X[i] - dofmgr.X0[i]) / dofmgr.r0 for i = 1:length(X) ]
         return [ _pos2dofs(U, dofmgr);
                  _defm2dofs(F, dofmgr) ]
@@ -176,40 +178,37 @@ end
 
 
 # ========================================================================
-#   Compute the gradient with respect to dofs 
-#   from forces and virials 
+#   Compute the gradient with respect to dofs
+#   from forces and virials
 
 function energy_dofs(system, calculator, dofmgr, x::AbstractVector, ps, state)
     res = calculate(Energy(), set_dofs(system, dofmgr, x), calculator, ps, state)
-    (; energy_unitless=ustrip(res.energy), res...)
+    (; energy_unitless=austrip(res), state=nothing)
 end
 
 function gradient_dofs(system, calculator, dofmgr, x::AbstractVector{T}, ps, state) where {T}
     # Compute and transform forces and virial into a gradient w.r.t. x
+    res = energy_forces_virial(set_dofs(system, dofmgr, x), calculator)
+
     if fixedcell(dofmgr)
         # fixed cell version
         # fi = - ∇_𝐫i E  [eV/A]
         # 𝐫i = X0[i] + r0 * U[i]
         # g_iα = - fiα * r0  [eV] => same unit as E so can strip
 
-        res = calculate(Forces(), set_dofs(system, dofmgr, x), calculator, ps, state)
-        g_pos = [ ustrip( - dofmgr.r0 * f ) for f in res.forces ]
+        g_pos = [ austrip.( - dofmgr.r0 * f ) for f in res.forces ]
         grad = collect(_pos2dofs(g_pos, dofmgr))::Vector{T}
     else
         # variable cell version
         # fi = - ∇_𝐫i E  [eV/A]     𝐫i = F * (X0[i] + r0 * U[i])
         # ∇_𝐮i' = - fi' * ∂𝐫i/∂𝐮i = - fi' * (r0 * F)   =>   ∇_𝐮i = - F' * r0 * fi
         # ∂F E |_{F = I} = - virial  => ∂F E = - virial / F'
-
-        res = calculate((Forces(), Virial()), set_dofs(system, dofmgr, x),
-                        calculator, ps, state)
-
         F = _dofs2defm(x, dofmgr)
-        g_pos = [ - ustrip(dofmgr.r0 * F' * f) for f in res.forces ]
+        g_pos = [ - austrip.(dofmgr.r0 * F' * f) for f in res.forces ]
 
         grad = [ _pos2dofs(g_pos, dofmgr);
-                 ( - ustrip.(res.virial) / F' )[:] ]::Vector{T}
+                 ( - austrip.(res.virial) / F' )[:] ]::Vector{T}
     end
-
-    (; grad, res...)
+    (; grad, state=nothing, res.forces, res.virial)
 end
+
