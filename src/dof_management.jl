@@ -194,7 +194,7 @@ function gradient_dofs(system, calculator, dofmgr, x::AbstractVector{T}, ps, sta
         # 𝐫i = X0[i] + r0 * U[i]
         # g_iα = - fiα * r0  [eV] => same unit as E so can strip
 
-        res   = calculate(Forces(), set_dofs(system, dofmgr, x), calculator, ps, state)
+        res   = AC.calculate(Forces(), set_dofs(system, dofmgr, x), calculator, ps, state)
         g_pos = [ austrip.( - dofmgr.r0 * f ) for f in res.forces ]
         grad  = collect(_pos2dofs(g_pos, dofmgr))::Vector{T}
     else
@@ -203,7 +203,7 @@ function gradient_dofs(system, calculator, dofmgr, x::AbstractVector{T}, ps, sta
         # ∇_𝐮i' = - fi' * ∂𝐫i/∂𝐮i = - fi' * (r0 * F)   =>   ∇_𝐮i = - F' * r0 * fi
         # ∂F E |_{F = I} = - virial  => ∂F E = - virial / F'
 
-        res = calculate((Forces(), Virial()), set_dofs(system, dofmgr, x), calculator, ps, state)
+        res = AC.calculate((Forces(), Virial()), set_dofs(system, dofmgr, x), calculator, ps, state)
         F = _dofs2defm(x, dofmgr)
         g_pos = [ - austrip.(dofmgr.r0 * F' * f) for f in res.forces ]
 
