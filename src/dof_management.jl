@@ -183,7 +183,7 @@ end
 
 function energy_dofs(system, calculator, dofmgr, x::AbstractVector, ps, state)
     res = calculate(Energy(), set_dofs(system, dofmgr, x), calculator, ps, state)
-    (; energy_unitless=austrip(res), state=nothing)
+    (; energy_unitless=austrip(res.energy), state=nothing)
 end
 
 function gradient_dofs(system, calculator, dofmgr, x::AbstractVector{T}, ps, state) where {T}
