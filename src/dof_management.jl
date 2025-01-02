@@ -52,15 +52,15 @@ end
 
 function DofManager(sys::AbstractSystem{D};
                     variablecell=false,
-                    r0=_auto_r0(sys),
+                    r0::T=_auto_r0(sys),
                     free=nothing,
                     clamp=nothing,
-                    mask=nothing) where {D}
+                    mask=nothing) where {D, T}
     if D != 3
         error("this package assumes D = 3; please file an issue if you neeed a different use case.")
     end
-    X0 = copy(position(sys, :))
-    C0 = cell_vectors(sys)
+    X0 = [T.(pos) for pos in position(sys, :)]
+    C0 = SVector{3,T}.(cell_vectors(sys))
     ifree = analyze_mask(sys, free, clamp, mask)
     DofManager(variablecell, ifree, r0, X0, C0)
 end

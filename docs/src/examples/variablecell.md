@@ -21,8 +21,8 @@ silicon_rattle = AbstractSystem(silicon_posrattle; cell_vectors=new_cell_vectors
 and optimise with `variablecell=true`
 
 ```@example silicon
-using AtomsCalculators
 using EmpiricalPotentials
+using GeometryOptimization
 
 sw = StillingerWeber()
 silicon = minimize_energy!(silicon_posrattle, sw; variablecell=true).system
