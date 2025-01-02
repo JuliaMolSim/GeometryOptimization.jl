@@ -57,7 +57,7 @@ end
     energy_init  = AC.potential_energy(silicon_init,  calculator)
     @assert energy_final ≤ energy_init
 
-    for solver in (GO.Autoselect(), GO.OptimCG(), GO.OptimLBFGS())
+    for solver in (GO.Autoselect(), GO.OptimCG(), GO.OptimLBFGS(), GO.OptimSD())
         # TODO OptimSD is *really slow* here
         results = minimize_energy!(silicon_init, calculator, solver;
                                    tol_forces=1e-8, maxiters=500, verbosity=1)

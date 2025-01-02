@@ -34,8 +34,7 @@
 
     @testset "minimize_energy! with variable cell" begin
         for solver in (GO.Autoselect(), GO.OptimCG(), GO.OptimLBFGS(), GO.OptimSD())
-            results = minimize_energy!(system, DummyCalc(), solver;
-                                       verbosity=1, variablecell=true)
+            results = minimize_energy!(system, DummyCalc(), solver; variablecell=true)
             @test norm(position(results.system[1]) - position(system[1])) < 1e-5u"bohr"
         end
     end
