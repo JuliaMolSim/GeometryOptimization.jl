@@ -182,33 +182,33 @@ end
 #   from forces and virials
 
 function energy_dofs(system, calculator, dofmgr, x::AbstractVector, ps, state)
-    res = calculate(Energy(), set_dofs(system, dofmgr, x), calculator, ps, state)
-    (; energy_unitless=austrip(res.energy), state=nothing)
+    res = AC.calculate(Energy(), set_dofs(system, dofmgr, x), calculator, ps, state)
+    (; energy_unitless=austrip(res.energy), res...)
 end
 
 function gradient_dofs(system, calculator, dofmgr, x::AbstractVector{T}, ps, state) where {T}
     # Compute and transform forces and virial into a gradient w.r.t. x
-    res = energy_forces_virial(set_dofs(system, dofmgr, x), calculator)
-
     if fixedcell(dofmgr)
         # fixed cell version
         # fi = - ∇_𝐫i E  [eV/A]
         # 𝐫i = X0[i] + r0 * U[i]
         # g_iα = - fiα * r0  [eV] => same unit as E so can strip
 
+        res   = calculate(Forces(), set_dofs(system, dofmgr, x), calculator, ps, state)
         g_pos = [ austrip.( - dofmgr.r0 * f ) for f in res.forces ]
-        grad = collect(_pos2dofs(g_pos, dofmgr))::Vector{T}
+        grad  = collect(_pos2dofs(g_pos, dofmgr))::Vector{T}
     else
         # variable cell version
         # fi = - ∇_𝐫i E  [eV/A]     𝐫i = F * (X0[i] + r0 * U[i])
         # ∇_𝐮i' = - fi' * ∂𝐫i/∂𝐮i = - fi' * (r0 * F)   =>   ∇_𝐮i = - F' * r0 * fi
         # ∂F E |_{F = I} = - virial  => ∂F E = - virial / F'
+
+        res = calculate((Forces(), Virial()), set_dofs(system, dofmgr, x), calculator, ps, state)
         F = _dofs2defm(x, dofmgr)
         g_pos = [ - austrip.(dofmgr.r0 * F' * f) for f in res.forces ]
 
-        grad = [ _pos2dofs(g_pos, dofmgr);
-                 ( - austrip.(res.virial) / F' )[:] ]::Vector{T}
+        grad  = [ _pos2dofs(g_pos, dofmgr);
+                  ( - austrip.(res.virial) / F' )[:] ]::Vector{T}
     end
-    (; grad, state=nothing, res.forces, res.virial)
+    (; grad, res...)
 end
-

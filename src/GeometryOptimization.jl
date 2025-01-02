@@ -14,7 +14,7 @@ using OptimizationOptimJL
 using LineSearches
 
 # Useful shortcuts
-using AtomsCalculators: Energy, Forces, Virial, calculate
+using AtomsCalculators: Energy, Forces, Virial
 AC = AtomsCalculators
 
 @template METHODS =
