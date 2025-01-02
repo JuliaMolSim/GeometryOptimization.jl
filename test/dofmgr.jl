@@ -42,7 +42,7 @@
 
         u = 0.01 * randn(3length(silicon))
         F = I + 0.01randn(3, 3)
-        newsys = GO.set_dofs!(silicon, dofmgr, [u; vec(F)])
+        newsys = GO.set_dofs(silicon, dofmgr, [u; vec(F)])
 
         X = Ref(F) .* ( dofmgr.X0 + reinterpret(SVector{3, Float64}, u) * dofmgr.r0 )
         X_diff  = position(newsys, :)   -  X

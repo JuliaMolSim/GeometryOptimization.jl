@@ -20,8 +20,9 @@
     @assert energy_final ≤ energy_init
 
     for solver in (GO.Autoselect(), GO.OptimCG(), GO.OptimLBFGS(), GO.OptimSD())
+        verbosity = solver == GO.Autoselect() ? 1 : 0
         results = minimize_energy!(silicon_init, calculator, solver;
-                                   tol_forces=1e-8, maxiters=500, verbosity=1)
+                                   tol_forces=1e-8, maxiters=500, verbosity)
         @test results.energy ≤ energy_init
         @test austrip(abs(results.energy - energy_final)) < 1e-12
 
@@ -63,13 +64,10 @@ end
     energy_init  = AC.potential_energy(silicon_init,  calculator)
     @assert energy_final ≤ energy_init
 
-    println()
-    println()
-    println()
-
     for solver in (GO.Autoselect(), GO.OptimCG(), GO.OptimLBFGS())
+        verbosity = solver == GO.Autoselect() ? 1 : 0
         results = minimize_energy!(silicon_init, calculator, solver;
-                                   variablecell=true, maxiters=500, verbosity=1,
+                                   variablecell=true, maxiters=500, verbosity,
                                    tol_virial=1e-7u"hartree", tol_forces=1e-8)
         @test maximum(x -> austrip(maximum(abs, x)),
                       AC.virial(results.system, calculator)) < 1e-6
