@@ -31,7 +31,11 @@ function (cb::GeoOptDefaultCallback)(optim_state, geoopt_state)
     cb.prev_time[] = runtime_ns
 
     Estr  = (@sprintf "%+15.12f" round(austrip(geoopt_state.energy), sigdigits=13))[1:15]
-    logΔE = optim_state.iter < 1 ? "" : format_log8(austrip(geoopt_state.energy_change))
+    if iszero(geoopt_state.energy_change) && optim_state.iter < 1
+        logΔE = ""
+    else
+        logΔE = format_log8(austrip(geoopt_state.energy_change))
+    end
 
     maxforce = austrip(maximum(norm, geoopt_state.forces))
     fstr = iszero(maxforce) ? "" : round(maxforce, sigdigits=8)

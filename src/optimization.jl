@@ -134,9 +134,18 @@ function _minimize_energy!(system, calculator, solver;
         halt = callback(optim_state, geoopt_state)
         halt && return true
 
-        energy_converged = optim_state.objective - Eold < austrip(tol_energy)
-        force_converged  = austrip(maximum(norm, geoopt_state.forces)) < austrip(tol_forces)
-        virial_converged = austrip(maximum(abs,  geoopt_state.virial)) < austrip(tol_virial)
+        energy_converged = abs(optim_state.objective - Eold) < austrip(tol_energy)
+        if optim_state.iter < 1
+            force_converged = false
+        else
+            force_converged  = austrip(maximum(norm, geoopt_state.forces)) < austrip(tol_forces)
+        end
+
+        if variablecell  # Also check virial to determine convergence
+            virial_converged = maximum(abs, geoopt_state.virial) < tol_virial
+        else
+            virial_converged = true
+        end
 
         Eold = optim_state.objective
         converged = energy_converged && force_converged && virial_converged
