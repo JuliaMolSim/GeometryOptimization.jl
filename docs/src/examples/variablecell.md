@@ -9,6 +9,7 @@ and than the lattice geometry:
 ```@example silicon
 using AtomsBase
 using AtomsBuilder
+using LinearAlgebra
 using Unitful
 using UnitfulAtomic
 
