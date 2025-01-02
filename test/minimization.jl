@@ -80,5 +80,7 @@ end
 
         @test results.energy ≤ energy_init
         @test austrip(abs(results.energy - energy_final)) < 1e-12
+
+        # TODO Check positions and cell agree ok-ish
     end
 end
