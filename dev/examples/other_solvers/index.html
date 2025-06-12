@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en"><head><meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><title>Using a different Optimization.jl compatible solver · GeometryOptimization.jl</title><meta name="title" content="Using a different Optimization.jl compatible solver · GeometryOptimization.jl"/><meta property="og:title" content="Using a different Optimization.jl compatible solver · GeometryOptimization.jl"/><meta property="twitter:title" content="Using a different Optimization.jl compatible solver · GeometryOptimization.jl"/><meta name="description" content="Documentation for GeometryOptimization.jl."/><meta property="og:description" content="Documentation for GeometryOptimization.jl."/><meta property="twitter:description" content="Documentation for GeometryOptimization.jl."/><meta property="og:url" content="https://JuliaMolSim.github.io/GeometryOptimization.jl/examples/other_solvers/"/><meta property="twitter:url" content="https://JuliaMolSim.github.io/GeometryOptimization.jl/examples/other_solvers/"/><link rel="canonical" href="https://JuliaMolSim.github.io/GeometryOptimization.jl/examples/other_solvers/"/><script data-outdated-warner src="../../assets/warner.js"></script><link href="https://cdnjs.cloudflare.com/ajax/libs/lato-font/3.0.0/css/lato-font.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/juliamono/0.050/juliamono.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/fontawesome.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/solid.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/brands.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.8/katex.min.css" rel="stylesheet" type="text/css"/><script>documenterBaseURL="../.."</script><script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.6/require.min.js" data-main="../../assets/documenter.js"></script><script src="../../search_index.js"></script><script src="../../siteinfo.js"></script><script src="../../../versions.js"></script><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../../assets/themes/catppuccin-mocha.css" data-theme-name="catppuccin-mocha"/><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../../assets/themes/catppuccin-macchiato.css" data-theme-name="catppuccin-macchiato"/><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../../assets/themes/catppuccin-frappe.css" data-theme-name="catppuccin-frappe"/><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../../assets/themes/catppuccin-latte.css" data-theme-name="catppuccin-latte"/><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../../assets/themes/documenter-dark.css" data-theme-name="documenter-dark" data-theme-primary-dark/><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../../assets/themes/documenter-light.css" data-theme-name="documenter-light" data-theme-primary/><script src="../../assets/themeswap.js"></script></head><body><div id="documenter"><nav class="docs-sidebar"><div class="docs-package-name"><span class="docs-autofit"><a href="../../">GeometryOptimization.jl</a></span></div><button class="docs-search-query input is-rounded is-small is-clickable my-2 mx-auto py-1 px-2" id="documenter-search-query">Search docs (Ctrl + /)</button><ul class="docs-menu"><li><a class="tocitem" href="../../">Home</a></li><li><span class="tocitem">Examples</span><ul><li><a class="tocitem" href="../aluminium_dftk/">Aluminium supercell using density-functional theory</a></li><li class="is-active"><a class="tocitem" href>Using a different Optimization.jl compatible solver</a></li><li><a class="tocitem" href="../tial_lj/">TiAl structure optimisation</a></li></ul></li><li><a class="tocitem" href="../../apireference/">API reference</a></li></ul><div class="docs-version-selector field has-addons"><div class="control"><span class="docs-label button is-static is-size-7">Version</span></div><div class="docs-selector control is-expanded"><div class="select is-fullwidth is-size-7"><select id="documenter-version-selector"></select></div></div></div></nav><div class="docs-main"><header class="docs-navbar"><a class="docs-sidebar-button docs-navbar-link fa-solid fa-bars is-hidden-desktop" id="documenter-sidebar-button" href="#"></a><nav class="breadcrumb"><ul class="is-hidden-mobile"><li><a class="is-disabled">Examples</a></li><li class="is-active"><a href>Using a different Optimization.jl compatible solver</a></li></ul><ul class="is-hidden-tablet"><li class="is-active"><a href>Using a different Optimization.jl compatible solver</a></li></ul></nav><div class="docs-right"><a class="docs-navbar-link" href="https://github.com/JuliaMolSim/GeometryOptimization.jl/blob/main/docs/src/examples/other_solvers.md#" title="Edit source on GitHub"><span class="docs-icon fa-solid"></span></a><a class="docs-settings-button docs-navbar-link fa-solid fa-gear" id="documenter-settings-button" href="#" title="Settings"></a><a class="docs-article-toggle-button fa-solid fa-chevron-up" id="documenter-article-toggle-button" href="javascript:;" title="Collapse all docstrings"></a></div></header><article class="content" id="documenter-page"><h1 id="Using-a-different-Optimization.jl-compatible-solver"><a class="docs-heading-anchor" href="#Using-a-different-Optimization.jl-compatible-solver">Using a different Optimization.jl compatible solver</a><a id="Using-a-different-Optimization.jl-compatible-solver-1"></a><a class="docs-heading-anchor-permalink" href="#Using-a-different-Optimization.jl-compatible-solver" title="Permalink"></a></h1><p>In this example we perform the simplistic optimisation the bond length of a Hydrogen molecule using a trust region quasi-Newton method from <a href="https://github.com/JuliaOpt/NLopt.jl">NLopt</a>.</p><p>We create a calculator employing the <a href="https://dftk.org/">density-functional toolkit</a> to compute energies and forces at using the LDA density functional.</p><pre><code class="language-julia hljs">using DFTK
+<html lang="en"><head><meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><title>Using a different Optimization.jl compatible solver · GeometryOptimization.jl</title><meta name="title" content="Using a different Optimization.jl compatible solver · GeometryOptimization.jl"/><meta property="og:title" content="Using a different Optimization.jl compatible solver · GeometryOptimization.jl"/><meta property="twitter:title" content="Using a different Optimization.jl compatible solver · GeometryOptimization.jl"/><meta name="description" content="Documentation for GeometryOptimization.jl."/><meta property="og:description" content="Documentation for GeometryOptimization.jl."/><meta property="twitter:description" content="Documentation for GeometryOptimization.jl."/><meta property="og:url" content="https://JuliaMolSim.github.io/GeometryOptimization.jl/examples/other_solvers/"/><meta property="twitter:url" content="https://JuliaMolSim.github.io/GeometryOptimization.jl/examples/other_solvers/"/><link rel="canonical" href="https://JuliaMolSim.github.io/GeometryOptimization.jl/examples/other_solvers/"/><script data-outdated-warner src="../../assets/warner.js"></script><link href="https://cdnjs.cloudflare.com/ajax/libs/lato-font/3.0.0/css/lato-font.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/juliamono/0.050/juliamono.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/fontawesome.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/solid.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/brands.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.8/katex.min.css" rel="stylesheet" type="text/css"/><script>documenterBaseURL="../.."</script><script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.6/require.min.js" data-main="../../assets/documenter.js"></script><script src="../../search_index.js"></script><script src="../../siteinfo.js"></script><script src="../../../versions.js"></script><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../../assets/themes/catppuccin-mocha.css" data-theme-name="catppuccin-mocha"/><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../../assets/themes/catppuccin-macchiato.css" data-theme-name="catppuccin-macchiato"/><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../../assets/themes/catppuccin-frappe.css" data-theme-name="catppuccin-frappe"/><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../../assets/themes/catppuccin-latte.css" data-theme-name="catppuccin-latte"/><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../../assets/themes/documenter-dark.css" data-theme-name="documenter-dark" data-theme-primary-dark/><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../../assets/themes/documenter-light.css" data-theme-name="documenter-light" data-theme-primary/><script src="../../assets/themeswap.js"></script></head><body><div id="documenter"><nav class="docs-sidebar"><div class="docs-package-name"><span class="docs-autofit"><a href="../../">GeometryOptimization.jl</a></span></div><button class="docs-search-query input is-rounded is-small is-clickable my-2 mx-auto py-1 px-2" id="documenter-search-query">Search docs (Ctrl + /)</button><ul class="docs-menu"><li><a class="tocitem" href="../../">Home</a></li><li><span class="tocitem">Examples</span><ul><li><a class="tocitem" href="../aluminium_dftk/">Aluminium supercell using density-functional theory</a></li><li><a class="tocitem" href="../variablecell/">Silicon variable cell relaxation</a></li><li class="is-active"><a class="tocitem" href>Using a different Optimization.jl compatible solver</a></li><li><a class="tocitem" href="../tial_lj/">TiAl structure optimisation</a></li></ul></li><li><a class="tocitem" href="../../apireference/">API reference</a></li></ul><div class="docs-version-selector field has-addons"><div class="control"><span class="docs-label button is-static is-size-7">Version</span></div><div class="docs-selector control is-expanded"><div class="select is-fullwidth is-size-7"><select id="documenter-version-selector"></select></div></div></div></nav><div class="docs-main"><header class="docs-navbar"><a class="docs-sidebar-button docs-navbar-link fa-solid fa-bars is-hidden-desktop" id="documenter-sidebar-button" href="#"></a><nav class="breadcrumb"><ul class="is-hidden-mobile"><li><a class="is-disabled">Examples</a></li><li class="is-active"><a href>Using a different Optimization.jl compatible solver</a></li></ul><ul class="is-hidden-tablet"><li class="is-active"><a href>Using a different Optimization.jl compatible solver</a></li></ul></nav><div class="docs-right"><a class="docs-navbar-link" href="https://github.com/JuliaMolSim/GeometryOptimization.jl/blob/main/docs/src/examples/other_solvers.md#" title="Edit source on GitHub"><span class="docs-icon fa-solid"></span></a><a class="docs-settings-button docs-navbar-link fa-solid fa-gear" id="documenter-settings-button" href="#" title="Settings"></a><a class="docs-article-toggle-button fa-solid fa-chevron-up" id="documenter-article-toggle-button" href="javascript:;" title="Collapse all docstrings"></a></div></header><article class="content" id="documenter-page"><h1 id="Using-a-different-Optimization.jl-compatible-solver"><a class="docs-heading-anchor" href="#Using-a-different-Optimization.jl-compatible-solver">Using a different Optimization.jl compatible solver</a><a id="Using-a-different-Optimization.jl-compatible-solver-1"></a><a class="docs-heading-anchor-permalink" href="#Using-a-different-Optimization.jl-compatible-solver" title="Permalink"></a></h1><p>In this example we perform the simplistic optimisation the bond length of a Hydrogen molecule using a trust region quasi-Newton method from <a href="https://github.com/JuliaOpt/NLopt.jl">NLopt</a>.</p><p>We create a calculator employing the <a href="https://dftk.org/">density-functional toolkit</a> to compute energies and forces at using the LDA density functional.</p><pre><code class="language-julia hljs">using DFTK
 using PseudoPotentialData
 
 pseudopotentials = PseudoFamily(&quot;dojo.nc.sr.lda.v0_4_1.oncvpsp3.standard.upf&quot;)
@@ -21,95 +21,515 @@ results = minimize_energy!(system, calc, solver;
                            tol_forces=1e-4u&quot;eV/Å&quot;, verbosity=1,
                            maxeval=100)
 nothing</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi"><span class="sgr1">Geometry optimisation convergence (in atomic units)
-┌─────┬─────────────────┬───────────┬────────────┬────────┐
-│   n │          Energy │ log10(ΔE) │ max(Force) │  Δtime │
-├─────┼─────────────────┼───────────┼────────────┼────────┤
-│   0 │ -1.105713124409 │           │  0.0820222 │  22.6s │
+┌─────┬─────────────────┬───────────┬─────────────┬─────────────┬──────────┬────────┐
+│   n │          Energy │ log10(ΔE) │  max(Force) │ max(Virial) │ Pressure │  Δtime │
+├─────┼─────────────────┼───────────┼─────────────┼─────────────┼──────────┼────────┤
+│   0 │ -1.105713124397 │      0.04 │   0.0820222 │             │          │  21.5s │
 Geometry optimisation convergence (in atomic units)
-┌─────┬─────────────────┬───────────┬────────────┬────────┐
-│   n │          Energy │ log10(ΔE) │ max(Force) │  Δtime │
-├─────┼─────────────────┼───────────┼────────────┼────────┤
-│   0 │ -1.105713128077 │           │  0.0820221 │  28.6s │
+┌─────┬─────────────────┬───────────┬─────────────┬─────────────┬──────────┬────────┐
+│   n │          Energy │ log10(ΔE) │  max(Force) │ max(Virial) │ Pressure │  Δtime │
+├─────┼─────────────────┼───────────┼─────────────┼─────────────┼──────────┼────────┤
+│   0 │ -1.105713128065 │     -8.44 │   0.0820221 │             │          │  24.8s │
 Geometry optimisation convergence (in atomic units)
-┌─────┬─────────────────┬───────────┬────────────┬────────┐
-│   n │          Energy │ log10(ΔE) │ max(Force) │  Δtime │
-├─────┼─────────────────┼───────────┼────────────┼────────┤
-│   0 │ -1.105713126009 │           │  0.0820222 │  34.5s │
+┌─────┬─────────────────┬───────────┬─────────────┬─────────────┬──────────┬────────┐
+│   n │          Energy │ log10(ΔE) │  max(Force) │ max(Virial) │ Pressure │  Δtime │
+├─────┼─────────────────┼───────────┼─────────────┼─────────────┼──────────┼────────┤
+│   0 │ -1.105713126263 │ +   -8.74 │   0.0820222 │             │          │  28.0s │
 Geometry optimisation convergence (in atomic units)
-┌─────┬─────────────────┬───────────┬────────────┬────────┐
-│   n │          Energy │ log10(ΔE) │ max(Force) │  Δtime │
-├─────┼─────────────────┼───────────┼────────────┼────────┤
-│   0 │ -1.105713123568 │           │  0.0820222 │  40.4s │
+┌─────┬─────────────────┬───────────┬─────────────┬─────────────┬──────────┬────────┐
+│   n │          Energy │ log10(ΔE) │  max(Force) │ max(Virial) │ Pressure │  Δtime │
+├─────┼─────────────────┼───────────┼─────────────┼─────────────┼──────────┼────────┤
+│   0 │ -1.105713125008 │ +   -8.90 │   0.0820222 │             │          │  31.1s │
 Geometry optimisation convergence (in atomic units)
-┌─────┬─────────────────┬───────────┬────────────┬────────┐
-│   n │          Energy │ log10(ΔE) │ max(Force) │  Δtime │
-├─────┼─────────────────┼───────────┼────────────┼────────┤
-│   0 │ -1.114391636908 │           │  0.0763904 │  52.4s │
+┌─────┬─────────────────┬───────────┬─────────────┬─────────────┬──────────┬────────┐
+│   n │          Energy │ log10(ΔE) │  max(Force) │ max(Virial) │ Pressure │  Δtime │
+├─────┼─────────────────┼───────────┼─────────────┼─────────────┼──────────┼────────┤
+│   0 │ -1.104146106594 │ +   -2.80 │   0.0827083 │             │          │  40.0s │
 Geometry optimisation convergence (in atomic units)
-┌─────┬─────────────────┬───────────┬────────────┬────────┐
-│   n │          Energy │ log10(ΔE) │ max(Force) │  Δtime │
-├─────┼─────────────────┼───────────┼────────────┼────────┤
-│   0 │ -1.114391640324 │           │  0.0763904 │  58.4s │
+┌─────┬─────────────────┬───────────┬─────────────┬─────────────┬──────────┬────────┐
+│   n │          Energy │ log10(ΔE) │  max(Force) │ max(Virial) │ Pressure │  Δtime │
+├─────┼─────────────────┼───────────┼─────────────┼─────────────┼──────────┼────────┤
+│   0 │ +258.8619812484 │ +    2.41 │     68417.0 │             │          │  48.4s │
 Geometry optimisation convergence (in atomic units)
-┌─────┬─────────────────┬───────────┬────────────┬────────┐
-│   n │          Energy │ log10(ΔE) │ max(Force) │  Δtime │
-├─────┼─────────────────┼───────────┼────────────┼────────┤
-│   0 │ -0.731159565481 │           │    1.86946 │  68.3s │
+┌─────┬─────────────────┬───────────┬─────────────┬─────────────┬──────────┬────────┐
+│   n │          Energy │ log10(ΔE) │  max(Force) │ max(Virial) │ Pressure │  Δtime │
+├─────┼─────────────────┼───────────┼─────────────┼─────────────┼──────────┼────────┤
+│   0 │ -0.847587721778 │      2.41 │     1.33866 │             │          │  56.3s │
 Geometry optimisation convergence (in atomic units)
-┌─────┬─────────────────┬───────────┬────────────┬────────┐
-│   n │          Energy │ log10(ΔE) │ max(Force) │  Δtime │
-├─────┼─────────────────┼───────────┼────────────┼────────┤
-│   0 │ -1.126970225193 │           │  0.0923657 │  80.3s │
+┌─────┬─────────────────┬───────────┬─────────────┬─────────────┬──────────┬────────┐
+│   n │          Energy │ log10(ΔE) │  max(Force) │ max(Virial) │ Pressure │  Δtime │
+├─────┼─────────────────┼───────────┼─────────────┼─────────────┼──────────┼────────┤
+│   0 │ -1.132167594536 │     -0.55 │   0.0521148 │             │          │  65.1s │
 Geometry optimisation convergence (in atomic units)
-┌─────┬─────────────────┬───────────┬────────────┬────────┐
-│   n │          Energy │ log10(ΔE) │ max(Force) │  Δtime │
-├─────┼─────────────────┼───────────┼────────────┼────────┤
-│   0 │ -1.126970229324 │           │  0.0923657 │  86.3s │
+┌─────┬─────────────────┬───────────┬─────────────┬─────────────┬──────────┬────────┐
+│   n │          Energy │ log10(ΔE) │  max(Force) │ max(Virial) │ Pressure │  Δtime │
+├─────┼─────────────────┼───────────┼─────────────┼─────────────┼──────────┼────────┤
+│   0 │ -1.132167596866 │     -8.63 │   0.0521148 │             │          │  67.8s │
 Geometry optimisation convergence (in atomic units)
-┌─────┬─────────────────┬───────────┬────────────┬────────┐
-│   n │          Energy │ log10(ΔE) │ max(Force) │  Δtime │
-├─────┼─────────────────┼───────────┼────────────┼────────┤
-│   0 │ -1.134864470420 │           │   0.017646 │  95.4s │
+┌─────┬─────────────────┬───────────┬─────────────┬─────────────┬──────────┬────────┐
+│   n │          Energy │ log10(ΔE) │  max(Force) │ max(Virial) │ Pressure │  Δtime │
+├─────┼─────────────────┼───────────┼─────────────┼─────────────┼──────────┼────────┤
+│   0 │ -1.135213860862 │     -2.52 │  0.00717939 │             │          │  74.2s │
 Geometry optimisation convergence (in atomic units)
-┌─────┬─────────────────┬───────────┬────────────┬────────┐
-│   n │          Energy │ log10(ΔE) │ max(Force) │  Δtime │
-├─────┼─────────────────┼───────────┼────────────┼────────┤
-│   0 │ -1.134864471209 │           │   0.017646 │   101s │
+┌─────┬─────────────────┬───────────┬─────────────┬─────────────┬──────────┬────────┐
+│   n │          Energy │ log10(ΔE) │  max(Force) │ max(Virial) │ Pressure │  Δtime │
+├─────┼─────────────────┼───────────┼─────────────┼─────────────┼──────────┼────────┤
+│   0 │ -1.135213861183 │     -9.49 │  0.00717937 │             │          │  77.2s │
 Geometry optimisation convergence (in atomic units)
-┌─────┬─────────────────┬───────────┬────────────┬────────┐
-│   n │          Energy │ log10(ΔE) │ max(Force) │  Δtime │
-├─────┼─────────────────┼───────────┼────────────┼────────┤
-│   0 │ -1.135282887095 │           │ 0.00190393 │   110s │
+┌─────┬─────────────────┬───────────┬─────────────┬─────────────┬──────────┬────────┐
+│   n │          Energy │ log10(ΔE) │  max(Force) │ max(Virial) │ Pressure │  Δtime │
+├─────┼─────────────────┼───────────┼─────────────┼─────────────┼──────────┼────────┤
+│   0 │ -1.135288094661 │     -4.13 │ 0.000359232 │             │          │  83.6s │
 Geometry optimisation convergence (in atomic units)
-┌─────┬─────────────────┬───────────┬────────────┬────────┐
-│   n │          Energy │ log10(ΔE) │ max(Force) │  Δtime │
-├─────┼─────────────────┼───────────┼────────────┼────────┤
-│   0 │ -1.135282887180 │           │ 0.00190391 │   116s │
+┌─────┬─────────────────┬───────────┬─────────────┬─────────────┬──────────┬────────┐
+│   n │          Energy │ log10(ΔE) │  max(Force) │ max(Virial) │ Pressure │  Δtime │
+├─────┼─────────────────┼───────────┼─────────────┼─────────────┼──────────┼────────┤
+│   0 │ -1.135288094677 │    -10.79 │ 0.000359217 │             │          │  86.6s │
 Geometry optimisation convergence (in atomic units)
-┌─────┬─────────────────┬───────────┬────────────┬────────┐
-│   n │          Energy │ log10(ΔE) │ max(Force) │  Δtime │
-├─────┼─────────────────┼───────────┼────────────┼────────┤
-│   0 │ -1.135288289262 │           │ 7.66662e-6 │   125s │
+┌─────┬─────────────────┬───────────┬─────────────┬─────────────┬──────────┬────────┐
+│   n │          Energy │ log10(ΔE) │  max(Force) │ max(Virial) │ Pressure │  Δtime │
+├─────┼─────────────────┼───────────┼─────────────┼─────────────┼──────────┼────────┤
+│   0 │ -1.135288288806 │     -6.71 │  2.54941e-6 │             │          │  92.0s │
 Geometry optimisation convergence (in atomic units)
-┌─────┬─────────────────┬───────────┬────────────┬────────┐
-│   n │          Energy │ log10(ΔE) │ max(Force) │  Δtime │
-├─────┼─────────────────┼───────────┼────────────┼────────┤
-│   0 │ -1.135288289262 │           │ 7.65058e-6 │   130s │
+┌─────┬─────────────────┬───────────┬─────────────┬─────────────┬──────────┬────────┐
+│   n │          Energy │ log10(ΔE) │  max(Force) │ max(Virial) │ Pressure │  Δtime │
+├─────┼─────────────────┼───────────┼─────────────┼─────────────┼──────────┼────────┤
+│   0 │ -1.135288288807 │    -12.87 │  2.53435e-6 │             │          │  94.8s │
 Geometry optimisation convergence (in atomic units)
-┌─────┬─────────────────┬───────────┬────────────┬────────┐
-│   n │          Energy │ log10(ΔE) │ max(Force) │  Δtime │
-├─────┼─────────────────┼───────────┼────────────┼────────┤
-│   0 │ -1.135288289262 │           │  7.6648e-6 │   136s │
+┌─────┬─────────────────┬───────────┬─────────────┬─────────────┬──────────┬────────┐
+│   n │          Energy │ log10(ΔE) │  max(Force) │ max(Virial) │ Pressure │  Δtime │
+├─────┼─────────────────┼───────────┼─────────────┼─────────────┼──────────┼────────┤
+│   0 │ -1.135288288807 │ +  -12.92 │  2.54848e-6 │             │          │  97.9s │
 Geometry optimisation convergence (in atomic units)
-┌─────┬─────────────────┬───────────┬────────────┬────────┐
-│   n │          Energy │ log10(ΔE) │ max(Force) │  Δtime │
-├─────┼─────────────────┼───────────┼────────────┼────────┤
-│   0 │ -1.135288289262 │           │ 7.66663e-6 │   142s │
+┌─────┬─────────────────┬───────────┬─────────────┬─────────────┬──────────┬────────┐
+│   n │          Energy │ log10(ΔE) │  max(Force) │ max(Virial) │ Pressure │  Δtime │
+├─────┼─────────────────┼───────────┼─────────────┼─────────────┼──────────┼────────┤
+│   0 │ -1.135288288806 │ +  -14.00 │  2.55158e-6 │             │          │   101s │
 Geometry optimisation convergence (in atomic units)
-┌─────┬─────────────────┬───────────┬────────────┬────────┐
-│   n │          Energy │ log10(ΔE) │ max(Force) │  Δtime │
-├─────┼─────────────────┼───────────┼────────────┼────────┤
-│   0 │ -1.135288289453 │           │ 9.50209e-7 │   150s │
-<span class="sgr33">┌ Warning: </span></span>NLopt failed to converge: FORCED_STOP
-<span class="sgr33"><span class="sgr1">└ </span></span><span class="sgr90">@ OptimizationNLopt ~/.julia/packages/OptimizationNLopt/LsFvb/src/OptimizationNLopt.jl:209</span></code></pre><p>The final hydrogen bond length is:</p><pre><code class="language-julia hljs">using LinearAlgebra
-norm(position(results.system[1]) - position(results.system[2]))</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi">1.4524717268870435 a₀</code></pre></article><nav class="docs-footer"><a class="docs-footer-prevpage" href="../aluminium_dftk/">« Aluminium supercell using density-functional theory</a><a class="docs-footer-nextpage" href="../tial_lj/">TiAl structure optimisation »</a><div class="flexbox-break"></div><p class="footer-message">Powered by <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> and the <a href="https://julialang.org/">Julia Programming Language</a>.</p></nav></div><div class="modal" id="documenter-settings"><div class="modal-background"></div><div class="modal-card"><header class="modal-card-head"><p class="modal-card-title">Settings</p><button class="delete"></button></header><section class="modal-card-body"><p><label class="label">Theme</label><div class="select"><select id="documenter-themepicker"><option value="auto">Automatic (OS)</option><option value="documenter-light">documenter-light</option><option value="documenter-dark">documenter-dark</option><option value="catppuccin-latte">catppuccin-latte</option><option value="catppuccin-frappe">catppuccin-frappe</option><option value="catppuccin-macchiato">catppuccin-macchiato</option><option value="catppuccin-mocha">catppuccin-mocha</option></select></div></p><hr/><p>This document was generated with <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> version 1.8.0 on <span class="colophon-date" title="Wednesday 1 January 2025 17:39">Wednesday 1 January 2025</span>. Using Julia version 1.11.2.</p></section><footer class="modal-card-foot"></footer></div></div></div></body></html>
+┌─────┬─────────────────┬───────────┬─────────────┬─────────────┬──────────┬────────┐
+│   n │          Energy │ log10(ΔE) │  max(Force) │ max(Virial) │ Pressure │  Δtime │
+├─────┼─────────────────┼───────────┼─────────────┼─────────────┼──────────┼────────┤
+│   0 │ -1.135288288807 │    -13.05 │  2.53881e-6 │             │          │   104s │
+Geometry optimisation convergence (in atomic units)
+┌─────┬─────────────────┬───────────┬─────────────┬─────────────┬──────────┬────────┐
+│   n │          Energy │ log10(ΔE) │  max(Force) │ max(Virial) │ Pressure │  Δtime │
+├─────┼─────────────────┼───────────┼─────────────┼─────────────┼──────────┼────────┤
+│   0 │ -1.135288288807 │ +  -13.14 │  2.54816e-6 │             │          │   107s │
+Geometry optimisation convergence (in atomic units)
+┌─────┬─────────────────┬───────────┬─────────────┬─────────────┬──────────┬────────┐
+│   n │          Energy │ log10(ΔE) │  max(Force) │ max(Virial) │ Pressure │  Δtime │
+├─────┼─────────────────┼───────────┼─────────────┼─────────────┼──────────┼────────┤
+│   0 │ -1.135288288854 │    -10.32 │  2.56088e-6 │             │          │   111s │
+Geometry optimisation convergence (in atomic units)
+┌─────┬─────────────────┬───────────┬─────────────┬─────────────┬──────────┬────────┐
+│   n │          Energy │ log10(ΔE) │  max(Force) │ max(Virial) │ Pressure │  Δtime │
+├─────┼─────────────────┼───────────┼─────────────┼─────────────┼──────────┼────────┤
+│   0 │ -1.135288302362 │     -7.87 │   6.4624e-6 │             │          │   117s │
+Geometry optimisation convergence (in atomic units)
+┌─────┬─────────────────┬───────────┬─────────────┬─────────────┬──────────┬────────┐
+│   n │          Energy │ log10(ΔE) │  max(Force) │ max(Virial) │ Pressure │  Δtime │
+├─────┼─────────────────┼───────────┼─────────────┼─────────────┼──────────┼────────┤
+│   0 │ -1.135204765100 │ +   -4.08 │  0.00759705 │             │          │   123s │
+Geometry optimisation convergence (in atomic units)
+┌─────┬─────────────────┬───────────┬─────────────┬─────────────┬──────────┬────────┐
+│   n │          Energy │ log10(ΔE) │  max(Force) │ max(Virial) │ Pressure │  Δtime │
+├─────┼─────────────────┼───────────┼─────────────┼─────────────┼──────────┼────────┤
+│   0 │ -1.135287958776 │     -4.08 │  0.00099143 │             │          │   132s │
+Geometry optimisation convergence (in atomic units)
+┌─────┬─────────────────┬───────────┬─────────────┬─────────────┬──────────┬────────┐
+│   n │          Energy │ log10(ΔE) │  max(Force) │ max(Virial) │ Pressure │  Δtime │
+├─────┼─────────────────┼───────────┼─────────────┼─────────────┼──────────┼────────┤
+│   0 │ -1.135288530754 │     -6.24 │ 0.000364815 │             │          │   138s │
+Geometry optimisation convergence (in atomic units)
+┌─────┬─────────────────┬───────────┬─────────────┬─────────────┬──────────┬────────┐
+│   n │          Energy │ log10(ΔE) │  max(Force) │ max(Virial) │ Pressure │  Δtime │
+├─────┼─────────────────┼───────────┼─────────────┼─────────────┼──────────┼────────┤
+│   0 │ -1.135288530770 │    -10.79 │ 0.000364799 │             │          │   141s │
+Geometry optimisation convergence (in atomic units)
+┌─────┬─────────────────┬───────────┬─────────────┬─────────────┬──────────┬────────┐
+│   n │          Energy │ log10(ΔE) │  max(Force) │ max(Virial) │ Pressure │  Δtime │
+├─────┼─────────────────┼───────────┼─────────────┼─────────────┼──────────┼────────┤
+│   0 │ -1.135288530755 │ +  -10.81 │ 0.000364813 │             │          │   144s │
+Geometry optimisation convergence (in atomic units)
+┌─────┬─────────────────┬───────────┬─────────────┬─────────────┬──────────┬────────┐
+│   n │          Energy │ log10(ΔE) │  max(Force) │ max(Virial) │ Pressure │  Δtime │
+├─────┼─────────────────┼───────────┼─────────────┼─────────────┼──────────┼────────┤
+│   0 │ -1.135288731668 │     -6.70 │  2.40073e-5 │             │          │   149s │
+Geometry optimisation convergence (in atomic units)
+┌─────┬─────────────────┬───────────┬─────────────┬─────────────┬──────────┬────────┐
+│   n │          Energy │ log10(ΔE) │  max(Force) │ max(Virial) │ Pressure │  Δtime │
+├─────┼─────────────────┼───────────┼─────────────┼─────────────┼──────────┼────────┤
+│   0 │ -1.135288731670 │    -11.98 │   2.3998e-5 │             │          │   152s │
+Geometry optimisation convergence (in atomic units)
+┌─────┬─────────────────┬───────────┬─────────────┬─────────────┬──────────┬────────┐
+│   n │          Energy │ log10(ΔE) │  max(Force) │ max(Virial) │ Pressure │  Δtime │
+├─────┼─────────────────┼───────────┼─────────────┼─────────────┼──────────┼────────┤
+│   0 │ -1.135288731669 │ +  -12.39 │  2.40068e-5 │             │          │   155s │
+Geometry optimisation convergence (in atomic units)
+┌─────┬─────────────────┬───────────┬─────────────┬─────────────┬──────────┬────────┐
+│   n │          Energy │ log10(ΔE) │  max(Force) │ max(Virial) │ Pressure │  Δtime │
+├─────┼─────────────────┼───────────┼─────────────┼─────────────┼──────────┼────────┤
+│   0 │ -1.135288731669 │ +  -12.88 │  2.40087e-5 │             │          │   158s │
+Geometry optimisation convergence (in atomic units)
+┌─────┬─────────────────┬───────────┬─────────────┬─────────────┬──────────┬────────┐
+│   n │          Energy │ log10(ΔE) │  max(Force) │ max(Virial) │ Pressure │  Δtime │
+├─────┼─────────────────┼───────────┼─────────────┼─────────────┼──────────┼────────┤
+│   0 │ -1.135288731668 │ +  -12.00 │  2.40148e-5 │             │          │   161s │
+Geometry optimisation convergence (in atomic units)
+┌─────┬─────────────────┬───────────┬─────────────┬─────────────┬──────────┬────────┐
+│   n │          Energy │ log10(ΔE) │  max(Force) │ max(Virial) │ Pressure │  Δtime │
+├─────┼─────────────────┼───────────┼─────────────┼─────────────┼──────────┼────────┤
+│   0 │ -1.135288731668 │    -12.34 │  2.40079e-5 │             │          │   164s │
+Geometry optimisation convergence (in atomic units)
+┌─────┬─────────────────┬───────────┬─────────────┬─────────────┬──────────┬────────┐
+│   n │          Energy │ log10(ΔE) │  max(Force) │ max(Virial) │ Pressure │  Δtime │
+├─────┼─────────────────┼───────────┼─────────────┼─────────────┼──────────┼────────┤
+│   0 │ -1.135288830762 │     -7.00 │ 0.000157053 │             │          │   170s │
+Geometry optimisation convergence (in atomic units)
+┌─────┬─────────────────┬───────────┬─────────────┬─────────────┬──────────┬────────┐
+│   n │          Energy │ log10(ΔE) │  max(Force) │ max(Virial) │ Pressure │  Δtime │
+├─────┼─────────────────┼───────────┼─────────────┼─────────────┼──────────┼────────┤
+│   0 │ -1.135288830769 │    -11.15 │ 0.000157038 │             │          │   173s │
+Geometry optimisation convergence (in atomic units)
+┌─────┬─────────────────┬───────────┬─────────────┬─────────────┬──────────┬────────┐
+│   n │          Energy │ log10(ΔE) │  max(Force) │ max(Virial) │ Pressure │  Δtime │
+├─────┼─────────────────┼───────────┼─────────────┼─────────────┼──────────┼────────┤
+│   0 │ -1.135288830762 │ +  -11.20 │ 0.000157053 │             │          │   176s │
+Geometry optimisation convergence (in atomic units)
+┌─────┬─────────────────┬───────────┬─────────────┬─────────────┬──────────┬────────┐
+│   n │          Energy │ log10(ΔE) │  max(Force) │ max(Virial) │ Pressure │  Δtime │
+├─────┼─────────────────┼───────────┼─────────────┼─────────────┼──────────┼────────┤
+│   0 │ -1.135288830763 │    -12.40 │ 0.000157052 │             │          │   179s │
+Geometry optimisation convergence (in atomic units)
+┌─────┬─────────────────┬───────────┬─────────────┬─────────────┬──────────┬────────┐
+│   n │          Energy │ log10(ΔE) │  max(Force) │ max(Virial) │ Pressure │  Δtime │
+├─────┼─────────────────┼───────────┼─────────────┼─────────────┼──────────┼────────┤
+│   0 │ -1.135289044494 │     -6.67 │    2.143e-5 │             │          │   185s │
+Geometry optimisation convergence (in atomic units)
+┌─────┬─────────────────┬───────────┬─────────────┬─────────────┬──────────┬────────┐
+│   n │          Energy │ log10(ΔE) │  max(Force) │ max(Virial) │ Pressure │  Δtime │
+├─────┼─────────────────┼───────────┼─────────────┼─────────────┼──────────┼────────┤
+│   0 │ -1.135289044495 │    -12.01 │  2.14272e-5 │             │          │   188s │
+Geometry optimisation convergence (in atomic units)
+┌─────┬─────────────────┬───────────┬─────────────┬─────────────┬──────────┬────────┐
+│   n │          Energy │ log10(ΔE) │  max(Force) │ max(Virial) │ Pressure │  Δtime │
+├─────┼─────────────────┼───────────┼─────────────┼─────────────┼──────────┼────────┤
+│   0 │ -1.135289044495 │ +  -13.04 │  2.14295e-5 │             │          │   191s │
+Geometry optimisation convergence (in atomic units)
+┌─────┬─────────────────┬───────────┬─────────────┬─────────────┬──────────┬────────┐
+│   n │          Energy │ log10(ΔE) │  max(Force) │ max(Virial) │ Pressure │  Δtime │
+├─────┼─────────────────┼───────────┼─────────────┼─────────────┼──────────┼────────┤
+│   0 │ -1.135289048542 │     -8.39 │  5.02077e-5 │             │          │   196s │
+Geometry optimisation convergence (in atomic units)
+┌─────┬─────────────────┬───────────┬─────────────┬─────────────┬──────────┬────────┐
+│   n │          Energy │ log10(ΔE) │  max(Force) │ max(Virial) │ Pressure │  Δtime │
+├─────┼─────────────────┼───────────┼─────────────┼─────────────┼──────────┼────────┤
+│   0 │ -1.135289048544 │    -11.65 │   5.0195e-5 │             │          │   200s │
+Geometry optimisation convergence (in atomic units)
+┌─────┬─────────────────┬───────────┬─────────────┬─────────────┬──────────┬────────┐
+│   n │          Energy │ log10(ΔE) │  max(Force) │ max(Virial) │ Pressure │  Δtime │
+├─────┼─────────────────┼───────────┼─────────────┼─────────────┼──────────┼────────┤
+│   0 │ -1.135289048543 │ +  -11.86 │  5.02074e-5 │             │          │   203s │
+Geometry optimisation convergence (in atomic units)
+┌─────┬─────────────────┬───────────┬─────────────┬─────────────┬──────────┬────────┐
+│   n │          Energy │ log10(ΔE) │  max(Force) │ max(Virial) │ Pressure │  Δtime │
+├─────┼─────────────────┼───────────┼─────────────┼─────────────┼──────────┼────────┤
+│   0 │ -1.135289048542 │ +  -12.05 │   5.0213e-5 │             │          │   205s │
+Geometry optimisation convergence (in atomic units)
+┌─────┬─────────────────┬───────────┬─────────────┬─────────────┬──────────┬────────┐
+│   n │          Energy │ log10(ΔE) │  max(Force) │ max(Virial) │ Pressure │  Δtime │
+├─────┼─────────────────┼───────────┼─────────────┼─────────────┼──────────┼────────┤
+│   0 │ -1.135289048541 │ +  -12.15 │  5.02123e-5 │             │          │   209s │
+Geometry optimisation convergence (in atomic units)
+┌─────┬─────────────────┬───────────┬─────────────┬─────────────┬──────────┬────────┐
+│   n │          Energy │ log10(ΔE) │  max(Force) │ max(Virial) │ Pressure │  Δtime │
+├─────┼─────────────────┼───────────┼─────────────┼─────────────┼──────────┼────────┤
+│   0 │ -1.135289048542 │    -12.16 │  5.02077e-5 │             │          │   212s │
+Geometry optimisation convergence (in atomic units)
+┌─────┬─────────────────┬───────────┬─────────────┬─────────────┬──────────┬────────┐
+│   n │          Energy │ log10(ΔE) │  max(Force) │ max(Virial) │ Pressure │  Δtime │
+├─────┼─────────────────┼───────────┼─────────────┼─────────────┼──────────┼────────┤
+│   0 │ -1.135289154878 │     -6.97 │  6.62141e-5 │             │          │   217s │
+Geometry optimisation convergence (in atomic units)
+┌─────┬─────────────────┬───────────┬─────────────┬─────────────┬──────────┬────────┐
+│   n │          Energy │ log10(ΔE) │  max(Force) │ max(Virial) │ Pressure │  Δtime │
+├─────┼─────────────────┼───────────┼─────────────┼─────────────┼──────────┼────────┤
+│   0 │ -1.135288399573 │ +   -6.12 │  0.00163011 │             │          │   223s │
+Geometry optimisation convergence (in atomic units)
+┌─────┬─────────────────┬───────────┬─────────────┬─────────────┬──────────┬────────┐
+│   n │          Energy │ log10(ΔE) │  max(Force) │ max(Virial) │ Pressure │  Δtime │
+├─────┼─────────────────┼───────────┼─────────────┼─────────────┼──────────┼────────┤
+│   0 │ -1.135290098123 │     -5.77 │ 0.000643492 │             │          │   231s │
+Geometry optimisation convergence (in atomic units)
+┌─────┬─────────────────┬───────────┬─────────────┬─────────────┬──────────┬────────┐
+│   n │          Energy │ log10(ΔE) │  max(Force) │ max(Virial) │ Pressure │  Δtime │
+├─────┼─────────────────┼───────────┼─────────────┼─────────────┼──────────┼────────┤
+│   0 │ -1.135290098152 │    -10.54 │ 0.000643476 │             │          │   234s │
+Geometry optimisation convergence (in atomic units)
+┌─────┬─────────────────┬───────────┬─────────────┬─────────────┬──────────┬────────┐
+│   n │          Energy │ log10(ΔE) │  max(Force) │ max(Virial) │ Pressure │  Δtime │
+├─────┼─────────────────┼───────────┼─────────────┼─────────────┼──────────┼────────┤
+│   0 │ -1.135290098127 │ +  -10.61 │ 0.000643489 │             │          │   237s │
+Geometry optimisation convergence (in atomic units)
+┌─────┬─────────────────┬───────────┬─────────────┬─────────────┬──────────┬────────┐
+│   n │          Energy │ log10(ΔE) │  max(Force) │ max(Virial) │ Pressure │  Δtime │
+├─────┼─────────────────┼───────────┼─────────────┼─────────────┼──────────┼────────┤
+│   0 │ -1.135290719114 │     -6.21 │  8.00638e-5 │             │          │   242s │
+Geometry optimisation convergence (in atomic units)
+┌─────┬─────────────────┬───────────┬─────────────┬─────────────┬──────────┬────────┐
+│   n │          Energy │ log10(ΔE) │  max(Force) │ max(Virial) │ Pressure │  Δtime │
+├─────┼─────────────────┼───────────┼─────────────┼─────────────┼──────────┼────────┤
+│   0 │ -1.135290719117 │    -11.45 │  8.00522e-5 │             │          │   245s │
+Geometry optimisation convergence (in atomic units)
+┌─────┬─────────────────┬───────────┬─────────────┬─────────────┬──────────┬────────┐
+│   n │          Energy │ log10(ΔE) │  max(Force) │ max(Virial) │ Pressure │  Δtime │
+├─────┼─────────────────┼───────────┼─────────────┼─────────────┼──────────┼────────┤
+│   0 │ -1.135290719115 │ +  -11.67 │  8.00643e-5 │             │          │   248s │
+Geometry optimisation convergence (in atomic units)
+┌─────┬─────────────────┬───────────┬─────────────┬─────────────┬──────────┬────────┐
+│   n │          Energy │ log10(ΔE) │  max(Force) │ max(Virial) │ Pressure │  Δtime │
+├─────┼─────────────────┼───────────┼─────────────┼─────────────┼──────────┼────────┤
+│   0 │ -1.135290719116 │    -12.03 │  8.00605e-5 │             │          │   251s │
+Geometry optimisation convergence (in atomic units)
+┌─────┬─────────────────┬───────────┬─────────────┬─────────────┬──────────┬────────┐
+│   n │          Energy │ log10(ΔE) │  max(Force) │ max(Virial) │ Pressure │  Δtime │
+├─────┼─────────────────┼───────────┼─────────────┼─────────────┼──────────┼────────┤
+│   0 │ -1.135290719112 │ +  -11.36 │  8.00754e-5 │             │          │   254s │
+Geometry optimisation convergence (in atomic units)
+┌─────┬─────────────────┬───────────┬─────────────┬─────────────┬──────────┬────────┐
+│   n │          Energy │ log10(ΔE) │  max(Force) │ max(Virial) │ Pressure │  Δtime │
+├─────┼─────────────────┼───────────┼─────────────┼─────────────┼──────────┼────────┤
+│   0 │ -1.135290719115 │    -11.48 │  8.00632e-5 │             │          │   257s │
+Geometry optimisation convergence (in atomic units)
+┌─────┬─────────────────┬───────────┬─────────────┬─────────────┬──────────┬────────┐
+│   n │          Energy │ log10(ΔE) │  max(Force) │ max(Virial) │ Pressure │  Δtime │
+├─────┼─────────────────┼───────────┼─────────────┼─────────────┼──────────┼────────┤
+│   0 │ -1.135291072855 │     -6.45 │ 0.000126333 │             │          │   263s │
+Geometry optimisation convergence (in atomic units)
+┌─────┬─────────────────┬───────────┬─────────────┬─────────────┬──────────┬────────┐
+│   n │          Energy │ log10(ΔE) │  max(Force) │ max(Virial) │ Pressure │  Δtime │
+├─────┼─────────────────┼───────────┼─────────────┼─────────────┼──────────┼────────┤
+│   0 │ -1.135291072861 │    -11.25 │  0.00012632 │             │          │   266s │
+Geometry optimisation convergence (in atomic units)
+┌─────┬─────────────────┬───────────┬─────────────┬─────────────┬──────────┬────────┐
+│   n │          Energy │ log10(ΔE) │  max(Force) │ max(Virial) │ Pressure │  Δtime │
+├─────┼─────────────────┼───────────┼─────────────┼─────────────┼──────────┼────────┤
+│   0 │ -1.135291072857 │ +  -11.39 │ 0.000126333 │             │          │   269s │
+Geometry optimisation convergence (in atomic units)
+┌─────┬─────────────────┬───────────┬─────────────┬─────────────┬──────────┬────────┐
+│   n │          Energy │ log10(ΔE) │  max(Force) │ max(Virial) │ Pressure │  Δtime │
+├─────┼─────────────────┼───────────┼─────────────┼─────────────┼──────────┼────────┤
+│   0 │ -1.135291072858 │    -11.92 │  0.00012633 │             │          │   272s │
+Geometry optimisation convergence (in atomic units)
+┌─────┬─────────────────┬───────────┬─────────────┬─────────────┬──────────┬────────┐
+│   n │          Energy │ log10(ΔE) │  max(Force) │ max(Virial) │ Pressure │  Δtime │
+├─────┼─────────────────┼───────────┼─────────────┼─────────────┼──────────┼────────┤
+│   0 │ -1.135291072857 │ +  -11.94 │ 0.000126332 │             │          │   275s │
+Geometry optimisation convergence (in atomic units)
+┌─────┬─────────────────┬───────────┬─────────────┬─────────────┬──────────┬────────┐
+│   n │          Energy │ log10(ΔE) │  max(Force) │ max(Virial) │ Pressure │  Δtime │
+├─────┼─────────────────┼───────────┼─────────────┼─────────────┼──────────┼────────┤
+│   0 │ -1.135291357306 │     -6.55 │ 0.000139297 │             │          │   281s │
+Geometry optimisation convergence (in atomic units)
+┌─────┬─────────────────┬───────────┬─────────────┬─────────────┬──────────┬────────┐
+│   n │          Energy │ log10(ΔE) │  max(Force) │ max(Virial) │ Pressure │  Δtime │
+├─────┼─────────────────┼───────────┼─────────────┼─────────────┼──────────┼────────┤
+│   0 │ -1.135291357312 │    -11.21 │ 0.000139283 │             │          │   283s │
+Geometry optimisation convergence (in atomic units)
+┌─────┬─────────────────┬───────────┬─────────────┬─────────────┬──────────┬────────┐
+│   n │          Energy │ log10(ΔE) │  max(Force) │ max(Virial) │ Pressure │  Δtime │
+├─────┼─────────────────┼───────────┼─────────────┼─────────────┼──────────┼────────┤
+│   0 │ -1.135291357307 │ +  -11.34 │ 0.000139296 │             │          │   287s │
+Geometry optimisation convergence (in atomic units)
+┌─────┬─────────────────┬───────────┬─────────────┬─────────────┬──────────┬────────┐
+│   n │          Energy │ log10(ΔE) │  max(Force) │ max(Virial) │ Pressure │  Δtime │
+├─────┼─────────────────┼───────────┼─────────────┼─────────────┼──────────┼────────┤
+│   0 │ -1.135291357304 │ +  -11.49 │ 0.000139303 │             │          │   290s │
+Geometry optimisation convergence (in atomic units)
+┌─────┬─────────────────┬───────────┬─────────────┬─────────────┬──────────┬────────┐
+│   n │          Energy │ log10(ΔE) │  max(Force) │ max(Virial) │ Pressure │  Δtime │
+├─────┼─────────────────┼───────────┼─────────────┼─────────────┼──────────┼────────┤
+│   0 │ -1.135291357307 │    -11.62 │ 0.000139297 │             │          │   293s │
+Geometry optimisation convergence (in atomic units)
+┌─────┬─────────────────┬───────────┬─────────────┬─────────────┬──────────┬────────┐
+│   n │          Energy │ log10(ΔE) │  max(Force) │ max(Virial) │ Pressure │  Δtime │
+├─────┼─────────────────┼───────────┼─────────────┼─────────────┼──────────┼────────┤
+│   0 │ -1.135291764386 │     -6.39 │  7.26115e-5 │             │          │   298s │
+Geometry optimisation convergence (in atomic units)
+┌─────┬─────────────────┬───────────┬─────────────┬─────────────┬──────────┬────────┐
+│   n │          Energy │ log10(ΔE) │  max(Force) │ max(Virial) │ Pressure │  Δtime │
+├─────┼─────────────────┼───────────┼─────────────┼─────────────┼──────────┼────────┤
+│   0 │ -1.135293042876 │     -5.89 │  0.00113549 │             │          │   305s │
+Geometry optimisation convergence (in atomic units)
+┌─────┬─────────────────┬───────────┬─────────────┬─────────────┬──────────┬────────┐
+│   n │          Energy │ log10(ΔE) │  max(Force) │ max(Virial) │ Pressure │  Δtime │
+├─────┼─────────────────┼───────────┼─────────────┼─────────────┼──────────┼────────┤
+│   0 │ -1.135293042927 │    -10.29 │  0.00113547 │             │          │   308s │
+Geometry optimisation convergence (in atomic units)
+┌─────┬─────────────────┬───────────┬─────────────┬─────────────┬──────────┬────────┐
+│   n │          Energy │ log10(ΔE) │  max(Force) │ max(Virial) │ Pressure │  Δtime │
+├─────┼─────────────────┼───────────┼─────────────┼─────────────┼──────────┼────────┤
+│   0 │ -1.135293042879 │ +  -10.32 │  0.00113549 │             │          │   311s │
+Geometry optimisation convergence (in atomic units)
+┌─────┬─────────────────┬───────────┬─────────────┬─────────────┬──────────┬────────┐
+│   n │          Energy │ log10(ΔE) │  max(Force) │ max(Virial) │ Pressure │  Δtime │
+├─────┼─────────────────┼───────────┼─────────────┼─────────────┼──────────┼────────┤
+│   0 │ -1.135295004040 │     -5.71 │   5.1921e-5 │             │          │   317s │
+Geometry optimisation convergence (in atomic units)
+┌─────┬─────────────────┬───────────┬─────────────┬─────────────┬──────────┬────────┐
+│   n │          Energy │ log10(ΔE) │  max(Force) │ max(Virial) │ Pressure │  Δtime │
+├─────┼─────────────────┼───────────┼─────────────┼─────────────┼──────────┼────────┤
+│   0 │ -1.135295004043 │    -11.64 │  5.19199e-5 │             │          │   320s │
+Geometry optimisation convergence (in atomic units)
+┌─────┬─────────────────┬───────────┬─────────────┬─────────────┬──────────┬────────┐
+│   n │          Energy │ log10(ΔE) │  max(Force) │ max(Virial) │ Pressure │  Δtime │
+├─────┼─────────────────┼───────────┼─────────────┼─────────────┼──────────┼────────┤
+│   0 │ -1.135295004042 │ +  -12.98 │  5.19213e-5 │             │          │   323s │
+Geometry optimisation convergence (in atomic units)
+┌─────┬─────────────────┬───────────┬─────────────┬─────────────┬──────────┬────────┐
+│   n │          Energy │ log10(ΔE) │  max(Force) │ max(Virial) │ Pressure │  Δtime │
+├─────┼─────────────────┼───────────┼─────────────┼─────────────┼──────────┼────────┤
+│   0 │ -1.135295004042 │    -13.99 │  5.19212e-5 │             │          │   326s │
+Geometry optimisation convergence (in atomic units)
+┌─────┬─────────────────┬───────────┬─────────────┬─────────────┬──────────┬────────┐
+│   n │          Energy │ log10(ΔE) │  max(Force) │ max(Virial) │ Pressure │  Δtime │
+├─────┼─────────────────┼───────────┼─────────────┼─────────────┼──────────┼────────┤
+│   0 │ -1.135298514163 │     -5.45 │ 0.000305787 │             │          │   332s │
+Geometry optimisation convergence (in atomic units)
+┌─────┬─────────────────┬───────────┬─────────────┬─────────────┬──────────┬────────┐
+│   n │          Energy │ log10(ΔE) │  max(Force) │ max(Virial) │ Pressure │  Δtime │
+├─────┼─────────────────┼───────────┼─────────────┼─────────────┼──────────┼────────┤
+│   0 │ -1.135298514177 │    -10.86 │ 0.000305773 │             │          │   335s │
+Geometry optimisation convergence (in atomic units)
+┌─────┬─────────────────┬───────────┬─────────────┬─────────────┬──────────┬────────┐
+│   n │          Energy │ log10(ΔE) │  max(Force) │ max(Virial) │ Pressure │  Δtime │
+├─────┼─────────────────┼───────────┼─────────────┼─────────────┼──────────┼────────┤
+│   0 │ -1.135298514166 │ +  -10.95 │ 0.000305787 │             │          │   338s │
+Geometry optimisation convergence (in atomic units)
+┌─────┬─────────────────┬───────────┬─────────────┬─────────────┬──────────┬────────┐
+│   n │          Energy │ log10(ΔE) │  max(Force) │ max(Virial) │ Pressure │  Δtime │
+├─────┼─────────────────┼───────────┼─────────────┼─────────────┼──────────┼────────┤
+│   0 │ -1.135298514164 │ +  -11.77 │ 0.000305789 │             │          │   341s │
+Geometry optimisation convergence (in atomic units)
+┌─────┬─────────────────┬───────────┬─────────────┬─────────────┬──────────┬────────┐
+│   n │          Energy │ log10(ΔE) │  max(Force) │ max(Virial) │ Pressure │  Δtime │
+├─────┼─────────────────┼───────────┼─────────────┼─────────────┼──────────┼────────┤
+│   0 │ -1.135298514166 │    -11.83 │ 0.000305787 │             │          │   344s │
+Geometry optimisation convergence (in atomic units)
+┌─────┬─────────────────┬───────────┬─────────────┬─────────────┬──────────┬────────┐
+│   n │          Energy │ log10(ΔE) │  max(Force) │ max(Virial) │ Pressure │  Δtime │
+├─────┼─────────────────┼───────────┼─────────────┼─────────────┼──────────┼────────┤
+│   0 │ -1.135298432620 │ +   -7.09 │  0.00146554 │             │          │   350s │
+Geometry optimisation convergence (in atomic units)
+┌─────┬─────────────────┬───────────┬─────────────┬─────────────┬──────────┬────────┐
+│   n │          Energy │ log10(ΔE) │  max(Force) │ max(Virial) │ Pressure │  Δtime │
+├─────┼─────────────────┼───────────┼─────────────┼─────────────┼──────────┼────────┤
+│   0 │ -1.135299216538 │     -6.11 │ 0.000843454 │             │          │   357s │
+Geometry optimisation convergence (in atomic units)
+┌─────┬─────────────────┬───────────┬─────────────┬─────────────┬──────────┬────────┐
+│   n │          Energy │ log10(ΔE) │  max(Force) │ max(Virial) │ Pressure │  Δtime │
+├─────┼─────────────────┼───────────┼─────────────┼─────────────┼──────────┼────────┤
+│   0 │ -1.135299216575 │    -10.42 │  0.00084344 │             │          │   360s │
+Geometry optimisation convergence (in atomic units)
+┌─────┬─────────────────┬───────────┬─────────────┬─────────────┬──────────┬────────┐
+│   n │          Energy │ log10(ΔE) │  max(Force) │ max(Virial) │ Pressure │  Δtime │
+├─────┼─────────────────┼───────────┼─────────────┼─────────────┼──────────┼────────┤
+│   0 │ -1.135299216540 │ +  -10.45 │ 0.000843454 │             │          │   363s │
+Geometry optimisation convergence (in atomic units)
+┌─────┬─────────────────┬───────────┬─────────────┬─────────────┬──────────┬────────┐
+│   n │          Energy │ log10(ΔE) │  max(Force) │ max(Virial) │ Pressure │  Δtime │
+├─────┼─────────────────┼───────────┼─────────────┼─────────────┼──────────┼────────┤
+│   0 │ -1.135299216541 │    -11.96 │ 0.000843454 │             │          │   366s │
+Geometry optimisation convergence (in atomic units)
+┌─────┬─────────────────┬───────────┬─────────────┬─────────────┬──────────┬────────┐
+│   n │          Energy │ log10(ΔE) │  max(Force) │ max(Virial) │ Pressure │  Δtime │
+├─────┼─────────────────┼───────────┼─────────────┼─────────────┼──────────┼────────┤
+│   0 │ -1.135304107523 │     -5.31 │ 0.000434431 │             │          │   373s │
+Geometry optimisation convergence (in atomic units)
+┌─────┬─────────────────┬───────────┬─────────────┬─────────────┬──────────┬────────┐
+│   n │          Energy │ log10(ΔE) │  max(Force) │ max(Virial) │ Pressure │  Δtime │
+├─────┼─────────────────┼───────────┼─────────────┼─────────────┼──────────┼────────┤
+│   0 │ -1.135304107543 │    -10.71 │ 0.000434415 │             │          │   376s │
+Geometry optimisation convergence (in atomic units)
+┌─────┬─────────────────┬───────────┬─────────────┬─────────────┬──────────┬────────┐
+│   n │          Energy │ log10(ΔE) │  max(Force) │ max(Virial) │ Pressure │  Δtime │
+├─────┼─────────────────┼───────────┼─────────────┼─────────────┼──────────┼────────┤
+│   0 │ -1.135304107526 │ +  -10.78 │ 0.000434429 │             │          │   379s │
+Geometry optimisation convergence (in atomic units)
+┌─────┬─────────────────┬───────────┬─────────────┬─────────────┬──────────┬────────┐
+│   n │          Energy │ log10(ΔE) │  max(Force) │ max(Virial) │ Pressure │  Δtime │
+├─────┼─────────────────┼───────────┼─────────────┼─────────────┼──────────┼────────┤
+│   0 │ -1.135304397104 │     -6.54 │  5.34663e-5 │             │          │   384s │
+Geometry optimisation convergence (in atomic units)
+┌─────┬─────────────────┬───────────┬─────────────┬─────────────┬──────────┬────────┐
+│   n │          Energy │ log10(ΔE) │  max(Force) │ max(Virial) │ Pressure │  Δtime │
+├─────┼─────────────────┼───────────┼─────────────┼─────────────┼──────────┼────────┤
+│   0 │ -1.135304397106 │    -11.62 │  5.34659e-5 │             │          │   387s │
+Geometry optimisation convergence (in atomic units)
+┌─────┬─────────────────┬───────────┬─────────────┬─────────────┬──────────┬────────┐
+│   n │          Energy │ log10(ΔE) │  max(Force) │ max(Virial) │ Pressure │  Δtime │
+├─────┼─────────────────┼───────────┼─────────────┼─────────────┼──────────┼────────┤
+│   0 │ -1.135304397106 │ +  -13.36 │  5.34664e-5 │             │          │   390s │
+Geometry optimisation convergence (in atomic units)
+┌─────┬─────────────────┬───────────┬─────────────┬─────────────┬──────────┬────────┐
+│   n │          Energy │ log10(ΔE) │  max(Force) │ max(Virial) │ Pressure │  Δtime │
+├─────┼─────────────────┼───────────┼─────────────┼─────────────┼──────────┼────────┤
+│   0 │ -1.135304397106 │    -13.41 │  5.34661e-5 │             │          │   393s │
+Geometry optimisation convergence (in atomic units)
+┌─────┬─────────────────┬───────────┬─────────────┬─────────────┬──────────┬────────┐
+│   n │          Energy │ log10(ΔE) │  max(Force) │ max(Virial) │ Pressure │  Δtime │
+├─────┼─────────────────┼───────────┼─────────────┼─────────────┼──────────┼────────┤
+│   0 │ -1.135304397106 │ +  -13.79 │  5.34662e-5 │             │          │   396s │
+Geometry optimisation convergence (in atomic units)
+┌─────┬─────────────────┬───────────┬─────────────┬─────────────┬──────────┬────────┐
+│   n │          Energy │ log10(ΔE) │  max(Force) │ max(Virial) │ Pressure │  Δtime │
+├─────┼─────────────────┼───────────┼─────────────┼─────────────┼──────────┼────────┤
+│   0 │ -1.134936212307 │ +   -3.43 │   0.0150655 │             │          │   402s │
+Geometry optimisation convergence (in atomic units)
+┌─────┬─────────────────┬───────────┬─────────────┬─────────────┬──────────┬────────┐
+│   n │          Energy │ log10(ΔE) │  max(Force) │ max(Virial) │ Pressure │  Δtime │
+├─────┼─────────────────┼───────────┼─────────────┼─────────────┼──────────┼────────┤
+│   0 │ -1.135304654642 │     -3.43 │   0.0014815 │             │          │   411s │
+Geometry optimisation convergence (in atomic units)
+┌─────┬─────────────────┬───────────┬─────────────┬─────────────┬──────────┬────────┐
+│   n │          Energy │ log10(ΔE) │  max(Force) │ max(Virial) │ Pressure │  Δtime │
+├─────┼─────────────────┼───────────┼─────────────┼─────────────┼──────────┼────────┤
+│   0 │ -1.135304654708 │    -10.18 │  0.00148149 │             │          │   414s │
+Geometry optimisation convergence (in atomic units)
+┌─────┬─────────────────┬───────────┬─────────────┬─────────────┬──────────┬────────┐
+│   n │          Energy │ log10(ΔE) │  max(Force) │ max(Virial) │ Pressure │  Δtime │
+├─────┼─────────────────┼───────────┼─────────────┼─────────────┼──────────┼────────┤
+│   0 │ -1.135304654645 │ +  -10.20 │   0.0014815 │             │          │   417s │
+Geometry optimisation convergence (in atomic units)
+┌─────┬─────────────────┬───────────┬─────────────┬─────────────┬──────────┬────────┐
+│   n │          Energy │ log10(ΔE) │  max(Force) │ max(Virial) │ Pressure │  Δtime │
+├─────┼─────────────────┼───────────┼─────────────┼─────────────┼──────────┼────────┤
+│   0 │ -1.135307990975 │     -5.48 │  8.04448e-5 │             │          │   423s │
+Geometry optimisation convergence (in atomic units)
+┌─────┬─────────────────┬───────────┬─────────────┬─────────────┬──────────┬────────┐
+│   n │          Energy │ log10(ΔE) │  max(Force) │ max(Virial) │ Pressure │  Δtime │
+├─────┼─────────────────┼───────────┼─────────────┼─────────────┼──────────┼────────┤
+│   0 │ -1.135307990978 │    -11.44 │   8.0435e-5 │             │          │   426s │
+Geometry optimisation convergence (in atomic units)
+┌─────┬─────────────────┬───────────┬─────────────┬─────────────┬──────────┬────────┐
+│   n │          Energy │ log10(ΔE) │  max(Force) │ max(Virial) │ Pressure │  Δtime │
+├─────┼─────────────────┼───────────┼─────────────┼─────────────┼──────────┼────────┤
+│   0 │ -1.135307990977 │ +  -11.82 │  8.04444e-5 │             │          │   429s │
+Geometry optimisation convergence (in atomic units)
+┌─────┬─────────────────┬───────────┬─────────────┬─────────────┬──────────┬────────┐
+│   n │          Energy │ log10(ΔE) │  max(Force) │ max(Virial) │ Pressure │  Δtime │
+├─────┼─────────────────┼───────────┼─────────────┼─────────────┼──────────┼────────┤
+│   0 │ -1.135307990976 │ +  -12.01 │  8.04481e-5 │             │          │   432s │
+Geometry optimisation convergence (in atomic units)
+┌─────┬─────────────────┬───────────┬─────────────┬─────────────┬──────────┬────────┐
+│   n │          Energy │ log10(ΔE) │  max(Force) │ max(Virial) │ Pressure │  Δtime │
+├─────┼─────────────────┼───────────┼─────────────┼─────────────┼──────────┼────────┤
+│   0 │ -1.135307990976 │    -12.98 │  8.04459e-5 │             │          │   435s │
+Geometry optimisation convergence (in atomic units)
+┌─────┬─────────────────┬───────────┬─────────────┬─────────────┬──────────┬────────┐
+│   n │          Energy │ log10(ΔE) │  max(Force) │ max(Virial) │ Pressure │  Δtime │
+├─────┼─────────────────┼───────────┼─────────────┼─────────────┼──────────┼────────┤
+│   0 │ -1.135308699085 │     -6.15 │ 0.000224056 │             │          │   441s │
+<span class="sgr33">┌ Warning: </span></span>Geometry optimisation not converged.
+<span class="sgr33"><span class="sgr1">└ </span></span><span class="sgr90">@ GeometryOptimization ~/work/GeometryOptimization.jl/GeometryOptimization.jl/src/optimization.jl:156</span></code></pre><p>The final hydrogen bond length is:</p><pre><code class="language-julia hljs">using LinearAlgebra
+norm(position(results.system[1]) - position(results.system[2]))</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi">1.4531922767206555 a₀</code></pre></article><nav class="docs-footer"><a class="docs-footer-prevpage" href="../variablecell/">« Silicon variable cell relaxation</a><a class="docs-footer-nextpage" href="../tial_lj/">TiAl structure optimisation »</a><div class="flexbox-break"></div><p class="footer-message">Powered by <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> and the <a href="https://julialang.org/">Julia Programming Language</a>.</p></nav></div><div class="modal" id="documenter-settings"><div class="modal-background"></div><div class="modal-card"><header class="modal-card-head"><p class="modal-card-title">Settings</p><button class="delete"></button></header><section class="modal-card-body"><p><label class="label">Theme</label><div class="select"><select id="documenter-themepicker"><option value="auto">Automatic (OS)</option><option value="documenter-light">documenter-light</option><option value="documenter-dark">documenter-dark</option><option value="catppuccin-latte">catppuccin-latte</option><option value="catppuccin-frappe">catppuccin-frappe</option><option value="catppuccin-macchiato">catppuccin-macchiato</option><option value="catppuccin-mocha">catppuccin-mocha</option></select></div></p><hr/><p>This document was generated with <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> version 1.8.1 on <span class="colophon-date" title="Thursday 12 June 2025 06:40">Thursday 12 June 2025</span>. Using Julia version 1.11.5.</p></section><footer class="modal-card-foot"></footer></div></div></div></body></html>

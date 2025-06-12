@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><title>Silicon variable cell relaxation · GeometryOptimization.jl</title><meta name="title" content="Silicon variable cell relaxation · GeometryOptimization.jl"/><meta property="og:title" content="Silicon variable cell relaxation · GeometryOptimization.jl"/><meta property="twitter:title" content="Silicon variable cell relaxation · GeometryOptimization.jl"/><meta name="description" content="Documentation for GeometryOptimization.jl."/><meta property="og:description" content="Documentation for GeometryOptimization.jl."/><meta property="twitter:description" content="Documentation for GeometryOptimization.jl."/><meta property="og:url" content="https://JuliaMolSim.github.io/GeometryOptimization.jl/examples/variablecell/"/><meta property="twitter:url" content="https://JuliaMolSim.github.io/GeometryOptimization.jl/examples/variablecell/"/><link rel="canonical" href="https://JuliaMolSim.github.io/GeometryOptimization.jl/examples/variablecell/"/><script data-outdated-warner src="../../assets/warner.js"></script><link href="https://cdnjs.cloudflare.com/ajax/libs/lato-font/3.0.0/css/lato-font.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/juliamono/0.050/juliamono.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/fontawesome.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/solid.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/brands.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.8/katex.min.css" rel="stylesheet" type="text/css"/><script>documenterBaseURL="../.."</script><script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.6/require.min.js" data-main="../../assets/documenter.js"></script><script src="../../search_index.js"></script><script src="../../siteinfo.js"></script><script src="../../../versions.js"></script><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../../assets/themes/catppuccin-mocha.css" data-theme-name="catppuccin-mocha"/><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../../assets/themes/catppuccin-macchiato.css" data-theme-name="catppuccin-macchiato"/><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../../assets/themes/catppuccin-frappe.css" data-theme-name="catppuccin-frappe"/><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../../assets/themes/catppuccin-latte.css" data-theme-name="catppuccin-latte"/><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../../assets/themes/documenter-dark.css" data-theme-name="documenter-dark" data-theme-primary-dark/><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../../assets/themes/documenter-light.css" data-theme-name="documenter-light" data-theme-primary/><script src="../../assets/themeswap.js"></script></head><body><div id="documenter"><nav class="docs-sidebar"><div class="docs-package-name"><span class="docs-autofit"><a href="../../">GeometryOptimization.jl</a></span></div><button class="docs-search-query input is-rounded is-small is-clickable my-2 mx-auto py-1 px-2" id="documenter-search-query">Search docs (Ctrl + /)</button><ul class="docs-menu"><li><a class="tocitem" href="../../">Home</a></li><li><span class="tocitem">Examples</span><ul><li><a class="tocitem" href="../aluminium_dftk/">Aluminium supercell using density-functional theory</a></li><li class="is-active"><a class="tocitem" href>Silicon variable cell relaxation</a></li><li><a class="tocitem" href="../other_solvers/">Using a different Optimization.jl compatible solver</a></li><li><a class="tocitem" href="../tial_lj/">TiAl structure optimisation</a></li></ul></li><li><a class="tocitem" href="../../apireference/">API reference</a></li></ul><div class="docs-version-selector field has-addons"><div class="control"><span class="docs-label button is-static is-size-7">Version</span></div><div class="docs-selector control is-expanded"><div class="select is-fullwidth is-size-7"><select id="documenter-version-selector"></select></div></div></div></nav><div class="docs-main"><header class="docs-navbar"><a class="docs-sidebar-button docs-navbar-link fa-solid fa-bars is-hidden-desktop" id="documenter-sidebar-button" href="#"></a><nav class="breadcrumb"><ul class="is-hidden-mobile"><li><a class="is-disabled">Examples</a></li><li class="is-active"><a href>Silicon variable cell relaxation</a></li></ul><ul class="is-hidden-tablet"><li class="is-active"><a href>Silicon variable cell relaxation</a></li></ul></nav><div class="docs-right"><a class="docs-navbar-link" href="https://github.com/JuliaMolSim/GeometryOptimization.jl/blob/main/docs/src/examples/variablecell.md#" title="Edit source on GitHub"><span class="docs-icon fa-solid"></span></a><a class="docs-settings-button docs-navbar-link fa-solid fa-gear" id="documenter-settings-button" href="#" title="Settings"></a><a class="docs-article-toggle-button fa-solid fa-chevron-up" id="documenter-article-toggle-button" href="javascript:;" title="Collapse all docstrings"></a></div></header><article class="content" id="documenter-page"><h1 id="Silicon-variable-cell-relaxation"><a class="docs-heading-anchor" href="#Silicon-variable-cell-relaxation">Silicon variable cell relaxation</a><a id="Silicon-variable-cell-relaxation-1"></a><a class="docs-heading-anchor-permalink" href="#Silicon-variable-cell-relaxation" title="Permalink"></a></h1><p>In this example we optimise both atomic positions and lattice geometry of a rattled silicon structure using a Stillinger-Weber potential.</p><p>We build an initial structure by first rattling the positions and than the lattice geometry:</p><pre><code class="language-julia hljs">using AtomsBase
+using AtomsBuilder
+using LinearAlgebra
+using Unitful
+using UnitfulAtomic
+
+silicon_posrattle = rattle!(bulk(:Si, cubic=true) * (2, 2, 2), 0.1u&quot;Å&quot;)
+F = I + 1e-3randn(3, 3)
+new_cell_vectors = tuple([F * v for v in cell_vectors(silicon_posrattle)]...)
+silicon_rattle = AbstractSystem(silicon_posrattle; cell_vectors=new_cell_vectors)</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi">FlexibleSystem(Si₆₄, periodicity = TTT):
+    cell_vectors      : [   10.88 -0.00503503 0.0116169;
+                         -0.0072386  10.8606 0.00387413;
+                         -0.00320434 0.00522038   10.887]u&quot;Å&quot;
+</code></pre><p>and optimise with <code>variablecell=true</code></p><pre><code class="language-julia hljs">using EmpiricalPotentials
+using GeometryOptimization
+
+sw = StillingerWeber()
+silicon = minimize_energy!(silicon_posrattle, sw;
+                           variablecell=true, verbosity=1, tol_virial=1e-4u&quot;hartree&quot;).system</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi"><span class="sgr1">Geometry optimisation convergence (in atomic units)
+┌─────┬─────────────────┬───────────┬─────────────┬─────────────┬──────────┬────────┐
+│   n │          Energy │ log10(ΔE) │  max(Force) │ max(Virial) │ Pressure │  Δtime │
+├─────┼─────────────────┼───────────┼─────────────┼─────────────┼──────────┼────────┤
+│   0 │ -10.11612661382 │      1.01 │   0.0469111 │     0.26875 │   -0.089 │  2.53s │
+│   1 │ -10.12052659711 │     -2.36 │   0.0444066 │    0.232126 │     0.14 │  544ms │
+│   2 │ -10.14640372563 │     -1.59 │   0.0314597 │    0.940617 │    -0.92 │ 4.35ms │
+│   3 │ -10.18731257786 │     -1.39 │   0.0146448 │    0.285105 │   -0.021 │ 3.90ms │
+│   4 │ -10.18894412979 │     -2.79 │    0.011691 │    0.101186 │    0.062 │ 3.82ms │
+│   5 │ -10.18914528380 │     -3.70 │   0.0113293 │   0.0500267 │    -0.04 │ 3.83ms │
+│   6 │ -10.18971074862 │     -3.25 │   0.0114105 │   0.0979813 │   -0.027 │ 3.89ms │
+│   7 │ -10.19048848336 │     -3.11 │  0.00856655 │    0.179121 │     0.12 │ 3.83ms │
+│   8 │ -10.19206861670 │     -2.80 │  0.00585466 │    0.173238 │   -0.084 │ 3.81ms │
+│   9 │ -10.19343339600 │     -2.86 │  0.00436887 │   0.0459619 │    -0.04 │ 3.78ms │
+│  10 │ -10.19349852064 │     -4.19 │  0.00435749 │   0.0172746 │    0.017 │ 3.75ms │
+│  11 │ -10.19356249895 │     -4.19 │  0.00446868 │    0.046337 │  -0.0062 │ 3.78ms │
+│  12 │ -10.19415472235 │     -3.23 │  0.00301871 │    0.129204 │    -0.11 │ 3.82ms │
+│  13 │ -10.19455478097 │     -3.40 │  0.00332788 │   0.0544791 │    0.017 │ 3.79ms │
+│  14 │ -10.19464694331 │     -4.04 │  0.00398414 │   0.0273191 │   0.0091 │ 3.86ms │
+│  15 │ -10.19469111194 │     -4.35 │  0.00378563 │    0.027936 │   -0.023 │ 3.80ms │
+│  16 │ -10.19472119705 │     -4.52 │  0.00353348 │   0.0208179 │     0.01 │ 3.75ms │
+│  17 │ -10.19490865918 │     -3.73 │  0.00306152 │   0.0684033 │    0.043 │ 3.77ms │
+│  18 │ -10.19524411222 │     -3.47 │  0.00180911 │   0.0614224 │   -0.051 │ 3.75ms │
+│  19 │ -10.19534185424 │     -4.01 │   0.0022053 │    0.010121 │  -0.0044 │ 3.75ms │
+│  20 │ -10.19534967576 │     -5.11 │  0.00207072 │   0.0111063 │    0.011 │ 3.77ms │
+│  21 │ -10.19537305379 │     -4.63 │  0.00176429 │   0.0262561 │   -0.015 │ 3.79ms │
+│  22 │ -10.19546884949 │     -4.02 │  0.00138108 │   0.0358532 │   -0.015 │ 3.79ms │
+│  23 │ -10.19551221181 │     -4.36 │  0.00125833 │   0.0436179 │    0.024 │ 3.78ms │
+│  24 │ -10.19554181278 │     -4.53 │  0.00115261 │   0.0136271 │  -0.0014 │ 3.78ms │
+│  25 │ -10.19554734570 │     -5.26 │  0.00126836 │  0.00513122 │  -0.0034 │ 3.78ms │
+│  26 │ -10.19555129528 │     -5.40 │  0.00124297 │   0.0136999 │    0.012 │ 3.78ms │
+│  27 │ -10.19560103052 │     -4.30 │  0.00103107 │   0.0339876 │   0.0066 │ 3.78ms │
+│  28 │ -10.19563777570 │     -4.43 │ 0.000914896 │   0.0169943 │   -0.013 │ 3.75ms │
+│  29 │ -10.19564209561 │     -5.36 │ 0.000915718 │  0.00405801 │   0.0015 │ 3.76ms │
+│  30 │ -10.19564577416 │     -5.43 │ 0.000959364 │  0.00772131 │   0.0044 │ 3.79ms │
+│  31 │ -10.19565214338 │     -5.20 │ 0.000845904 │   0.0187801 │    -0.01 │ 3.78ms │
+│  32 │ -10.19566492713 │     -4.89 │ 0.000675466 │   0.0171681 │   0.0053 │ 3.81ms │
+│  33 │ -10.19569463571 │     -4.53 │ 0.000709258 │   0.0133602 │    0.011 │ 3.77ms │
+│  34 │ -10.19569828899 │     -5.44 │ 0.000697549 │  0.00333101 │  -0.0022 │ 3.77ms │
+│  35 │ -10.19569909332 │     -6.09 │ 0.000637956 │  0.00312549 │ -0.00011 │ 3.77ms │
+│  36 │ -10.19570347551 │     -5.36 │ 0.000555464 │   0.0153088 │    0.013 │ 3.74ms │
+│  37 │ -10.19571587946 │     -4.91 │ 0.000399756 │   0.0107006 │   -0.002 │ 3.72ms │
+│  38 │ -10.19571948682 │     -5.44 │ 0.000416791 │  0.00519955 │  -0.0024 │ 3.80ms │
+│  39 │ -10.19572031211 │     -6.08 │ 0.000407777 │  0.00437338 │   0.0032 │ 3.75ms │
+│  40 │ -10.19572095677 │     -6.19 │ 0.000384763 │  0.00180595 │ -0.00022 │ 3.74ms │
+│  41 │ -10.19572193816 │     -6.01 │ 0.000359105 │  0.00616768 │  -0.0037 │ 3.75ms │
+│  42 │ -10.19572572999 │     -5.42 │ 0.000289511 │    0.008917 │   0.0074 │ 3.77ms │
+│  43 │ -10.19572939261 │     -5.44 │ 0.000187301 │  0.00203189 │   0.0013 │ 3.77ms │
+│  44 │ -10.19572953733 │     -6.84 │ 0.000192774 │  0.00113682 │  -0.0009 │ 3.77ms │
+│  45 │ -10.19572963548 │     -7.01 │ 0.000193453 │  0.00147663 │  0.00071 │ 3.74ms │
+│  46 │ -10.19573036577 │     -6.14 │  0.00012091 │  0.00479294 │   0.0024 │ 3.92ms │
+│  47 │ -10.19573082125 │     -6.34 │  8.34252e-5 │   0.0032312 │  -0.0019 │ 3.90ms │
+│  48 │ -10.19573116734 │     -6.46 │  8.24251e-5 │  0.00172864 │   1.8e-5 │ 3.73ms │
+│  49 │ -10.19573126507 │     -7.01 │  7.41581e-5 │  0.00053925 │  0.00053 │ 3.88ms │
+│  50 │ -10.19573127653 │     -7.94 │   7.2944e-5 │ 0.000382035 │ -0.00027 │ 3.74ms │
+│  51 │ -10.19573133622 │     -7.22 │  6.89788e-5 │   0.0014377 │ -0.00037 │ 3.87ms │
+│  52 │ -10.19573151368 │     -6.75 │  4.37322e-5 │  0.00162202 │   0.0014 │ 3.87ms │
+│  53 │ -10.19573156476 │     -7.29 │  4.03903e-5 │ 0.000288322 │   1.3e-5 │ 3.73ms │
+│  54 │ -10.19573157145 │     -8.17 │  4.07221e-5 │ 0.000260034 │ -0.00021 │ 3.90ms │
+│  55 │ -10.19573158194 │     -7.98 │  3.98719e-5 │ 0.000678456 │  0.00042 │ 3.90ms │
+│  56 │ -10.19573160598 │     -7.62 │  4.10914e-5 │ 0.000620619 │  -5.7e-5 │ 3.73ms │
+│  57 │ -10.19573170047 │     -7.02 │  3.76345e-5 │  0.00162499 │  -0.0013 │ 3.89ms │
+│  58 │ -10.19573176829 │     -7.17 │  3.88821e-5 │ 0.000592196 │  0.00027 │ 3.88ms │
+│  59 │ -10.19573177933 │     -7.96 │  3.88016e-5 │ 0.000126526 │   7.5e-5 │ 3.73ms │
+│  60 │ -10.19573178570 │     -8.20 │  3.62019e-5 │  0.00054908 │  -0.0005 │ 3.88ms │
+│  61 │ -10.19573183329 │     -7.32 │  3.27118e-5 │  0.00102075 │  0.00012 │ 3.91ms │
+│  62 │ -10.19573187454 │     -7.38 │   1.9955e-5 │ 0.000599698 │  0.00033 │ 3.73ms │
+│  63 │ -10.19573187914 │     -8.34 │  1.91061e-5 │ 0.000326452 │ -0.00015 │ 4.31ms │
+│  64 │ -10.19573188214 │     -8.52 │   1.7912e-5 │ 0.000125159 │  -2.9e-5 │ 4.42ms │
+│  65 │ -10.19573188331 │     -8.93 │   1.8128e-5 │ 0.000186835 │  0.00011 │ 4.44ms │
+│  66 │ -10.19573188625 │     -8.53 │   1.8175e-5 │ 0.000344558 │ -0.00024 │ 4.44ms │
+│  67 │ -10.19573190742 │     -7.67 │  2.16587e-5 │ 0.000309385 │ -0.00024 │ 4.46ms │
+│  68 │ -10.19573191099 │     -8.45 │  2.24615e-5 │ 0.000130821 │  0.00011 │ 4.55ms │
+│  69 │ -10.19573191176 │     -9.11 │  2.15358e-5 │  8.01631e-5 │  -2.4e-5 │ 4.51ms │
+│  70 │ -10.19573191607 │     -8.37 │  2.04657e-5 │ 0.000414508 │ -0.00031 │ 4.44ms │
+│  71 │ -10.19573192458 │     -8.07 │  1.40823e-5 │ 0.000523261 │  0.00022 │ 4.44ms │
+│  72 │ -10.19573193188 │     -8.14 │  9.51056e-6 │ 0.000259851 │   3.1e-5 │ 4.47ms │
+│  73 │ -10.19573193568 │     -8.42 │  1.21412e-5 │ 0.000174139 │ -0.00015 │ 4.51ms │
+│  74 │ -10.19573193629 │     -9.22 │  1.24063e-5 │  3.77636e-5 │   2.0e-5 │ 4.45ms │
+│  75 │ -10.19573193681 │     -9.28 │  1.08074e-5 │ 0.000117685 │   4.2e-5 │ 4.56ms │
+│  76 │ -10.19573193984 │     -8.52 │  7.54653e-6 │ 0.000326476 │ -0.00028 │ 4.58ms │
+│  77 │ -10.19573194313 │     -8.48 │  4.33841e-6 │  7.87973e-5 │  -1.9e-5 │ 4.50ms │
+│  78 │ -10.19573194332 │     -9.72 │  4.09199e-6 │  3.83202e-5 │   2.7e-5 │ 4.46ms │
+│  79 │ -10.19573194338 │    -10.25 │  4.12615e-6 │  2.68321e-5 │  -2.2e-5 │ 49.8ms │
+│  80 │ -10.19573194350 │     -9.93 │  3.66934e-6 │  2.75773e-5 │  -8.5e-6 │ 4.08ms │
+│  81 │ -10.19573194367 │     -9.76 │  3.05321e-6 │ 0.000105209 │   6.3e-5 │ 3.90ms │
+│  82 │ -10.19573194398 │     -9.51 │  1.97976e-6 │  5.37914e-5 │  -2.3e-5 │ 3.85ms │
+│  83 │ -10.19573194408 │    -10.00 │  1.35282e-6 │  1.11244e-5 │  -9.7e-6 │ 3.81ms │</span></code></pre><p>Final structure:</p><pre><code class="language-julia hljs">silicon</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi">FlexibleSystem(Si₆₄, periodicity = TTT):
+    cell_vectors      : [ 10.8619 -1.64462e-05 4.3899e-05;
+                         1.79113e-05  10.8619 0.000253047;
+                         -4.25881e-05 -0.000247145  10.8619]u&quot;Å&quot;
+</code></pre></article><nav class="docs-footer"><a class="docs-footer-prevpage" href="../aluminium_dftk/">« Aluminium supercell using density-functional theory</a><a class="docs-footer-nextpage" href="../other_solvers/">Using a different Optimization.jl compatible solver »</a><div class="flexbox-break"></div><p class="footer-message">Powered by <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> and the <a href="https://julialang.org/">Julia Programming Language</a>.</p></nav></div><div class="modal" id="documenter-settings"><div class="modal-background"></div><div class="modal-card"><header class="modal-card-head"><p class="modal-card-title">Settings</p><button class="delete"></button></header><section class="modal-card-body"><p><label class="label">Theme</label><div class="select"><select id="documenter-themepicker"><option value="auto">Automatic (OS)</option><option value="documenter-light">documenter-light</option><option value="documenter-dark">documenter-dark</option><option value="catppuccin-latte">catppuccin-latte</option><option value="catppuccin-frappe">catppuccin-frappe</option><option value="catppuccin-macchiato">catppuccin-macchiato</option><option value="catppuccin-mocha">catppuccin-mocha</option></select></div></p><hr/><p>This document was generated with <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> version 1.8.1 on <span class="colophon-date" title="Thursday 12 June 2025 06:40">Thursday 12 June 2025</span>. Using Julia version 1.11.5.</p></section><footer class="modal-card-foot"></footer></div></div></div></body></html>
