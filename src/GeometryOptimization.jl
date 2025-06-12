@@ -1,11 +1,11 @@
 module GeometryOptimization
 
-using DocStringExtensions
-using LinearAlgebra
-using StaticArrays
-using Optimization
 using AtomsBase
 using AtomsCalculators
+using DocStringExtensions
+using LinearAlgebra
+using Optimization
+using StaticArrays
 using Unitful
 using UnitfulAtomic
 
@@ -13,6 +13,8 @@ using UnitfulAtomic
 using OptimizationOptimJL
 using LineSearches
 
+# Useful shortcuts
+using AtomsCalculators: Energy, Forces, Virial
 AC = AtomsCalculators
 
 @template METHODS =
@@ -22,7 +24,7 @@ $(TYPEDSIGNATURES)
 $(DOCSTRING)
 """
 
-include("clamping_updating_positions.jl")
+include("dof_management.jl")
 include("optimization.jl")
 include("callbacks.jl")
 
