@@ -29,14 +29,15 @@ One aspect of this definition is that clamped atom positions still change via
 the deformation `F`. This is natural in the context of optimizing the
 cell shape.
 """
-mutable struct DofManager{D,T}
+struct DofManager{D,T}
     variablecell::Bool
     ifree::Vector{Int}   # extract the free position dofs
     r0::T
     X0::Vector{SVector{D,T}}       # reference positions
     C0::NTuple{D, SVector{D, T}}   # reference cell
 end
-# TODO Why is this  mutable ?
+
+# TODO: Change F to F-I  (such that the initial guess is exactly 0 everywhere)
 
 
 # NOTES:
@@ -181,12 +182,12 @@ end
 #   Compute the gradient with respect to dofs
 #   from forces and virials
 
-function energy_dofs(system, calculator, dofmgr, x::AbstractVector, ps, state)
+function eval_objective(system, calculator, dofmgr, x::AbstractVector, ps, state)
     res = AC.calculate(Energy(), set_dofs(system, dofmgr, x), calculator, ps, state)
     (; energy_unitless=austrip(res.energy), res...)
 end
 
-function gradient_dofs(system, calculator, dofmgr, x::AbstractVector{T}, ps, state) where {T}
+function eval_gradient(system, calculator, dofmgr, x::AbstractVector{T}, ps, state) where {T}
     # Compute and transform forces and virial into a gradient w.r.t. x
     if fixedcell(dofmgr)
         # fixed cell version
@@ -212,3 +213,18 @@ function gradient_dofs(system, calculator, dofmgr, x::AbstractVector{T}, ps, sta
     end
     (; grad, res...)
 end
+
+# =======================
+#   Idea for making this more flexible:
+#
+# struct FixedCell   end
+# struct UnitaryCell end
+#
+# struct DofManager{D,T,CellParam,Sys}
+#     system0::Sys  # Reference system
+#     r0::T         # Reference unit length
+#     X0::Vector{SVector{D,T}}      # Reference positions
+#     C0::NTuple{D, SVector{D, T}}  # Reference cell
+#     cellparam::CellParam  # Parametrisation used for the unit cell (fixed, voigt, unitary)
+#     ifree::Vector{Int}    # Degrees of freedom, which can be changed
+# end
