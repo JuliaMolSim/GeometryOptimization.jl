@@ -4,14 +4,11 @@ using AtomsBase
 using AtomsCalculators
 using DocStringExtensions
 using LinearAlgebra
-using Optimization
+using LineSearches
+using Optim
 using StaticArrays
 using Unitful
 using UnitfulAtomic
-
-# Make sure Optim is always available
-using OptimizationOptimJL
-using LineSearches
 
 # Useful shortcuts
 using AtomsCalculators: Energy, Forces, Virial
