@@ -24,7 +24,6 @@ $(DOCSTRING)
 include("dof_management.jl")
 include("optimization.jl")
 include("optim.jl")
-include("sciml.jl")
 include("callbacks.jl")
 
 export minimize_energy!
