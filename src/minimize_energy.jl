@@ -123,6 +123,8 @@ can also be employed. Note, that in principle all such solvers should work, but 
 tested a small fraction and you can expect that minor modifications are needed to make
 some solvers work (PRs appreciated!). In general only first-order or second-order methods work.
 
+See [`GeometryOptimization.clamp_atoms`](@ref) for an experimental way how to clamp atoms.
+
 ## Keyword arguments:
 - `variablecell`: Determines whether the cell is fixed or allowed to change during optimization
 - `maxiters`: Maximal number of iterations
