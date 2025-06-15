@@ -34,9 +34,8 @@ nothing  # hide
 Minimise energy:
 ```@example tial
 using GeometryOptimization
-GO = GeometryOptimization
 
-results = minimize_energy!(system, calc, GO.OptimCG(); maxiters=10, verbosity=1)
+results = minimize_energy!(system, calc, OptimCG(); maxiters=10, verbosity=1)
 nothing  # hide
 ```
 

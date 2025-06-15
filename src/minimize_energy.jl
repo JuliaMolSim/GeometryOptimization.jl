@@ -94,7 +94,9 @@ function is_converged(cvg::GeoOptConvergence, geoopt_state::GeometryOptimization
         virial_zero = true
     end
 
-    # If force and virial are zero, nothing can possibly happen
+    @debug force_zero virial_zero energy_converged force_converged virial_converged
+
+    # If force and virial are zero, nothing can possibly happen in the future
     if force_zero && virial_zero
         return true
     else
@@ -104,21 +106,22 @@ end
 
 
 """
-Minimise the energy of a system using the specified calculator. For now only optimises
-atomic positions. Returns a named tuple including the optimised system as first entry.
-Under the hood this constructs an `Optimization.OptimizationProblem` and uses
-Optimization.jl to solve it using the passed `solver`.
-
-Typical arguments passed as `solver` are
-[`GeometryOptimization.Autoselect()`](@ref) (the default),
-[`GeometryOptimization.OptimLBFGS()`](@ref),
-[`GeometryOptimization.OptimCG()`](@ref),
-[`GeometryOptimization.OptimSD()`](@ref).
+Minimise the energy of a `system` using the specified `calculator`. Optimises either only
+atomic positions (`variablecell=false`) or both positions and lattice (`variablecell=true`).
+Returns a named tuple including the optimised system as first entry. Typical arguments passed
+as `solver` are
+[`Autoselect()`](@ref) (the default),
+[`OptimLBFGS()`](@ref),
+[`OptimCG()`](@ref),
+[`OptimSD()`](@ref).
 These automatically choose some heuristics for setting up the solvers,
 which we found to work well in practice.
-Beyond that any other `solver`
+
+Beyond that any other first-order `solver`
 [compatible with Optimization.jl](https://docs.sciml.ai/Optimization/stable/#Overview-of-the-Optimizers)
-can also be employed here.
+can also be employed. Note, that in principle all such solvers should work, but we only
+tested a small fraction and you can expect that minor modifications are needed to make
+some solvers work (PRs appreciated!). In general only first-order or second-order methods work.
 
 ## Keyword arguments:
 - `variablecell`: Determines whether the cell is fixed or allowed to change during optimization
@@ -154,7 +157,7 @@ function _minimize_energy!(system, calculator, solver;
                            maxtime::Integer=60*60*24*365,  # 1 year
                            tol_energy=Inf*u"eV",
                            tol_forces=1e-4u"eV/Å",  # VASP default
-                           tol_virial=1e-6u"eV",    # TODO How reasonable ?
+                           tol_virial=5e-5u"eV",    # QE default is about 4.6e-5 eV
                            maxstep=0.8u"bohr",
                            verbosity::Integer=0,
                            callback=GeoOptDefaultCallback(verbosity;
@@ -180,7 +183,8 @@ function _minimize_energy!(system, calculator, solver;
 
     (; system=set_dofs(system, dofmgr, res.minimizer), geoopt_state.converged,
        energy=res.minimum * u"hartree", geoopt_state.forces, geoopt_state.virial,
-       state=geoopt_state.calc_state, res.optimres)
+       state=geoopt_state.calc_state, geoopt_state.history_energy, geoopt_state.n_iter,
+       res.optimres)
 end
 
 # Default setup_solver function just passes things through

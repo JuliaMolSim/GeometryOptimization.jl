@@ -1,4 +1,4 @@
-# Using a different Optimization.jl compatible solver
+# Using a Optimization.jl compatible solver
 
 In this example we perform the simplistic optimisation
 the bond length of a Hydrogen molecule using a trust region
@@ -56,3 +56,10 @@ The final hydrogen bond length is:
 using LinearAlgebra
 norm(position(results.system[1]) - position(results.system[2]))
 ```
+
+!!! info ""
+    While in principle all *first-order* solvers supported
+    by Optimization.jl can be employed, only few have been tested with this
+    package so far. Given the complexity of the Optimization.jl ecosystem
+    we expect that minor changes of our integration may be needed to make
+    specific solvers work well. We welcome any PRs.

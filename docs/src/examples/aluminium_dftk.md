@@ -36,15 +36,14 @@ calc = DFTKCalculator(; model_kwargs, basis_kwargs, scf_kwargs)
 
 We perform the structure optimisation using the LBFGS solver
 from Optim with solver parameters adapted for our geometry optimisation setting.
-This is selected by passing the [GeometryOptimization.OptimLBFGS](@ref)
+This is selected by passing the [OptimLBFGS](@ref)
 solver as the third argument. The `verbosity=2` flag makes sure we get
 output from both the geometry optimisation as well as the inner SCF solver.
 
 ```@example dftk-aluminium
 using GeometryOptimization
-GO = GeometryOptimization
 
-results = minimize_energy!(system, calc, GO.OptimLBFGS();
+results = minimize_energy!(system, calc, OptimLBFGS();
                            tol_forces=1e-4u"eV/Å", verbosity=2)
 nothing
 ```
@@ -65,13 +64,10 @@ We can view the final structure
 results.system
 ```
 
-Some statistics about the optimisation
+The results object returned from Optim (containing some statistics
+about the optimisation):
 ```@example dftk-aluminium
-results.stats
-```
-or the details about the selected algorithm:
-```@example dftk-aluminium
-results.alg
+results.optimres
 ```
 
 The final state of the calculator object is also accessible

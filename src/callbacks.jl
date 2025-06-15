@@ -21,7 +21,7 @@ end
 
 format_log8(value) = (value < 0 ? " " : "+") * (@sprintf "%8.2f" log10(abs(value)))
 
-function (cb::GeoOptDefaultCallback)(geoopt_state, optim_state)
+function (cb::GeoOptDefaultCallback)(optim_state, geoopt_state)
     cb.verbosity ≤ 0 && return false  # No printing, just continue iterations
 
     # If first iteration clear a potentially cached previous time

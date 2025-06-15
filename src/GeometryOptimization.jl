@@ -10,9 +10,8 @@ using StaticArrays
 using Unitful
 using UnitfulAtomic
 
-# Useful shortcuts
 using AtomsCalculators: Energy, Forces, Virial
-AC = AtomsCalculators
+const AC = AtomsCalculators
 
 @template METHODS =
 """
@@ -21,13 +20,13 @@ $(TYPEDSIGNATURES)
 $(DOCSTRING)
 """
 
-include("dof_management.jl")
-include("optimization.jl")
-include("optim.jl")
-include("callbacks.jl")
-
 export minimize_energy!
 export GeoOptDefaultCallback
-export OptimLBFGS, OptimCG, OptimSD
+export Autoselect, OptimLBFGS, OptimCG, OptimSD
+
+include("dof_management.jl")
+include("minimize_energy.jl")
+include("optim.jl")
+include("callbacks.jl")
 
 end
