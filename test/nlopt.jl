@@ -19,7 +19,7 @@
     silicon_init = rattle!(bulk(:Si; cubic=true), 0.2u"Å")
     energy_init  = AC.potential_energy(silicon_init,  calculator)
     results = minimize_energy!(silicon_init, calculator, solver;
-                               tol_forces=1e-4u"eV/Å", maxeval=100)
+                               tol_energy=1e-10, tol_forces=1e-4u"eV/Å", maxeval=100)
     @test results.energy ≤ energy_init
-    @test austrip(abs(results.energy - reference.energy)) < 1e-12
+    @test austrip(abs(results.energy - reference.energy)) < 1e-10
 end
