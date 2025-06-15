@@ -25,23 +25,25 @@ function (cb::GeoOptDefaultCallback)(optim_state, geoopt_state)
     cb.verbosity ≤ 0 && return false  # No printing, just continue iterations
 
     # If first iteration clear a potentially cached previous time
-    optim_state.iter ≤ 0 && (cb.prev_time[] = 0)
+    geoopt_state.n_iter ≤ 0 && (cb.prev_time[] = 0)
     runtime_ns = time_ns() - geoopt_state.start_time
     tstr = @sprintf "% 6s" TimerOutputs.prettytime(runtime_ns - cb.prev_time[])
     cb.prev_time[] = runtime_ns
 
-    Estr  = (@sprintf "%+15.12f" round(austrip(geoopt_state.energy), sigdigits=13))[1:15]
-    if iszero(geoopt_state.energy_change) && optim_state.iter < 1
+    energy = austrip(geoopt_state.history_energy[end])
+    Estr  = (@sprintf "%+15.12f" round(energy, sigdigits=13))[1:15]
+    if geoopt_state.n_iter < 2
         logΔE = ""
     else
-        logΔE = format_log8(austrip(geoopt_state.energy_change))
+        energy_change = geoopt_state.history_energy[end] - geoopt_state.history_energy[end-1]
+        logΔE = format_log8(austrip(energy_change))
     end
 
     maxforce = austrip(maximum(norm, geoopt_state.forces))
     fstr = iszero(maxforce) ? "" : round(maxforce, sigdigits=8)
 
     fields = [  # Header, width, value
-        ("n",           3, optim_state.iter),
+        ("n",           3, geoopt_state.n_iter),
         ("Energy",     15, Estr),
         ("log10(ΔE)",   9, logΔE),
         ("max(Force)", 11, fstr),
@@ -62,14 +64,14 @@ function (cb::GeoOptDefaultCallback)(optim_state, geoopt_state)
     if cb.always_show_header
         hlines = :all
         show_header = true
-    elseif optim_state.iter == 0
+    elseif geoopt_state.n_iter == 0
         hlines = [0, 1]
         show_header = true
     else
         hlines = :none
         show_header = false
     end
-    title = iszero(optim_state.iter) ? "Geometry optimisation convergence (in atomic units)" : ""
+    title = iszero(geoopt_state.n_iter) ? "Geometry optimisation convergence (in atomic units)" : ""
 
     cb.always_show_header && println(stdout)
     pretty_table(stdout, reshape(getindex.(fields, 3), 1, length(fields));

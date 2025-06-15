@@ -9,6 +9,7 @@ A package for optimising the structural parameters of an atomistic system,
 i.e. the step usually referred to as
 **geometry optimisation** or **structural relaxation**
 in electronic structure theory and atomistic modelling.
+Both relaxing **atomic positions** as well as the **unit cell** is supported.
 
 The package is generic in the datastructures used to represent the geometry,
 the calculator used to evaluate energies and forces as well as the solver algorithm.
