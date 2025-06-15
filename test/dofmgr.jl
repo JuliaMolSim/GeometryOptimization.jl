@@ -52,7 +52,7 @@
         @test maximum(x -> austrip(maximum(abs, x)), cv_diff) < 1e-14
     end
 
-    @testset "energy_dofs / gradient_dofs agrees with raw energy" begin
+    @testset "eval_objective / eval_gradient agrees with raw energy" begin
         sw = StillingerWeber()
         dofmgrs = (GO.DofManager(silicon; variablecell=false),
                    GO.DofManager(silicon; variablecell=true ))
@@ -62,21 +62,21 @@
 
             ps    = AC.get_parameters(sw)
             state = AC.get_state(sw)
-            Edof  = GO.energy_dofs(silicon, sw, dofmgr, x, ps, state).energy_unitless
+            Edof  = GO.eval_objective(silicon, sw, dofmgr, x, ps, state).energy_unitless
             @test Edof * u"hartree" ≈ AC.potential_energy(silicon, sw)
 
-            gdof = GO.gradient_dofs(silicon, sw, dofmgr, x, ps, state).grad
+            gdof = GO.eval_gradient(silicon, sw, dofmgr, x, ps, state).grad
             @test length(gdof) == length(x)
             @test typeof(gdof) == Vector{Float64}
 
             ε = 1e-5
             d = randn(size(x))
-            get_ene(X) = GO.energy_dofs(silicon, sw, dofmgr, X, ps, state).energy_unitless
+            get_ene(X) = GO.eval_objective(silicon, sw, dofmgr, X, ps, state).energy_unitless
             gd_ref = (get_ene(x + ε * d) - get_ene(x - ε * d)) / 2ε
             @test abs(gd_ref - dot(d, gdof)) < 1e-7
         end
     end
 
     # TODO Test clamped version of getters / setters
-    # TODO Test clamped version of energy_dofs / gradient_dofs
+    # TODO Test clamped version of energy_dofs / eval_gradient
 end

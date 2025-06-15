@@ -46,8 +46,8 @@ function eval_objective_gradient!(G, prob::GeoOptProblem, ps, x)
     energy = res.energy
 
     gradnorm = nothing
-    forces = nothing
-    virial = nothing
+    forces   = nothing
+    virial   = nothing
     if !isnothing(G)
         res = eval_gradient(prob.system, prob.calculator, prob.dofmgr, x, ps, res.state)
         gradnorm = maximum(abs, res.grad)
@@ -58,8 +58,8 @@ function eval_objective_gradient!(G, prob::GeoOptProblem, ps, x)
 
     # Commit state
     min_energy = minimum(cache.energy for cache in geoopt_state.cache_evaluations;
-                         init=100abs(energy))
-    if energy < min_energy
+                         init=abs(energy) + 100u"hartree")
+    if energy ≤ min_energy
         geoopt_state.calc_state = res.state
     end
     push!(geoopt_state.cache_evaluations, (; energy, forces, virial, objective, gradnorm))
@@ -74,19 +74,32 @@ struct GeoOptConvergence
     check_virial::Bool
 end
 function is_converged(cvg::GeoOptConvergence, geoopt_state::GeometryOptimizationState)
-    length(geoopt_state.history_energy) < 2 && return false
+    is_almost_zero(u::Quantity{T}) where {T} = ustrip(u) < 5eps(T)
 
-    ene_diff = abs(geoopt_state.history_energy[end-1] - geoopt_state.history_energy[end])
-    energy_converged = austrip(abs(ene_diff)) < austrip(cvg.tol_energy)
-    force_converged  = austrip(maximum(norm, geoopt_state.forces)) < austrip(cvg.tol_forces)
+    if length(geoopt_state.history_energy) > 1
+        ene_diff = abs(geoopt_state.history_energy[end-1] - geoopt_state.history_energy[end])
+        energy_converged = austrip(abs(ene_diff)) < austrip(cvg.tol_energy)
+    else
+        energy_converged = false
+    end
+
+    force_converged = austrip(maximum(norm, geoopt_state.forces)) < austrip(cvg.tol_forces)
+    force_zero = is_almost_zero(maximum(norm, geoopt_state.forces))
 
     if cvg.check_virial
         virial_converged = austrip(maximum(abs, geoopt_state.virial)) < austrip(cvg.tol_virial)
+        virial_zero = is_almost_zero(maximum(abs, geoopt_state.virial))
     else
         virial_converged = true
+        virial_zero = true
     end
 
-    return energy_converged && force_converged && virial_converged
+    # If force and virial are zero, nothing can possibly happen
+    if force_zero && virial_zero
+        return true
+    else
+        return energy_converged && force_converged && virial_converged
+    end
 end
 
 
