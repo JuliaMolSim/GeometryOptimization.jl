@@ -22,7 +22,7 @@ package.
 using DFTK
 using PseudoPotentialData
 
-pseudopotentials = PseudoFamily("dojo.nc.sr.lda.v0_4_1.oncvpsp3.standard.upf")
+pseudopotentials = PseudoFamily("dojo.nc.sr.lda.v0_4_1.standard.upf")
 model_kwargs = (; functionals=LDA(), temperature=1e-3, pseudopotentials)
 basis_kwargs = (; kgrid=(3, 3, 3), Ecut=10.0)
 scf_kwargs   = (; mixing=KerkerMixing())
