@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><title>Silicon variable cell relaxation · GeometryOptimization.jl</title><meta name="title" content="Silicon variable cell relaxation · GeometryOptimization.jl"/><meta property="og:title" content="Silicon variable cell relaxation · GeometryOptimization.jl"/><meta property="twitter:title" content="Silicon variable cell relaxation · GeometryOptimization.jl"/><meta name="description" content="Documentation for GeometryOptimization.jl."/><meta property="og:description" content="Documentation for GeometryOptimization.jl."/><meta property="twitter:description" content="Documentation for GeometryOptimization.jl."/><meta property="og:url" content="https://JuliaMolSim.github.io/GeometryOptimization.jl/examples/variablecell/"/><meta property="twitter:url" content="https://JuliaMolSim.github.io/GeometryOptimization.jl/examples/variablecell/"/><link rel="canonical" href="https://JuliaMolSim.github.io/GeometryOptimization.jl/examples/variablecell/"/><script data-outdated-warner src="../../assets/warner.js"></script><link href="https://cdnjs.cloudflare.com/ajax/libs/lato-font/3.0.0/css/lato-font.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/juliamono/0.050/juliamono.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/fontawesome.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/solid.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/brands.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.8/katex.min.css" rel="stylesheet" type="text/css"/><script>documenterBaseURL="../.."</script><script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.6/require.min.js" data-main="../../assets/documenter.js"></script><script src="../../search_index.js"></script><script src="../../siteinfo.js"></script><script src="../../../versions.js"></script><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../../assets/themes/catppuccin-mocha.css" data-theme-name="catppuccin-mocha"/><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../../assets/themes/catppuccin-macchiato.css" data-theme-name="catppuccin-macchiato"/><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../../assets/themes/catppuccin-frappe.css" data-theme-name="catppuccin-frappe"/><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../../assets/themes/catppuccin-latte.css" data-theme-name="catppuccin-latte"/><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../../assets/themes/documenter-dark.css" data-theme-name="documenter-dark" data-theme-primary-dark/><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../../assets/themes/documenter-light.css" data-theme-name="documenter-light" data-theme-primary/><script src="../../assets/themeswap.js"></script></head><body><div id="documenter"><nav class="docs-sidebar"><div class="docs-package-name"><span class="docs-autofit"><a href="../../">GeometryOptimization.jl</a></span></div><button class="docs-search-query input is-rounded is-small is-clickable my-2 mx-auto py-1 px-2" id="documenter-search-query">Search docs (Ctrl + /)</button><ul class="docs-menu"><li><a class="tocitem" href="../../">Home</a></li><li><span class="tocitem">Examples</span><ul><li><a class="tocitem" href="../aluminium_dftk/">Aluminium supercell using density-functional theory</a></li><li class="is-active"><a class="tocitem" href>Silicon variable cell relaxation</a></li><li><a class="tocitem" href="../other_solvers/">Using a Optimization.jl compatible solver</a></li><li><a class="tocitem" href="../tial_lj/">TiAl structure optimisation</a></li></ul></li><li><a class="tocitem" href="../../apireference/">API reference</a></li></ul><div class="docs-version-selector field has-addons"><div class="control"><span class="docs-label button is-static is-size-7">Version</span></div><div class="docs-selector control is-expanded"><div class="select is-fullwidth is-size-7"><select id="documenter-version-selector"></select></div></div></div></nav><div class="docs-main"><header class="docs-navbar"><a class="docs-sidebar-button docs-navbar-link fa-solid fa-bars is-hidden-desktop" id="documenter-sidebar-button" href="#"></a><nav class="breadcrumb"><ul class="is-hidden-mobile"><li><a class="is-disabled">Examples</a></li><li class="is-active"><a href>Silicon variable cell relaxation</a></li></ul><ul class="is-hidden-tablet"><li class="is-active"><a href>Silicon variable cell relaxation</a></li></ul></nav><div class="docs-right"><a class="docs-navbar-link" href="https://github.com/JuliaMolSim/GeometryOptimization.jl/blob/main/docs/src/examples/variablecell.md#" title="Edit source on GitHub"><span class="docs-icon fa-solid"></span></a><a class="docs-settings-button docs-navbar-link fa-solid fa-gear" id="documenter-settings-button" href="#" title="Settings"></a><a class="docs-article-toggle-button fa-solid fa-chevron-up" id="documenter-article-toggle-button" href="javascript:;" title="Collapse all docstrings"></a></div></header><article class="content" id="documenter-page"><h1 id="Silicon-variable-cell-relaxation"><a class="docs-heading-anchor" href="#Silicon-variable-cell-relaxation">Silicon variable cell relaxation</a><a id="Silicon-variable-cell-relaxation-1"></a><a class="docs-heading-anchor-permalink" href="#Silicon-variable-cell-relaxation" title="Permalink"></a></h1><p>In this example we optimise both atomic positions and lattice geometry of a rattled silicon structure using a Stillinger-Weber potential.</p><p>We build an initial structure by first rattling the positions and than the lattice geometry:</p><pre><code class="language-julia hljs">using AtomsBase
+using AtomsBuilder
+using LinearAlgebra
+using Unitful
+using UnitfulAtomic
+
+silicon_posrattle = rattle!(bulk(:Si, cubic=true) * (2, 2, 2), 0.1u&quot;Å&quot;)
+F = I + 1e-3randn(3, 3)
+new_cell_vectors = tuple([F * v for v in cell_vectors(silicon_posrattle)]...)
+silicon_rattle = AbstractSystem(silicon_posrattle; cell_vectors=new_cell_vectors)</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi">FlexibleSystem(Si₆₄, periodicity = TTT):
+    cell_vectors      : [ 10.8624 0.00208122 0.012593;
+                         0.0130994  10.8629 -0.0153086;
+                         -0.00667916 -0.0305593  10.8549]u&quot;Å&quot;
+</code></pre><p>and optimise with <code>variablecell=true</code></p><pre><code class="language-julia hljs">using EmpiricalPotentials
+using GeometryOptimization
+
+sw = StillingerWeber()
+silicon = minimize_energy!(silicon_posrattle, sw;
+                           variablecell=true, verbosity=1, tol_virial=1e-4u&quot;hartree&quot;).system</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi"><span class="sgr1">              Geometry optimisation convergence (in atomic units)</span>
+┌─────┬─────────────────┬───────────┬─────────────┬─────────────┬──────────┬────
+│<span class="sgr1">   n </span>│<span class="sgr1">          Energy </span>│<span class="sgr1"> log10(ΔE) </span>│<span class="sgr1">  max(Force) </span>│<span class="sgr1"> max(Virial) </span>│<span class="sgr1"> Pressure </span>│<span class="sgr1">  </span> ⋯
+├─────┼─────────────────┼───────────┼─────────────┼─────────────┼──────────┼────
+│   0 │ -10.12145855545 │           │   0.0517845 │    0.170543 │   -0.081 │   ⋯
+<span class="sgr36">                                                                1 column omitted</span>
+│   1 │ -10.12536955106 │           │   0.0519089 │    0.210114 │     0.17 │ 5 ⋯
+<span class="sgr36">                                                                1 column omitted</span>
+│   2 │ -10.15042635533 │     -1.60 │   0.0319434 │     0.92075 │    -0.86 │ 5 ⋯
+<span class="sgr36">                                                                1 column omitted</span>
+│   3 │ -10.18498651253 │     -1.46 │   0.0142534 │    0.226847 │   -0.026 │ 5 ⋯
+<span class="sgr36">                                                                1 column omitted</span>
+│   4 │ -10.18675268961 │     -2.75 │   0.0118499 │    0.138352 │    0.076 │ 5 ⋯
+<span class="sgr36">                                                                1 column omitted</span>
+│   5 │ -10.18710894968 │     -3.45 │   0.0115455 │   0.0760926 │   -0.051 │ 5 ⋯
+<span class="sgr36">                                                                1 column omitted</span>
+│   6 │ -10.18754558077 │     -3.36 │   0.0119196 │   0.0580798 │   -0.014 │ 5 ⋯
+<span class="sgr36">                                                                1 column omitted</span>
+│   7 │ -10.18810391941 │     -3.25 │    0.010177 │    0.189516 │     0.12 │ 5 ⋯
+<span class="sgr36">                                                                1 column omitted</span>
+│   8 │ -10.19028781113 │     -2.66 │  0.00691903 │    0.196083 │   -0.087 │ 5 ⋯
+<span class="sgr36">                                                                1 column omitted</span>
+│   9 │ -10.19231992013 │     -2.69 │  0.00541279 │   0.0573511 │   -0.054 │ 5 ⋯
+<span class="sgr36">                                                                1 column omitted</span>
+│  10 │ -10.19241659200 │     -4.01 │  0.00558205 │   0.0191385 │    0.019 │ 5 ⋯
+<span class="sgr36">                                                                1 column omitted</span>
+│  11 │ -10.19252623230 │     -3.96 │  0.00585018 │   0.0544685 │  -0.0023 │ 5 ⋯
+<span class="sgr36">                                                                1 column omitted</span>
+│  12 │ -10.19349655935 │     -3.01 │  0.00350453 │    0.173588 │    -0.15 │ 5 ⋯
+<span class="sgr36">                                                                1 column omitted</span>
+│  13 │ -10.19419095172 │     -3.16 │  0.00385681 │   0.0462319 │   0.0095 │ 5 ⋯
+<span class="sgr36">                                                                1 column omitted</span>
+│  14 │ -10.19428823046 │     -4.01 │  0.00395729 │   0.0290405 │    0.013 │ 4 ⋯
+<span class="sgr36">                                                                1 column omitted</span>
+│  15 │ -10.19434017400 │     -4.28 │  0.00396232 │   0.0352343 │    -0.03 │ 5 ⋯
+<span class="sgr36">                                                                1 column omitted</span>
+│  16 │ -10.19440576605 │     -4.18 │  0.00388836 │   0.0318974 │   0.0074 │ 5 ⋯
+<span class="sgr36">                                                                1 column omitted</span>
+│  17 │ -10.19466919752 │     -3.58 │  0.00312625 │   0.0877682 │    0.062 │ 5 ⋯
+<span class="sgr36">                                                                1 column omitted</span>
+│  18 │ -10.19507429371 │     -3.39 │  0.00233729 │    0.056903 │   -0.047 │ 5 ⋯
+<span class="sgr36">                                                                1 column omitted</span>
+│  19 │ -10.19518995468 │     -3.94 │  0.00204488 │  0.00849217 │  -0.0062 │ 5 ⋯
+<span class="sgr36">                                                                1 column omitted</span>
+│  20 │ -10.19519859797 │     -5.06 │  0.00211502 │   0.0128545 │    0.012 │ 5 ⋯
+<span class="sgr36">                                                                1 column omitted</span>
+│  21 │ -10.19523666925 │     -4.42 │  0.00212443 │   0.0348004 │   -0.014 │ 5 ⋯
+<span class="sgr36">                                                                1 column omitted</span>
+│  22 │ -10.19542070375 │     -3.74 │  0.00155949 │   0.0371768 │   -0.028 │ 5 ⋯
+<span class="sgr36">                                                                1 column omitted</span>
+│  23 │ -10.19544644226 │     -4.59 │  0.00168913 │    0.018279 │   0.0076 │ 6 ⋯
+<span class="sgr36">                                                                1 column omitted</span>
+│  24 │ -10.19545547157 │     -5.04 │  0.00174377 │  0.00940979 │  0.00052 │ 4 ⋯
+<span class="sgr36">                                                                1 column omitted</span>
+│  25 │ -10.19546435609 │     -5.05 │   0.0016564 │   0.0166332 │  -0.0086 │ 5 ⋯
+<span class="sgr36">                                                                1 column omitted</span>
+│  26 │ -10.19547413044 │     -5.01 │  0.00158451 │   0.0210313 │    0.013 │ 5 ⋯
+<span class="sgr36">                                                                1 column omitted</span>
+│  27 │ -10.19555864458 │     -4.07 │  0.00135574 │   0.0337496 │    0.014 │ 5 ⋯
+<span class="sgr36">                                                                1 column omitted</span>
+│  28 │ -10.19560146098 │     -4.37 │  0.00103569 │   0.0149691 │   -0.014 │ 5 ⋯
+<span class="sgr36">                                                                1 column omitted</span>
+│  29 │ -10.19560679012 │     -5.27 │   0.0010495 │  0.00321416 │  0.00071 │ 5 ⋯
+<span class="sgr36">                                                                1 column omitted</span>
+│  30 │ -10.19561327509 │     -5.19 │ 0.000945216 │   0.0123163 │    0.011 │ 5 ⋯
+<span class="sgr36">                                                                1 column omitted</span>
+│  31 │ -10.19564440811 │     -4.51 │ 0.000865156 │   0.0240054 │    -0.02 │ 5 ⋯
+<span class="sgr36">                                                                1 column omitted</span>
+│  32 │ -10.19567793256 │     -4.47 │ 0.000836773 │  0.00837162 │  -0.0039 │ 5 ⋯
+<span class="sgr36">                                                                1 column omitted</span>
+│  33 │ -10.19568105838 │     -5.51 │  0.00082815 │  0.00960077 │   0.0057 │ 5 ⋯
+<span class="sgr36">                                                                1 column omitted</span>
+│  34 │ -10.19568325084 │     -5.66 │ 0.000808068 │  0.00406092 │   -0.002 │ 5 ⋯
+<span class="sgr36">                                                                1 column omitted</span>
+│  35 │ -10.19568528975 │     -5.69 │ 0.000777184 │  0.00632524 │  -0.0015 │ 5 ⋯
+<span class="sgr36">                                                                1 column omitted</span>
+│  36 │ -10.19569288723 │     -5.12 │ 0.000571768 │   0.0200213 │    0.017 │ 5 ⋯
+<span class="sgr36">                                                                1 column omitted</span>
+│  37 │ -10.19571324725 │     -4.69 │ 0.000537465 │  0.00980791 │  0.00041 │ 5 ⋯
+<span class="sgr36">                                                                1 column omitted</span>
+│  38 │ -10.19571610382 │     -5.54 │ 0.000532895 │  0.00272796 │  -0.0026 │ 5 ⋯
+<span class="sgr36">                                                                1 column omitted</span>
+│  39 │ -10.19571649301 │     -6.41 │ 0.000526133 │  0.00215341 │   0.0021 │ 5 ⋯
+<span class="sgr36">                                                                1 column omitted</span>
+│  40 │ -10.19572026991 │     -5.42 │ 0.000405556 │  0.00880589 │   0.0037 │ 5 ⋯
+<span class="sgr36">                                                                1 column omitted</span>
+│  41 │ -10.19572672854 │     -5.19 │  0.00022734 │   0.0097859 │  -0.0072 │ 5 ⋯
+<span class="sgr36">                                                                1 column omitted</span>
+│  42 │ -10.19572821157 │     -5.83 │ 0.000220194 │  0.00263536 │  0.00022 │ 6 ⋯
+<span class="sgr36">                                                                1 column omitted</span>
+│  43 │ -10.19572859232 │     -6.42 │ 0.000203598 │  0.00169705 │   0.0014 │ 4 ⋯
+<span class="sgr36">                                                                1 column omitted</span>
+│  44 │ -10.19572874678 │     -6.81 │ 0.000198715 │  0.00178237 │  -0.0011 │ 5 ⋯
+<span class="sgr36">                                                                1 column omitted</span>
+│  45 │ -10.19572894820 │     -6.70 │ 0.000199888 │    0.001735 │  0.00045 │ 5 ⋯
+<span class="sgr36">                                                                1 column omitted</span>
+│  46 │ -10.19573027387 │     -5.88 │ 0.000108481 │  0.00477551 │   0.0043 │ 5 ⋯
+<span class="sgr36">                                                                1 column omitted</span>
+│  47 │ -10.19573077297 │     -6.30 │ 0.000114925 │   0.0010209 │ -0.00043 │ 5 ⋯
+<span class="sgr36">                                                                1 column omitted</span>
+│  48 │ -10.19573082150 │     -7.31 │ 0.000121061 │ 0.000213026 │ -0.00019 │ 4 ⋯
+<span class="sgr36">                                                                1 column omitted</span>
+│  49 │ -10.19573084794 │     -7.58 │    0.000117 │  0.00106928 │    0.001 │ 5 ⋯
+<span class="sgr36">                                                                1 column omitted</span>
+│  50 │ -10.19573108876 │     -6.62 │  7.76383e-5 │   0.0016706 │  -1.2e-5 │ 5 ⋯
+<span class="sgr36">                                                                1 column omitted</span>
+│  51 │ -10.19573128933 │     -6.70 │   6.4354e-5 │  0.00157415 │ -0.00083 │ 5 ⋯
+<span class="sgr36">                                                                1 column omitted</span>
+│  52 │ -10.19573132097 │     -7.50 │  6.39781e-5 │  0.00080207 │  0.00041 │ 5 ⋯
+<span class="sgr36">                                                                1 column omitted</span>
+│  53 │ -10.19573134745 │     -7.58 │  7.05688e-5 │ 0.000292618 │  0.00011 │ 5 ⋯
+<span class="sgr36">                                                                1 column omitted</span>
+│  54 │ -10.19573136230 │     -7.83 │   6.2146e-5 │ 0.000781742 │ -0.00048 │ 5 ⋯
+<span class="sgr36">                                                                1 column omitted</span>
+│  55 │ -10.19573142050 │     -7.24 │   5.3482e-5 │  0.00133883 │   0.0009 │ 5 ⋯
+<span class="sgr36">                                                                1 column omitted</span>
+│  56 │ -10.19573169104 │     -6.57 │  5.74363e-5 │ 0.000896732 │   0.0008 │ 4 ⋯
+<span class="sgr36">                                                                1 column omitted</span>
+│  57 │ -10.19573171694 │     -7.59 │  5.46729e-5 │ 0.000269636 │ -0.00025 │ 5 ⋯
+<span class="sgr36">                                                                1 column omitted</span>
+│  58 │ -10.19573172263 │     -8.24 │   5.0347e-5 │ 0.000211106 │   4.1e-5 │ 5 ⋯
+<span class="sgr36">                                                                1 column omitted</span>
+│  59 │ -10.19573175835 │     -7.45 │  3.92703e-5 │  0.00114462 │    0.001 │ 5 ⋯
+<span class="sgr36">                                                                1 column omitted</span>
+│  60 │ -10.19573181795 │     -7.22 │  3.11479e-5 │  0.00066914 │ -0.00027 │ 5 ⋯
+<span class="sgr36">                                                                1 column omitted</span>
+│  61 │ -10.19573183380 │     -7.80 │  2.32294e-5 │ 0.000373345 │ -0.00011 │ 4 ⋯
+<span class="sgr36">                                                                1 column omitted</span>
+│  62 │ -10.19573183770 │     -8.41 │   2.3939e-5 │ 0.000254816 │  0.00022 │ 5 ⋯
+<span class="sgr36">                                                                1 column omitted</span>
+│  63 │ -10.19573183978 │     -8.68 │  2.44936e-5 │  8.95115e-5 │  -3.5e-5 │ 5 ⋯
+<span class="sgr36">                                                                1 column omitted</span>
+│  64 │ -10.19573184339 │     -8.44 │  2.28722e-5 │ 0.000306939 │ -0.00017 │ 4 ⋯
+<span class="sgr36">                                                                1 column omitted</span>
+│  65 │ -10.19573186430 │     -7.68 │  1.96804e-5 │ 0.000841564 │  0.00072 │ 5 ⋯
+<span class="sgr36">                                                                1 column omitted</span>
+│  66 │ -10.19573189305 │     -7.54 │   2.5584e-5 │ 0.000225607 │   8.8e-5 │ 4 ⋯
+<span class="sgr36">                                                                1 column omitted</span>
+│  67 │ -10.19573189493 │     -8.73 │  2.56877e-5 │ 0.000116911 │ -0.00011 │ 5 ⋯
+<span class="sgr36">                                                                1 column omitted</span>
+│  68 │ -10.19573189713 │     -8.66 │  2.50022e-5 │  0.00022696 │  0.00018 │ 4 ⋯
+<span class="sgr36">                                                                1 column omitted</span>
+│  69 │ -10.19573192322 │     -7.58 │  1.53436e-5 │ 0.000549199 │  0.00039 │ 5 ⋯
+<span class="sgr36">                                                                1 column omitted</span>
+│  70 │ -10.19573193279 │     -8.02 │  1.31312e-5 │  0.00041843 │  -0.0002 │ 5 ⋯
+<span class="sgr36">                                                                1 column omitted</span>
+│  71 │ -10.19573193537 │     -8.59 │  1.28608e-5 │ 0.000134497 │   1.4e-5 │ 5 ⋯
+<span class="sgr36">                                                                1 column omitted</span>
+│  72 │ -10.19573193654 │     -8.93 │  1.19853e-5 │  8.87139e-5 │   7.0e-5 │ 4 ⋯
+<span class="sgr36">                                                                1 column omitted</span>
+│  73 │ -10.19573193687 │     -9.48 │  1.16003e-5 │  9.36568e-5 │  -6.3e-5 │ 5 ⋯
+<span class="sgr36">                                                                1 column omitted</span>
+│  74 │ -10.19573193874 │     -8.73 │  1.04749e-5 │ 0.000265092 │  -2.5e-5 │ 4 ⋯
+<span class="sgr36">                                                                1 column omitted</span>
+│  75 │ -10.19573194283 │     -8.39 │  4.14711e-6 │ 0.000188111 │  0.00017 │ 4 ⋯
+<span class="sgr36">                                                                1 column omitted</span>
+│  76 │ -10.19573194344 │     -9.22 │  3.85417e-6 │  3.45392e-5 │  -6.8e-9 │ 4 ⋯
+<span class="sgr36">                                                                1 column omitted</span>
+│  77 │ -10.19573194348 │    -10.37 │  3.71268e-6 │  1.57966e-5 │  -1.2e-5 │ 5 ⋯
+<span class="sgr36">                                                                1 column omitted</span>
+│  78 │ -10.19573194356 │    -10.12 │  3.38571e-6 │  5.49406e-5 │   4.9e-5 │ 4 ⋯
+<span class="sgr36">                                                                1 column omitted</span>
+│  79 │ -10.19573194390 │     -9.46 │   1.8182e-6 │  5.00691e-5 │   1.4e-5 │ 5 ⋯
+<span class="sgr36">                                                                1 column omitted</span></code></pre><p>Final structure:</p><pre><code class="language-julia hljs">silicon</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi">FlexibleSystem(Si₆₄, periodicity = TTT):
+    cell_vectors      : [ 10.8619 -0.000104441 0.000182817;
+                         0.000105906  10.8619 -0.00017795;
+                         -0.000200398 0.000179976  10.8619]u&quot;Å&quot;
+</code></pre></article><nav class="docs-footer"><a class="docs-footer-prevpage" href="../aluminium_dftk/">« Aluminium supercell using density-functional theory</a><a class="docs-footer-nextpage" href="../other_solvers/">Using a Optimization.jl compatible solver »</a><div class="flexbox-break"></div><p class="footer-message">Powered by <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> and the <a href="https://julialang.org/">Julia Programming Language</a>.</p></nav></div><div class="modal" id="documenter-settings"><div class="modal-background"></div><div class="modal-card"><header class="modal-card-head"><p class="modal-card-title">Settings</p><button class="delete"></button></header><section class="modal-card-body"><p><label class="label">Theme</label><div class="select"><select id="documenter-themepicker"><option value="auto">Automatic (OS)</option><option value="documenter-light">documenter-light</option><option value="documenter-dark">documenter-dark</option><option value="catppuccin-latte">catppuccin-latte</option><option value="catppuccin-frappe">catppuccin-frappe</option><option value="catppuccin-macchiato">catppuccin-macchiato</option><option value="catppuccin-mocha">catppuccin-mocha</option></select></div></p><hr/><p>This document was generated with <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> version 1.8.1 on <span class="colophon-date" title="Friday 13 February 2026 21:29">Friday 13 February 2026</span>. Using Julia version 1.12.5.</p></section><footer class="modal-card-foot"></footer></div></div></div></body></html>

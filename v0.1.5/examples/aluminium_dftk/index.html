@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><title>Aluminium supercell using density-functional theory · GeometryOptimization.jl</title><meta name="title" content="Aluminium supercell using density-functional theory · GeometryOptimization.jl"/><meta property="og:title" content="Aluminium supercell using density-functional theory · GeometryOptimization.jl"/><meta property="twitter:title" content="Aluminium supercell using density-functional theory · GeometryOptimization.jl"/><meta name="description" content="Documentation for GeometryOptimization.jl."/><meta property="og:description" content="Documentation for GeometryOptimization.jl."/><meta property="twitter:description" content="Documentation for GeometryOptimization.jl."/><meta property="og:url" content="https://JuliaMolSim.github.io/GeometryOptimization.jl/examples/aluminium_dftk/"/><meta property="twitter:url" content="https://JuliaMolSim.github.io/GeometryOptimization.jl/examples/aluminium_dftk/"/><link rel="canonical" href="https://JuliaMolSim.github.io/GeometryOptimization.jl/examples/aluminium_dftk/"/><script data-outdated-warner src="../../assets/warner.js"></script><link href="https://cdnjs.cloudflare.com/ajax/libs/lato-font/3.0.0/css/lato-font.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/juliamono/0.050/juliamono.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/fontawesome.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/solid.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/brands.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.8/katex.min.css" rel="stylesheet" type="text/css"/><script>documenterBaseURL="../.."</script><script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.6/require.min.js" data-main="../../assets/documenter.js"></script><script src="../../search_index.js"></script><script src="../../siteinfo.js"></script><script src="../../../versions.js"></script><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../../assets/themes/catppuccin-mocha.css" data-theme-name="catppuccin-mocha"/><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../../assets/themes/catppuccin-macchiato.css" data-theme-name="catppuccin-macchiato"/><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../../assets/themes/catppuccin-frappe.css" data-theme-name="catppuccin-frappe"/><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../../assets/themes/catppuccin-latte.css" data-theme-name="catppuccin-latte"/><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../../assets/themes/documenter-dark.css" data-theme-name="documenter-dark" data-theme-primary-dark/><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../../assets/themes/documenter-light.css" data-theme-name="documenter-light" data-theme-primary/><script src="../../assets/themeswap.js"></script></head><body><div id="documenter"><nav class="docs-sidebar"><div class="docs-package-name"><span class="docs-autofit"><a href="../../">GeometryOptimization.jl</a></span></div><button class="docs-search-query input is-rounded is-small is-clickable my-2 mx-auto py-1 px-2" id="documenter-search-query">Search docs (Ctrl + /)</button><ul class="docs-menu"><li><a class="tocitem" href="../../">Home</a></li><li><span class="tocitem">Examples</span><ul><li class="is-active"><a class="tocitem" href>Aluminium supercell using density-functional theory</a></li><li><a class="tocitem" href="../variablecell/">Silicon variable cell relaxation</a></li><li><a class="tocitem" href="../other_solvers/">Using a Optimization.jl compatible solver</a></li><li><a class="tocitem" href="../tial_lj/">TiAl structure optimisation</a></li></ul></li><li><a class="tocitem" href="../../apireference/">API reference</a></li></ul><div class="docs-version-selector field has-addons"><div class="control"><span class="docs-label button is-static is-size-7">Version</span></div><div class="docs-selector control is-expanded"><div class="select is-fullwidth is-size-7"><select id="documenter-version-selector"></select></div></div></div></nav><div class="docs-main"><header class="docs-navbar"><a class="docs-sidebar-button docs-navbar-link fa-solid fa-bars is-hidden-desktop" id="documenter-sidebar-button" href="#"></a><nav class="breadcrumb"><ul class="is-hidden-mobile"><li><a class="is-disabled">Examples</a></li><li class="is-active"><a href>Aluminium supercell using density-functional theory</a></li></ul><ul class="is-hidden-tablet"><li class="is-active"><a href>Aluminium supercell using density-functional theory</a></li></ul></nav><div class="docs-right"><a class="docs-navbar-link" href="https://github.com/JuliaMolSim/GeometryOptimization.jl/blob/main/docs/src/examples/aluminium_dftk.md#" title="Edit source on GitHub"><span class="docs-icon fa-solid"></span></a><a class="docs-settings-button docs-navbar-link fa-solid fa-gear" id="documenter-settings-button" href="#" title="Settings"></a><a class="docs-article-toggle-button fa-solid fa-chevron-up" id="documenter-article-toggle-button" href="javascript:;" title="Collapse all docstrings"></a></div></header><article class="content" id="documenter-page"><h1 id="Aluminium-supercell-using-density-functional-theory"><a class="docs-heading-anchor" href="#Aluminium-supercell-using-density-functional-theory">Aluminium supercell using density-functional theory</a><a id="Aluminium-supercell-using-density-functional-theory-1"></a><a class="docs-heading-anchor-permalink" href="#Aluminium-supercell-using-density-functional-theory" title="Permalink"></a></h1><p>In this example we will optimise the structure of a rattled aluminium system using density-functional theory.</p><p>First we build a rattled aluminium system:</p><pre><code class="language-julia hljs">using AtomsBuilder
+using Unitful
+
+system = rattle!(bulk(:Al; cubic=true), 0.2u&quot;Å&quot;)</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi">FlexibleSystem(Al₄, periodicity = TTT):
+    cell_vectors      : [    4.05        0        0;
+                                0     4.05        0;
+                                0        0     4.05]u&quot;Å&quot;
+
+    Atom(Al, [-0.016129, 0.0128552, -0.0366136]u&quot;Å&quot;)
+    Atom(Al, [0.104269,  1.92399,   1.8914]u&quot;Å&quot;)
+    Atom(Al, [  1.9844, 0.171942,  2.03027]u&quot;Å&quot;)
+    Atom(Al, [ 1.85705,  2.03016, 0.0242244]u&quot;Å&quot;)
+</code></pre><p>Next we create a calculator employing the <a href="https://dftk.org/">density-functional toolkit</a> to compute energies and forces at using the LDA density functional. As pseudopotentials we use the <a href="http://pseudo-dojo.org">PseudoDojo</a> as available in the <a href="https://github.com/JuliaMolSim/PseudoPotentialData.jl/">PseudoPotentialData</a> package.</p><pre><code class="language-julia hljs">using DFTK
+using PseudoPotentialData
+
+pseudopotentials = PseudoFamily(&quot;dojo.nc.sr.lda.v0_4_1.standard.upf&quot;)
+model_kwargs = (; functionals=LDA(), temperature=1e-3, pseudopotentials)
+basis_kwargs = (; kgrid=(3, 3, 3), Ecut=10.0)
+scf_kwargs   = (; mixing=KerkerMixing())
+calc = DFTKCalculator(; model_kwargs, basis_kwargs, scf_kwargs)</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi">DFTKCalculator(functionals=Xc(lda_x, lda_c_pw), pseudopotentials=PseudoFamily(&quot;dojo.nc.sr.lda.v0_4_1.standard.upf&quot;), temperature=0.001, Ecut=10.0, kgrid=(3, 3, 3))</code></pre><div class="admonition is-info"><header class="admonition-header">Crude computational parameters</header><div class="admonition-body"><p>Note, that the numerical parameters above are chosen rather crudely in order to give a fast runtime on CI systems. For production calculations one would require larger computational parameters.</p></div></div><p>We perform the structure optimisation using the LBFGS solver from Optim with solver parameters adapted for our geometry optimisation setting. This is selected by passing the <a href="../../apireference/#GeometryOptimization.OptimLBFGS">OptimLBFGS</a> solver as the third argument. The <code>verbosity=2</code> flag makes sure we get output from both the geometry optimisation as well as the inner SCF solver.</p><pre><code class="language-julia hljs">using GeometryOptimization
+
+results = minimize_energy!(system, calc, OptimLBFGS();
+                           tol_forces=1e-4u&quot;eV/Å&quot;, verbosity=2)
+nothing</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi"><span class="sgr32"><span class="sgr1"> Downloading</span></span> artifact: dojo.nc.sr.lda.v0_4_1.standard.upf
+n     Energy            log10(ΔE)   log10(Δρ)   α      Diag   Δtime
+---   ---------------   ---------   ---------   ----   ----   ------
+  1   -9.428389153348                   -1.10   0.80    7.4    3.86s
+  2   -9.435921928377       -2.12       -1.68   0.80    1.0    3.70s
+  3   -9.436435608739       -3.29       -2.28   0.80    3.1    580ms
+  4   -9.436525338137       -4.05       -2.86   0.80    2.3    460ms
+  5   -9.436531857818       -5.19       -3.52   0.80    2.7    910ms
+  6   -9.436532188213       -6.48       -4.45   0.80    2.8    434ms
+  7   -9.436532197082       -8.05       -5.25   0.80    3.7    574ms
+  8   -9.436532197183      -10.00       -5.95   0.80    3.3    487ms
+  9   -9.436532197188      -11.29       -6.50   0.80    2.7    470ms
+ 10   -9.436532197189      -12.53       -7.52   0.80    2.6    429ms
+ 11   -9.436532197189      -14.05       -8.30   0.80    3.9    607ms
+ 12   -9.436532197189   +  -14.75       -9.01   0.80    2.8    551ms
+n     Energy            log10(ΔE)   log10(Δρ)   α      Diag   Δtime
+---   ---------------   ---------   ---------   ----   ----   ------
+  1   -9.436532197189                   -9.44   0.80    1.0    2.06s
+  2   -9.436532197189   +  -14.75      -10.29   0.80    1.0    291ms
+
+<span class="sgr1">    Geometry optimisation convergence (in atomic units)</span>
+┌─────┬─────────────────┬───────────┬─────────────┬────────┐
+│<span class="sgr1">   n </span>│<span class="sgr1">          Energy </span>│<span class="sgr1"> log10(ΔE) </span>│<span class="sgr1">  max(Force) </span>│<span class="sgr1">  Δtime </span>│
+├─────┼─────────────────┼───────────┼─────────────┼────────┤
+│   0 │ -9.436532197189 │           │    0.023565 │  34.6s │
+└─────┴─────────────────┴───────────┴─────────────┴────────┘
+
+n     Energy            log10(ΔE)   log10(Δρ)   α      Diag   Δtime
+---   ---------------   ---------   ---------   ----   ----   ------
+  1   -9.437103902560                   -2.14   0.80    1.0    241ms
+  2   -9.437299616343       -3.71       -2.98   0.80    1.0    331ms
+  3   -9.437305809471       -5.21       -3.34   0.80    3.0    898ms
+  4   -9.437306201079       -6.41       -3.85   0.80    2.0    353ms
+  5   -9.437306283626       -7.08       -4.90   0.80    2.6    444ms
+  6   -9.437306284832       -8.92       -5.42   0.80    3.7    571ms
+  7   -9.437306284846      -10.88       -6.32   0.80    2.2    393ms
+  8   -9.437306284847      -11.95       -6.88   0.80    3.3    521ms
+  9   -9.437306284847      -13.80       -7.71   0.80    2.5    429ms
+ 10   -9.437306284847      -14.75       -8.43   0.80    3.1    531ms
+ 11   -9.437306284847   +    -Inf       -9.41   0.80    3.0    910ms
+n     Energy            log10(ΔE)   log10(Δρ)   α      Diag   Δtime
+---   ---------------   ---------   ---------   ----   ----   ------
+  1   -9.388747470017                   -0.94   0.80    2.3    382ms
+  2   -9.442574097409       -1.27       -2.02   0.80    1.2    297ms
+  3   -9.443551943440       -3.01       -2.20   0.80    3.2    567ms
+  4   -9.443620568211       -4.16       -2.55   0.80    2.1    398ms
+  5   -9.443655715377       -4.45       -3.71   0.80    1.7    327ms
+  6   -9.443656500666       -6.10       -3.86   0.80    3.9    664ms
+  7   -9.443656569196       -7.16       -5.04   0.80    1.3    306ms
+  8   -9.443656570721       -8.82       -5.48   0.80    3.9    1.10s
+  9   -9.443656570717   +  -11.37       -5.64   0.80    1.7    312ms
+ 10   -9.443656570733      -10.79       -6.47   0.80    1.3    279ms
+ 11   -9.443656570734      -12.05       -7.24   0.80    3.2    527ms
+ 12   -9.443656570734      -13.85       -8.21   0.80    2.9    492ms
+ 13   -9.443656570734      -14.45       -8.63   0.80    3.8    597ms
+n     Energy            log10(ΔE)   log10(Δρ)   α      Diag   Δtime
+---   ---------------   ---------   ---------   ----   ----   ------
+  1   -9.443656570734                   -8.64   0.80    1.0    257ms
+  2   -9.443656570734   +  -14.75       -9.84   0.80    1.0    270ms
+n     Energy            log10(ΔE)   log10(Δρ)   α      Diag   Δtime
+---   ---------------   ---------   ---------   ----   ----   ------
+  1   -9.443656570734                   -9.61   0.80    1.0    646ms
+  2   -9.443656570734      -14.75      -10.38   0.80    1.0    261ms
+
+┌─────┬─────────────────┬───────────┬─────────────┬────────┐
+│<span class="sgr1">   n </span>│<span class="sgr1">          Energy </span>│<span class="sgr1"> log10(ΔE) </span>│<span class="sgr1">  max(Force) </span>│<span class="sgr1">  Δtime </span>│
+├─────┼─────────────────┼───────────┼─────────────┼────────┤
+│   1 │ -9.443656570734 │           │  0.00606025 │  16.2s │
+└─────┴─────────────────┴───────────┴─────────────┴────────┘
+
+n     Energy            log10(ΔE)   log10(Δρ)   α      Diag   Δtime
+---   ---------------   ---------   ---------   ----   ----   ------
+  1   -9.442830178794                   -1.68   0.80    1.0    237ms
+  2   -9.444336764266       -2.82       -2.40   0.80    1.0    290ms
+  3   -9.444396078441       -4.23       -2.82   0.80    3.2    503ms
+  4   -9.444398831079       -5.56       -3.15   0.80    2.1    398ms
+  5   -9.444400987894       -5.67       -4.26   0.80    1.9    348ms
+  6   -9.444401030015       -7.38       -4.39   0.80    3.9    710ms
+  7   -9.444401034879       -8.31       -5.09   0.80    1.2    678ms
+  8   -9.444401035155       -9.56       -6.20   0.80    2.6    455ms
+  9   -9.444401035156      -11.77       -6.11   0.80    4.3    635ms
+ 10   -9.444401035158      -11.76       -7.07   0.80    1.2    286ms
+ 11   -9.444401035158      -13.37       -7.68   0.80    2.9    496ms
+ 12   -9.444401035158      -14.75       -8.36   0.80    2.4    447ms
+ 13   -9.444401035158      -14.75       -9.02   0.80    2.9    512ms
+n     Energy            log10(ΔE)   log10(Δρ)   α      Diag   Δtime
+---   ---------------   ---------   ---------   ----   ----   ------
+  1   -9.442177082794                   -1.58   0.80    1.0    253ms
+  2   -9.444645712293       -2.61       -2.29   0.80    1.0    728ms
+  3   -9.444742249733       -4.02       -2.71   0.80    3.3    395ms
+  4   -9.444747198178       -5.31       -3.08   0.80    2.2    301ms
+  5   -9.444750318466       -5.51       -4.16   0.80    1.9    306ms
+  6   -9.444750370807       -7.28       -4.35   0.80    3.9    622ms
+  7   -9.444750376392       -8.25       -5.25   0.80    1.2    274ms
+  8   -9.444750376603       -9.68       -6.11   0.80    3.1    515ms
+  9   -9.444750376603      -12.70       -6.09   0.80    3.7    450ms
+ 10   -9.444750376604      -11.75       -7.30   0.80    1.1    241ms
+ 11   -9.444750376605      -13.39       -7.62   0.80    4.0    505ms
+ 12   -9.444750376605      -14.45       -8.36   0.80    1.9    295ms
+ 13   -9.444750376605      -14.75       -8.77   0.80    2.7    848ms
+n     Energy            log10(ΔE)   log10(Δρ)   α      Diag   Δtime
+---   ---------------   ---------   ---------   ----   ----   ------
+  1   -9.444750376605                   -9.33   0.80    1.0    200ms
+  2   -9.444750376605   +  -14.75      -10.28   0.80    1.0    216ms
+n     Energy            log10(ΔE)   log10(Δρ)   α      Diag   Δtime
+---   ---------------   ---------   ---------   ----   ----   ------
+  1   -9.444750376605                  -10.13   0.80    1.0    260ms
+  2   -9.444750376605   +  -14.75      -10.95   0.80    1.0    260ms
+
+┌─────┬─────────────────┬───────────┬─────────────┬────────┐
+│<span class="sgr1">   n </span>│<span class="sgr1">          Energy </span>│<span class="sgr1"> log10(ΔE) </span>│<span class="sgr1">  max(Force) </span>│<span class="sgr1">  Δtime </span>│
+├─────┼─────────────────┼───────────┼─────────────┼────────┤
+│   2 │ -9.444750376605 │     -2.96 │ 0.000982973 │  13.3s │
+└─────┴─────────────────┴───────────┴─────────────┴────────┘
+
+n     Energy            log10(ΔE)   log10(Δρ)   α      Diag   Δtime
+---   ---------------   ---------   ---------   ----   ----   ------
+  1   -9.444742043961                   -2.66   0.80    1.0    205ms
+  2   -9.444760180457       -4.74       -3.45   0.80    1.0    287ms
+  3   -9.444760742783       -6.25       -3.83   0.80    3.3    814ms
+  4   -9.444760768648       -7.59       -4.18   0.80    2.0    304ms
+  5   -9.444760788832       -7.69       -5.28   0.80    1.9    268ms
+  6   -9.444760789246       -9.38       -5.47   0.80    3.7    472ms
+  7   -9.444760789270      -10.61       -6.07   0.80    1.2    228ms
+  8   -9.444760789273      -11.64       -7.03   0.80    2.7    351ms
+  9   -9.444760789273      -13.06       -7.31   0.80    3.4    451ms
+ 10   -9.444760789273      -14.15       -8.00   0.80    1.3    251ms
+ 11   -9.444760789273   +  -14.75       -8.46   0.80    2.7    371ms
+n     Energy            log10(ΔE)   log10(Δρ)   α      Diag   Δtime
+---   ---------------   ---------   ---------   ----   ----   ------
+  1   -9.444646320072                   -2.24   0.80    1.0    271ms
+  2   -9.444768023239       -3.91       -3.04   0.80    1.0    615ms
+  3   -9.444771779987       -5.43       -3.41   0.80    3.3    393ms
+  4   -9.444771956393       -6.75       -3.76   0.80    2.0    302ms
+  5   -9.444772090589       -6.87       -4.86   0.80    1.9    277ms
+  6   -9.444772093237       -8.58       -5.04   0.80    3.7    620ms
+  7   -9.444772093413       -9.76       -5.61   0.80    1.0    264ms
+  8   -9.444772093432      -10.72       -6.59   0.80    2.7    406ms
+  9   -9.444772093432      -12.10       -6.81   0.80    3.4    600ms
+ 10   -9.444772093432      -13.22       -7.23   0.80    1.1    279ms
+ 11   -9.444772093432      -14.15       -8.07   0.80    2.4    389ms
+ 12   -9.444772093432      -14.45       -8.75   0.80    3.1    524ms
+n     Energy            log10(ΔE)   log10(Δρ)   α      Diag   Δtime
+---   ---------------   ---------   ---------   ----   ----   ------
+  1   -9.444772093432                   -9.14   0.80    1.0    207ms
+  2   -9.444772093432   +  -14.75       -9.95   0.80    1.0    216ms
+n     Energy            log10(ΔE)   log10(Δρ)   α      Diag   Δtime
+---   ---------------   ---------   ---------   ----   ----   ------
+  1   -9.444772093432                   -9.99   0.80    1.0    203ms
+  2   -9.444772093432   +  -14.75      -10.75   0.80    1.0    219ms
+
+┌─────┬─────────────────┬───────────┬─────────────┬────────┐
+│<span class="sgr1">   n </span>│<span class="sgr1">          Energy </span>│<span class="sgr1"> log10(ΔE) </span>│<span class="sgr1">  max(Force) </span>│<span class="sgr1">  Δtime </span>│
+├─────┼─────────────────┼───────────┼─────────────┼────────┤
+│   3 │ -9.444772093432 │     -4.66 │  0.00013896 │  10.9s │
+└─────┴─────────────────┴───────────┴─────────────┴────────┘
+
+n     Energy            log10(ΔE)   log10(Δρ)   α      Diag   Δtime
+---   ---------------   ---------   ---------   ----   ----   ------
+  1   -9.444771950410                   -3.56   0.80    1.0    240ms
+  2   -9.444772244910       -6.53       -4.51   0.80    1.0    273ms
+  3   -9.444772251767       -8.16       -4.81   0.80    3.1    565ms
+  4   -9.444772252384       -9.21       -5.41   0.80    1.9    332ms
+  5   -9.444772252404      -10.70       -6.07   0.80    3.1    862ms
+  6   -9.444772252405      -11.76       -6.77   0.80    2.5    414ms
+  7   -9.444772252405      -13.55       -7.31   0.80    2.7    432ms
+  8   -9.444772252405      -14.05       -8.04   0.80    2.5    413ms
+  9   -9.444772252405   +  -14.45       -8.82   0.80    2.9    476ms
+n     Energy            log10(ΔE)   log10(Δρ)   α      Diag   Δtime
+---   ---------------   ---------   ---------   ----   ----   ------
+  1   -9.444766672247                   -2.92   0.80    1.0    247ms
+  2   -9.444772425701       -5.24       -3.88   0.80    1.0    268ms
+  3   -9.444772554680       -6.89       -4.17   0.80    3.2    582ms
+  4   -9.444772566042       -7.94       -4.77   0.80    1.7    723ms
+  5   -9.444772566508       -9.33       -5.47   0.80    2.9    440ms
+  6   -9.444772566539      -10.52       -6.14   0.80    2.6    426ms
+  7   -9.444772566539      -12.39       -6.68   0.80    2.9    418ms
+  8   -9.444772566539      -12.91       -7.44   0.80    2.3    412ms
+  9   -9.444772566539      -14.27       -8.13   0.80    3.1    498ms
+ 10   -9.444772566539      -14.75       -8.95   0.80    3.0    470ms
+n     Energy            log10(ΔE)   log10(Δρ)   α      Diag   Δtime
+---   ---------------   ---------   ---------   ----   ----   ------
+  1   -9.444772566539                   -8.95   0.80    1.0    251ms
+  2   -9.444772566539   +  -14.45      -10.01   0.80    1.0    329ms
+n     Energy            log10(ΔE)   log10(Δρ)   α      Diag   Δtime
+---   ---------------   ---------   ---------   ----   ----   ------
+  1   -9.444772566539                   -9.86   0.80    1.0    208ms
+  2   -9.444772566539   +    -Inf      -10.72   0.80    1.0    218ms
+
+┌─────┬─────────────────┬───────────┬─────────────┬────────┐
+│<span class="sgr1">   n </span>│<span class="sgr1">          Energy </span>│<span class="sgr1"> log10(ΔE) </span>│<span class="sgr1">  max(Force) </span>│<span class="sgr1">  Δtime </span>│
+├─────┼─────────────────┼───────────┼─────────────┼────────┤
+│   4 │ -9.444772566539 │     -6.33 │  1.60009e-5 │  10.5s │
+└─────┴─────────────────┴───────────┴─────────────┴────────┘
+
+n     Energy            log10(ΔE)   log10(Δρ)   α      Diag   Δtime
+---   ---------------   ---------   ---------   ----   ----   ------
+  1   -9.444772568506                   -4.90   0.80    1.0    231ms
+  2   -9.444772568889       -9.42       -5.37   0.80    1.0    283ms
+  3   -9.444772568930      -10.39       -6.02   0.80    3.2    487ms
+  4   -9.444772568932      -11.69       -6.86   0.80    2.4    360ms
+  5   -9.444772568932      -13.06       -7.48   0.80    2.8    447ms
+  6   -9.444772568932      -14.75       -8.71   0.80    2.8    774ms
+n     Energy            log10(ΔE)   log10(Δρ)   α      Diag   Δtime
+---   ---------------   ---------   ---------   ----   ----   ------
+  1   -9.444772561455                   -4.15   0.80    1.0    202ms
+  2   -9.444772573781       -7.91       -4.62   0.80    1.0    216ms
+  3   -9.444772575092       -8.88       -5.28   0.80    3.1    398ms
+  4   -9.444772575165      -10.13       -6.12   0.80    2.4    346ms
+  5   -9.444772575168      -11.60       -6.72   0.80    2.9    392ms
+  6   -9.444772575168      -13.41       -8.01   0.80    2.9    364ms
+  7   -9.444772575168   +    -Inf       -8.44   0.80    4.4    600ms
+n     Energy            log10(ΔE)   log10(Δρ)   α      Diag   Δtime
+---   ---------------   ---------   ---------   ----   ----   ------
+  1   -9.444772575168                   -8.83   0.80    1.0    205ms
+  2   -9.444772575168   +  -14.45       -9.43   0.80    1.0    215ms
+n     Energy            log10(ΔE)   log10(Δρ)   α      Diag   Δtime
+---   ---------------   ---------   ---------   ----   ----   ------
+  1   -9.444772575168                   -9.65   0.80    1.0    213ms
+  2   -9.444772575168   +  -14.45      -10.32   0.80    1.0    225ms
+
+┌─────┬─────────────────┬───────────┬─────────────┬────────┐
+│<span class="sgr1">   n </span>│<span class="sgr1">          Energy </span>│<span class="sgr1"> log10(ΔE) </span>│<span class="sgr1">  max(Force) </span>│<span class="sgr1">  Δtime </span>│
+├─────┼─────────────────┼───────────┼─────────────┼────────┤
+│   5 │ -9.444772575168 │     -8.06 │   1.1224e-6 │  6.94s │
+└─────┴─────────────────┴───────────┴─────────────┴────────┘</code></pre><div class="admonition is-success"><header class="admonition-header">Automatically adapted calculator parameters</header><div class="admonition-body"><p>Some calculators (such as DFTK) are able to adapt to the keyword arguments and parameters passed to <code>minimize_energy!</code>. In this case the SCF tolerance is automatically adapted according to the convergence parameters (here <code>tol_forces</code>) passed to <code>minimize_energy!</code>.</p></div></div><p>The final energy is</p><pre><code class="language-julia hljs">results.energy</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi">-9.444772575167741 Eₕ</code></pre><p>We can view the final structure</p><pre><code class="language-julia hljs">results.system</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi">FlexibleSystem(Al₄, periodicity = TTT):
+    cell_vectors      : [    4.05        0        0;
+                                0     4.05        0;
+                                0        0     4.05]u&quot;Å&quot;
+
+    Atom(Al, [-0.0300995, 0.0222363, -0.0351778]u&quot;Å&quot;)
+    Atom(Al, [-0.0300997,  2.04723,  1.98981]u&quot;Å&quot;)
+    Atom(Al, [  1.9949, 0.0222502,  1.98983]u&quot;Å&quot;)
+    Atom(Al, [ 1.99488,  2.04724, -0.0351774]u&quot;Å&quot;)
+</code></pre><p>The results object returned from Optim (containing some statistics about the optimisation):</p><pre><code class="language-julia hljs">results.optimres</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi"> * Status: failure
+
+ * Candidate solution
+    Final objective value:     -9.444773e+00
+
+ * Found with
+    Algorithm:     L-BFGS
+
+ * Convergence measures
+    |x - x&#39;|               = 1.91e-04 ≰ -1.0e+00
+    |x - x&#39;|/|x&#39;|          = 1.28e-03 ≰ -1.0e+00
+    |f(x) - f(x&#39;)|         = 8.63e-09 ≰ -1.0e+00
+    |f(x) - f(x&#39;)|/|f(x&#39;)| = 9.14e-10 ≰ -1.0e+00
+    |g(x)|                 = 1.99e-06 ≰ 2.2e-15
+
+ * Work counters
+    Seconds run:   58  (vs limit 31536000)
+    Iterations:    5
+    f(x) calls:    11
+    ∇f(x) calls:   6
+</code></pre><p>The final state of the calculator object is also accessible via <code>results.state</code> and could be employed for postprocessing using the framework of the calculator. E.g. in the case of <code>DFTK</code>, the <code>results.state</code> is what <code>DFTK</code> calls an <code>scfres</code> and could just be used to plot a density of states or plot bands or compute response properties.</p></article><nav class="docs-footer"><a class="docs-footer-prevpage" href="../../">« Home</a><a class="docs-footer-nextpage" href="../variablecell/">Silicon variable cell relaxation »</a><div class="flexbox-break"></div><p class="footer-message">Powered by <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> and the <a href="https://julialang.org/">Julia Programming Language</a>.</p></nav></div><div class="modal" id="documenter-settings"><div class="modal-background"></div><div class="modal-card"><header class="modal-card-head"><p class="modal-card-title">Settings</p><button class="delete"></button></header><section class="modal-card-body"><p><label class="label">Theme</label><div class="select"><select id="documenter-themepicker"><option value="auto">Automatic (OS)</option><option value="documenter-light">documenter-light</option><option value="documenter-dark">documenter-dark</option><option value="catppuccin-latte">catppuccin-latte</option><option value="catppuccin-frappe">catppuccin-frappe</option><option value="catppuccin-macchiato">catppuccin-macchiato</option><option value="catppuccin-mocha">catppuccin-mocha</option></select></div></p><hr/><p>This document was generated with <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> version 1.8.1 on <span class="colophon-date" title="Friday 13 February 2026 21:29">Friday 13 February 2026</span>. Using Julia version 1.12.5.</p></section><footer class="modal-card-foot"></footer></div></div></div></body></html>
