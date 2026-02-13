@@ -1,3 +1,6 @@
+using Optim
+using NLSolversBase: only_fg!
+
 #
 # Solvers with sane defaults
 #
@@ -101,7 +104,7 @@ function solve_problem(prob::GeoOptProblem, solver::Optim.AbstractOptimizer, cvg
         time_limit=maxtime,
         kwargs...
     )
-    optimres = Optim.optimize(Optim.only_fg!(fg!), x0, solver, options)
+    optimres = Optim.optimize(only_fg!(fg!), x0, solver, options)
 
     (; minimizer=Optim.minimizer(optimres), minimum=Optim.minimum(optimres), optimres)
 end
