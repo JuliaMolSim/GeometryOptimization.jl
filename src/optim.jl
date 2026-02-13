@@ -42,28 +42,28 @@ function solve_problem(prob::GeoOptProblem, solver::Optim.AbstractOptimizer, cvg
     end
 
     geoopt_state = prob.geoopt_state
-    inner_callback = function(ts)
+    inner_callback = function(optim_state)
         cache_evaluations = geoopt_state.cache_evaluations
-
-        geoopt_state.n_iter = ts.iteration
+        n_iter = optim_state.pseudo_iteration
+        geoopt_state.n_iter = n_iter
         if isempty(cache_evaluations)
             # Find out if we already added the current state (if optim cannot
             # make progress it keeps printing iterations, but does not run further
             # function evaluations ... in this case we have no new forces and virials).
             # Also it sometimes does an extra call to the callback even though
             # convergence has already been flagged.
-            tol = 10eps(typeof(ts.value))
-            is_match = abs(austrip(geoopt_state.history_energy[end]) - ts.value) < tol
+            tol = 10eps(typeof(optim_state.f_x))
+            is_match = abs(austrip(geoopt_state.history_energy[end]) - optim_state.f_x) < tol
             if !geoopt_state.converged && !is_match
-                @warn "Discarding optimisation step of iteration $(ts.iteration)"
+                @warn "Discarding optimisation step of iteration $(n_iter)"
             end
         else
             # Find position in the cache matching Optim's current state
             i_match = findlast(cache_evaluations) do eval
-                isnothing(eval.gradnorm) && return false
-                tol = 10eps(typeof(ts.value))
-                (   abs(eval.objective - ts.value)  < tol
-                 && abs(eval.gradnorm  - ts.g_norm) < tol)
+                isnothing(eval.grad) && return false
+                tol = 10eps(typeof(optim_state.f_x))
+                (   abs(eval.objective - optim_state.f_x)     < tol
+                 && maximum(abs, eval.grad - optim_state.g_x) < tol)
             end
             i_match = @something i_match length(cache_evaluations)
 
@@ -82,7 +82,7 @@ function solve_problem(prob::GeoOptProblem, solver::Optim.AbstractOptimizer, cvg
         end
 
         # Callback and possible abortion
-        halt = callback(ts, geoopt_state)
+        halt = callback(optim_state, geoopt_state)
         halt && return true
 
         geoopt_state.converged
@@ -95,8 +95,8 @@ function solve_problem(prob::GeoOptProblem, solver::Optim.AbstractOptimizer, cvg
         allow_f_increases=true,
         successive_f_tol=2,
         callback=inner_callback,
-        x_abstol=-1, f_abstol=-1, g_tol=10eps(T),
-        x_reltol=-1, f_reltol=-1,
+        x_abstol=NaN, f_abstol=NaN, g_tol=10eps(T),
+        x_reltol=NaN, f_reltol=NaN,
         iterations=maxiters,
         time_limit=maxtime,
         kwargs...
@@ -108,6 +108,7 @@ end
 
 function solve_problem(prob, solver::Optim.ZerothOrderOptimizer, cvg;
                        callback, maxiters, maxtime, kwargs...)
-    # TODO Supporting this needs more fiddeling with the callbacks and convergence checks
+    # TODO: Supporting this needs more fiddeling with the callbacks and convergence checks
+    #       and it's generally not very useful as forces / stresses are usually available
     throw(ArgumentError("Zeroth-order optimizers are currently not supported."))
 end
