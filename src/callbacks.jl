@@ -62,21 +62,25 @@ function (cb::GeoOptDefaultCallback)(optim_state, geoopt_state)
     #      a few calculator-specific things (e.g. total number of SCF iterations)
 
     if cb.always_show_header
-        hlines = :all
-        show_header = true
+        table_format = TextTableFormat(; horizontal_line_at_beginning=true,
+                                         horizontal_line_after_data_rows=true)
+        show_column_labels = true
     elseif geoopt_state.n_iter == 0
-        hlines = [0, 1]
-        show_header = true
+        table_format = TextTableFormat(; horizontal_line_at_beginning=true,
+                                         horizontal_line_after_data_rows=false)
+        show_column_labels = true
     else
-        hlines = :none
-        show_header = false
+        table_format = TextTableFormat(; horizontal_line_at_beginning=false,
+                                         horizontal_line_after_data_rows=false)
+        show_column_labels = false
     end
     title = iszero(geoopt_state.n_iter) ? "Geometry optimisation convergence (in atomic units)" : ""
 
     cb.always_show_header && println(stdout)
     pretty_table(stdout, reshape(getindex.(fields, 3), 1, length(fields));
-                 header=Symbol.(getindex.(fields, 1)), columns_width=getindex.(fields, 2),
-                 title, show_header, hlines)
+                 table_format, title, show_column_labels,
+                 column_labels=getindex.(fields, 1),
+                 fixed_data_column_widths=getindex.(fields, 2))
     cb.always_show_header && println(stdout)
 
     flush(stdout)
