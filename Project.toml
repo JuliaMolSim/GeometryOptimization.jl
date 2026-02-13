@@ -1,6 +1,6 @@
 name = "GeometryOptimization"
 uuid = "673bf261-a53d-43b9-876f-d3c1fc8329c2"
-version = "0.1.4"
+version = "0.1.5"
 authors = ["JuliaMolSim community"]
 
 [deps]
