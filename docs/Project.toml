@@ -9,10 +9,14 @@ Documenter = "e30172f5-a6a5-5a46-863b-614d45cd2de4"
 EmpiricalPotentials = "38527215-9240-4c91-a638-d4250620c9e2"
 GeometryOptimization = "673bf261-a53d-43b9-876f-d3c1fc8329c2"
 LinearAlgebra = "37e2e46d-f89d-539d-b4ee-838fcccc9c8e"
+Optimization = "7f7a1694-90dd-40f0-9382-eb1efda571ba"
 OptimizationNLopt = "4e6fcdb7-1186-4e1f-a706-475e75c168bb"
 PseudoPotentialData = "5751a51d-ac76-4487-a056-413ecf6fbe19"
 Unitful = "1986cc42-f94f-5a68-af5c-568840ba703d"
 UnitfulAtomic = "a7773ee8-282e-5fa2-be4e-bd808c38a91a"
+
+[sources]
+GeometryOptimization = {path = ".."}
 
 [compat]
 ASEconvert = "0.1.8"
