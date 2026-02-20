@@ -20,6 +20,7 @@ GeometryOptimization = {path = ".."}
 
 [compat]
 ASEconvert = "0.1.8"
+AtomsBase = "0.5.2"
 DFTK = "0.7"
 Documenter = "~1.8"
 PseudoPotentialData = "0.2"
