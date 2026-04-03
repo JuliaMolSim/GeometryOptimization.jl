@@ -80,7 +80,9 @@ function (cb::GeoOptDefaultCallback)(optim_state, geoopt_state)
     pretty_table(stdout, reshape(getindex.(fields, 3), 1, length(fields));
                  table_format, title, show_column_labels,
                  column_labels=getindex.(fields, 1),
-                 fixed_data_column_widths=getindex.(fields, 2))
+                 fixed_data_column_widths=getindex.(fields, 2),
+                 # show full table regardless of displaysize
+                 fit_table_in_display_horizontally=false)
     cb.always_show_header && println(stdout)
 
     flush(stdout)
