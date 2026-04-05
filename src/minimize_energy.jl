@@ -45,12 +45,12 @@ function eval_objective_gradient!(G, prob::GeoOptProblem, ps, x)
     objective = res.energy_unitless
     energy = res.energy
 
-    gradnorm = nothing
-    forces   = nothing
-    virial   = nothing
+    grad   = nothing
+    forces = nothing
+    virial = nothing
     if !isnothing(G)
         res = eval_gradient(prob.system, prob.calculator, prob.dofmgr, x, ps, res.state)
-        gradnorm = maximum(abs, res.grad)
+        grad = res.grad
         haskey(res, :forces) && (forces = res.forces)
         haskey(res, :virial) && (virial = res.virial)
         copy!(G, res.grad)
@@ -62,7 +62,7 @@ function eval_objective_gradient!(G, prob::GeoOptProblem, ps, x)
     if energy ≤ min_energy
         geoopt_state.calc_state = res.state
     end
-    push!(geoopt_state.cache_evaluations, (; energy, forces, virial, objective, gradnorm))
+    push!(geoopt_state.cache_evaluations, (; energy, forces, virial, objective, grad))
 
     objective
 end
