@@ -21,8 +21,8 @@ In addition set at most one of the kwargs:
 On call to the constructor, `DofManager` stores positions and cell
 `X0, C0`, dofs are understood *relative* to this initial configuration.
 `get_dofs(sys, dm::DofManager)` returns a vector that represents the
-non-dimensional displacement and a deformation matrix `(U, F)`. The new configuration extracted from a dof vector
-is understood as
+non-dimensional displacement and a deformation matrix `(U, F)`.
+The new configuration extracted from a dof vector is understood as
 * The new cell: `C = F * C0`
 * The new positions: `𝐫[i] = F * (X0[i] + U[i] * r0)`
 One aspect of this definition is that clamped atom positions still change via

@@ -5,7 +5,6 @@ using AtomsCalculators
 using DocStringExtensions
 using LinearAlgebra
 using LineSearches
-using Optim
 using StaticArrays
 using Unitful
 using UnitfulAtomic
